@@ -1,1 +1,1 @@
-#No copiar sino eres tremendo gey
+No copiar sino eres tremendo gey
