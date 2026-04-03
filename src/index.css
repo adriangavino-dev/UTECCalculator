@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  /* Aquí podrías definir variables si quisieras, pero v4 lo hace automático */
+}
+
+/* El CSS global se escribe así en v4 */
+:root {
+  background-color: #070b14;
+  color: white;
+  margin: 0;
+  padding: 0;
+  font-family: 'Quicksand', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar para el modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #164e63; /* Color cyan oscuro */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0891b2; /* Color cyan brillante */
+}
