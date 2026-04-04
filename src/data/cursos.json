@@ -22,6 +22,12 @@
     "nombre": "Ecuaciones Diferenciales",
     "carrera": "Ciencia de la Computación",
     "sistema": { "EC1": 0.50, "EC2": 0.50, "EP": 0.20, "EF": 0.30 }
+  },
+  {
+    "id": "CS2013",
+    "nombre": "Programación III",
+    "carrera": "Ciencia de la Computación",
+    "sistema": { "EC1": 0.15, "EC2": 0.15, "P1": 0.10, "P2": 0.20, "EP": 0.10, "EF": 0.30 }
   }
 
 ]
