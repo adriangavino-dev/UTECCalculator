@@ -2,7 +2,7 @@
   {
     "id": "CS1022",
     "nombre": "Matemáticas Discretas II",
-    "carrera": "Ciencia de la Computación",
+    "carrera": ["Ciencia de la Computación", "Sistemas de Información"],
     "sistema": { "EC1": 0.20, "EC2": 0.20, "EP": 0.30, "EF": 0.30 }
   },
   {
@@ -31,19 +31,21 @@
         "Tarea 1": 0.05,
         "Tarea 2": 0.05,
         "AG 1": 0.10,
-        "AG 2": 0.10
+        "AG 2": 0.10,
+        "ABP 1": 0.05
       }
     },
     "EC2": {
       "peso": 0.25,
       "subNotas": {
-        "Quiz 4": 0.233,
-        "Quiz 5": 0.233,
-        "Quiz 6": 0.233,
+        "Quiz 4": 0.2,
+        "Quiz 5": 0.2,
+        "Quiz 6": 0.2,
         "Tarea 3": 0.05,
         "Tarea 4": 0.05,
         "AG 3": 0.10,
-        "AG 4": 0.10
+        "AG 4": 0.10,
+        "ABP 2": 0.05
       }
     },
     "EP": 0.20,
