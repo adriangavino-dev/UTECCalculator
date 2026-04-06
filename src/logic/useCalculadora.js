@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import cursosData from '../data/cursos.json'
 
-// Carreras actualizadas
 const LISTA_CARRERAS = [
   "Ciencia de la Computación", 
   "Ciberseguridad", 
@@ -16,19 +15,16 @@ export const useCalculadora = () => {
   const [resultado, setResultado] = useState(null)
   const [verMisCursos, setVerMisCursos] = useState(false)
 
-  // 1. Cargar NOTAS desde LocalStorage al iniciar
   const [notasGlobales, setNotasGlobales] = useState(() => {
     const saved = localStorage.getItem('quantum_notas');
     return saved ? JSON.parse(saved) : {};
   });
 
-  // 2. Cargar MIS CURSOS (Favoritos) desde LocalStorage
   const [misCursosIds, setMisCursosIds] = useState(() => {
     const saved = localStorage.getItem('quantum_favoritos');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // 3. Efectos para guardar automáticamente cuando algo cambie
   useEffect(() => {
     localStorage.setItem('quantum_notas', JSON.stringify(notasGlobales));
   }, [notasGlobales]);
@@ -37,43 +33,46 @@ export const useCalculadora = () => {
     localStorage.setItem('quantum_favoritos', JSON.stringify(misCursosIds));
   }, [misCursosIds]);
 
-  // Lógica de Filtrado Pro
   const filtrados = cursosData.filter(c => {
     const coincideCarrera = c.carrera === carrera;
     const coincideBusqueda = c.nombre.toLowerCase().includes(busqueda.toLowerCase());
     const estaEnMisCursos = misCursosIds.includes(c.id);
-    
-    if (verMisCursos) {
-      return estaEnMisCursos && coincideBusqueda;
-    }
-    return coincideCarrera && coincideBusqueda;
+    return verMisCursos ? (estaEnMisCursos && coincideBusqueda) : (coincideCarrera && coincideBusqueda);
   });
 
-  // Funciones de acción
   const toggleFavorito = (id) => {
-    setMisCursosIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+    setMisCursosIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const actualizarNota = (cursoId, ev, valor) => {
+  const actualizarNota = (cursoId, llaveNota, valor) => {
     setNotasGlobales(prev => ({
       ...prev,
-      [cursoId]: { 
-        ...(prev[cursoId] || {}), 
-        [ev]: valor 
-      }
+      [cursoId]: { ...(prev[cursoId] || {}), [llaveNota]: valor }
     }));
   };
 
   const calcularPromedio = (curso) => {
     const notasDelCurso = notasGlobales[curso.id] || {};
-    let acumulado = 0;
-    Object.keys(curso.sistema).forEach(ev => {
-      const valor = parseFloat(notasDelCurso[ev]) || 0;
-      acumulado += valor * curso.sistema[ev];
+    let totalPromedio = 0;
+
+    Object.keys(curso.sistema).forEach(key => {
+      const config = curso.sistema[key];
+      
+      if (typeof config === 'number') {
+        const nota = parseFloat(notasDelCurso[key]) || 0;
+        totalPromedio += nota * config;
+      } else if (config.subNotas) {
+        let acumuladoSub = 0;
+        Object.keys(config.subNotas).forEach(subKey => {
+          const notaSub = parseFloat(notasDelCurso[`${key}_${subKey}`]) || 0;
+          const pesoSub = config.subNotas[subKey];
+          acumuladoSub += notaSub * pesoSub;
+        });
+        totalPromedio += acumuladoSub * config.peso;
+      }
     });
-    setResultado(acumulado.toFixed(2));
+
+    setResultado(totalPromedio.toFixed(2));
   };
 
   const reset = () => {
@@ -82,15 +81,10 @@ export const useCalculadora = () => {
   };
 
   return {
-    carreras: LISTA_CARRERAS,
-    carrera, setCarrera,
-    busqueda, setBusqueda,
-    verMisCursos, setVerMisCursos,
-    filtrados,
-    cursoSeleccionado, setCursoSeleccionado,
-    notasGlobales, actualizarNota,
-    misCursosIds, toggleFavorito,
-    resultado, calcularPromedio,
-    reset
+    carreras: LISTA_CARRERAS, carrera, setCarrera,
+    busqueda, setBusqueda, verMisCursos, setVerMisCursos,
+    filtrados, cursoSeleccionado, setCursoSeleccionado,
+    notasGlobales, actualizarNota, misCursosIds, toggleFavorito,
+    resultado, calcularPromedio, reset
   }
 }
