@@ -33,12 +33,18 @@ export const useCalculadora = () => {
     localStorage.setItem('quantum_favoritos', JSON.stringify(misCursosIds));
   }, [misCursosIds]);
 
-  const filtrados = cursosData.filter(c => {
-    const coincideCarrera = c.carrera === carrera;
-    const coincideBusqueda = c.nombre.toLowerCase().includes(busqueda.toLowerCase());
-    const estaEnMisCursos = misCursosIds.includes(c.id);
-    return verMisCursos ? (estaEnMisCursos && coincideBusqueda) : (coincideCarrera && coincideBusqueda);
-  });
+const filtrados = cursosData.filter(c => {
+  const coincideCarrera = Array.isArray(c.carrera) 
+    ? c.carrera.includes(carrera) 
+    : c.carrera === carrera;
+
+  const coincideBusqueda = c.nombre.toLowerCase().includes(busqueda.toLowerCase());
+  const estaEnMisCursos = misCursosIds.includes(c.id);
+  
+  return verMisCursos 
+    ? (estaEnMisCursos && coincideBusqueda) 
+    : (coincideCarrera && coincideBusqueda);
+});
 
   const toggleFavorito = (id) => {
     setMisCursosIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
