@@ -17,17 +17,50 @@
     "carrera": "Ciencia de la Computación",
     "sistema": { "EC1": 0.10, "EC2": 0.10, "P1": 0.10, "P2": 0.20, "EP": 0.25, "EF": 0.25 }
   },
-  {
-    "id": "CC2101",
-    "nombre": "Ecuaciones Diferenciales",
-    "carrera": "Ciencia de la Computación",
-    "sistema": { "EC1": 0.50, "EC2": 0.50, "EP": 0.20, "EF": 0.30 }
-  },
+{
+  "id": "CC2101",
+  "nombre": "Ecuaciones Diferenciales",
+  "carrera": "Ciencia de la Computación",
+  "sistema": {
+    "EC1": {
+      "peso": 0.25,
+      "subNotas": {
+        "Quiz 1": 0.233, 
+        "Quiz 2": 0.233,
+        "Quiz 3": 0.233,
+        "Tarea 1": 0.05,
+        "Tarea 2": 0.05,
+        "AG 1": 0.10,
+        "AG 2": 0.10
+      }
+    },
+    "EC2": {
+      "peso": 0.25,
+      "subNotas": {
+        "Quiz 4": 0.233,
+        "Quiz 5": 0.233,
+        "Quiz 6": 0.233,
+        "Tarea 3": 0.05,
+        "Tarea 4": 0.05,
+        "AG 3": 0.10,
+        "AG 4": 0.10
+      }
+    },
+    "EP": 0.20,
+    "EF": 0.30
+  }
+},
   {
     "id": "CS2013",
     "nombre": "Programación III",
     "carrera": "Ciencia de la Computación",
     "sistema": { "EC1": 0.15, "EC2": 0.15, "P1": 0.10, "P2": 0.20, "EP": 0.10, "EF": 0.30 }
+  },
+  {
+    "id": "CC1105",
+    "nombre": "Estadística y Probabilidades I",
+    "carrera": "Ciencia de la Computación",
+    "sistema": { "Quiz 1": 0.05, "Quiz 2": 0.05,"Tarea 1": 0.10, "Tarea 2": 0.10, "PG1": 0.15, "PG2": 0.15, "EP": 0.20, "EF": 0.20 }
   }
 
 ]
