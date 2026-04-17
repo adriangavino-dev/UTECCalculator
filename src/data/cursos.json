@@ -11,7 +11,7 @@
     "carrera": "Ciencia de la Computación",
     "sistema": {
     "EC1": {
-      "peso": 0.15,
+      "peso": 0.10,
       "subNotas": {
         "Lab 1": 1.43, 
         "Lab 2": 1.43,
