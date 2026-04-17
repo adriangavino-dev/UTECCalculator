@@ -9,7 +9,7 @@
     "id": "CS2041",
     "nombre": "Base de Datos I",
     "carrera": "Ciencia de la Computación",
-    "sistema": {   "sistema": {
+    "sistema": {
     "EC1": {
       "peso": 0.10,
       "subNotas": {
@@ -36,8 +36,7 @@
     },
     
     "P1": 0.10, "P2": 0.20, "EP": 0.25, "EF": 0.25 }
-  }
-},
+  },
   {
     "id": "CS2031",
     "nombre": "Desarrollo Basado en Plataformas",
