@@ -45,12 +45,12 @@
     "EC1": {
       "peso": 0.10,
       "subNotas": {
-        "Quiz 1": 0.83, 
-        "Quiz 2": 0.83,
-        "Quiz 3": 0.83,
-        "Quiz 4": 0.83,
-        "Quiz 5": 0.83,
-        "Quiz 6": 0.83,
+        "Quiz 1": 0.083, 
+        "Quiz 2": 0.083,
+        "Quiz 3": 0.083,
+        "Quiz 4": 0.083,
+        "Quiz 5": 0.083,
+        "Quiz 6": 0.083,
         "Hackaton 0": 0.01,
         "Hackaton 1": 0.02,
         "Hackaton 2": 0.02
