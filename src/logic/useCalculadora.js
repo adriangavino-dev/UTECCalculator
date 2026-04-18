@@ -56,6 +56,14 @@ const filtrados = cursosData.filter(c => {
       [cursoId]: { ...(prev[cursoId] || {}), [llaveNota]: valor }
     }));
   };
+  
+  const limpiarNotasCurso = (cursoId) => {
+  setNotasGlobales(prev => {
+    const nuevasNotas = { ...prev };
+    delete nuevasNotas[cursoId];
+    return nuevasNotas;
+  });
+};
 
   const calcularPromedio = (curso) => {
     const notasDelCurso = notasGlobales[curso.id] || {};
@@ -91,6 +99,6 @@ const filtrados = cursosData.filter(c => {
     busqueda, setBusqueda, verMisCursos, setVerMisCursos,
     filtrados, cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota, misCursosIds, toggleFavorito,
-    resultado, calcularPromedio, reset
+    resultado, calcularPromedio, reset, limpiarNotasCurso
   }
 }
