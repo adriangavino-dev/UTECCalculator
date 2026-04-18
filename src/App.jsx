@@ -9,7 +9,8 @@ export default function App() {
     cursoSeleccionado, setCursoSeleccionado, 
     notasGlobales, actualizarNota,
     misCursosIds, toggleFavorito,
-    resultado, calcularPromedio, reset 
+    resultado, calcularPromedio, reset,
+    limpiarNotasCurso
   } = useCalculadora()
 
   return (
@@ -128,6 +129,7 @@ export default function App() {
         curso={cursoSeleccionado}
         notasGlobales={notasGlobales}
         actualizarNota={actualizarNota}
+        limpiarNotasCurso={limpiarNotasCurso}
         resultado={resultado}
         onCalcular={() => calcularPromedio(cursoSeleccionado)}
         onCerrar={reset}
