@@ -9,16 +9,13 @@ export const ModalCalculo = ({ curso, notasGlobales, actualizarNota, limpiarNota
       
       <div className="bg-[#161d31]/40 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 w-full max-w-md md:max-w-4xl border border-white/10 shadow-[0_0_80px_-15px_rgba(0,0,0,0.6)] flex flex-col max-h-[90vh] relative overflow-hidden">
         
+
         <button 
-          onClick={() => {
-            if(window.confirm("¿Seguro que quieres borrar todas las notas de este curso?")) {
-              limpiarNotasCurso(curso.id);
-            }
-          }}
-          className="absolute top-6 right-6 md:top-8 md:right-8 p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl text-red-500 transition-all group z-20 cursor-pointer"
+          onClick={() => limpiarNotasCurso(curso.id)} 
+          className="absolute top-6 right-6 md:top-8 md:right-8 p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl text-red-500 transition-all group z-20 cursor-pointer active:scale-90"
           title="Limpiar todas las notas"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
