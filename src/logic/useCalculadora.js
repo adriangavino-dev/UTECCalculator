@@ -57,10 +57,10 @@ const filtrados = cursosData.filter(c => {
     }));
   };
   
-  const limpiarNotasCurso = (cursoId) => {
+const limpiarNotasCurso = (cursoId) => {
   setNotasGlobales(prev => {
     const nuevasNotas = { ...prev };
-    delete nuevasNotas[cursoId];
+    nuevasNotas[cursoId] = {}; 
     return nuevasNotas;
   });
 };
