@@ -43,27 +43,27 @@
     "carrera": "Ciencia de la Computación",
       "sistema": {
     "EC1": {
-      "peso": 0.20,
+      "peso": 0.10,
       "subNotas": {
-        "Quiz 1": 0.166667, 
-        "Quiz 2": 0.166667,
-        "Quiz 3": 0.166667,
-        "Quiz 4": 0.166667,
-        "Quiz 5": 0.166667,
-        "Quiz 6": 0.166667,
-        "Hackaton 0": 0.02,
-        "Hackaton 1": 0.04,
-        "Hackaton 2": 0.04
+        "Quiz 1": 0.83, 
+        "Quiz 2": 0.83,
+        "Quiz 3": 0.83,
+        "Quiz 4": 0.83,
+        "Quiz 5": 0.83,
+        "Quiz 6": 0.83,
+        "Hackaton 0": 0.01,
+        "Hackaton 1": 0.02,
+        "Hackaton 2": 0.02
       }
     },
     "EC2": {
-      "peso": 0.20,
+      "peso": 0.10,
       "subNotas": {
-        "Postman": 0.05, 
-        "6 Laboratorios": 0.15,
+        "Postman": 0.025, 
+        "6 Laboratorios": 0.075,
       }
     },
-    "P1": 0.10, "P2": 0.20, "EP": 0.25, "EF": 0.25
+    "P1": 0.20, "P2": 0.20, "EP": 0.20, "EF": 0.20
   }
 },
 {
