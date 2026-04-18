@@ -58,11 +58,10 @@ const filtrados = cursosData.filter(c => {
   };
   
 const limpiarNotasCurso = (cursoId) => {
-  setNotasGlobales(prev => {
-    const nuevasNotas = { ...prev };
-    nuevasNotas[cursoId] = {}; 
-    return nuevasNotas;
-  });
+  setNotasGlobales(prev => ({
+    ...prev,
+    [cursoId]: {}
+  }));
 };
 
   const calcularPromedio = (curso) => {
