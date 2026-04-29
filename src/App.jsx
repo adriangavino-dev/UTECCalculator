@@ -18,11 +18,9 @@ export default function App() {
       <div className="p-5 md:p-10">
         
         {!carrera ? (
-          /* --- PANTALLA DE INICIO CON LOGO --- */
           <div className="max-w-md mx-auto bg-[#161d31] p-10 rounded-[40px] text-center mt-20 border border-white/5 shadow-[0_0_50px_-15px_rgba(0,173,238,0.3)] relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-600/10 rounded-full blur-3xl"></div>
             
-            {/* EL LOGO "Q" */}
             <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-violet-600 rounded-full mx-auto mb-8 flex items-center justify-center shadow-[0_0_30px_rgba(0,173,238,0.5)]">
               <span className="text-4xl font-bold text-white">CN</span>
             </div>
@@ -43,7 +41,6 @@ export default function App() {
             </div>
           </div>
         ) : (
-          /* --- PANEL DE CURSOS CON LOGO PEQUEÑO --- */
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <button onClick={() => setCarrera(null)} className="text-cyan-400 font-bold flex items-center gap-2 hover:text-white transition-colors cursor-pointer group">
@@ -51,7 +48,6 @@ export default function App() {
                 <span className="text-xs uppercase tracking-widest">Cambiar Carrera</span>
               </button>
               
-              {/* Logo pequeño en la esquina superior derecha */}
               <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
                 <span className="text-sm font-bold">CN</span>
               </div>
