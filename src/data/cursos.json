@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "id": "CS1022",
@@ -94,3 +95,122 @@
 
 
 ]
+=======
+[
+  {
+    "id": "CS1022",
+    "nombre": "Matemáticas Discretas II",
+    "carrera": ["Ciencia de la Computación", "Sistemas de Información"],
+    "sistema": { "EC1": 0.20, "EC2": 0.20, "EP": 0.30, "EF": 0.30 }
+  },
+  {
+  "id": "CS2041",
+  "nombre": "Base de Datos I",
+  "carrera": "Ciencia de la Computación",
+  "sistema": {
+    "EC1": {
+      "peso": 0.10,
+      "subNotas": {
+        "Lab 1": 0.142857, 
+        "Lab 2": 0.142857,
+        "Lab 3": 0.142857,
+        "Lab 4": 0.142857,
+        "Lab 5": 0.142857,
+        "Lab 6": 0.142857,
+        "Lab 7": 0.142857
+      }
+    },
+    "EC2": {
+      "peso": 0.10,
+      "subNotas": {
+        "Lab 8": 0.142857, 
+        "Lab 9": 0.142857,
+        "Lab 10": 0.142857,
+        "Lab 11": 0.142857,
+        "Lab 12": 0.142857,
+        "Lab 13": 0.142857,
+        "Lab 14": 0.142857
+      }
+    },
+    "P1": 0.10, "P2": 0.20, "EP": 0.25, "EF": 0.25
+  }
+},
+  {
+    "id": "CS2031",
+    "nombre": "Desarrollo Basado en Plataformas",
+    "carrera": "Ciencia de la Computación",
+      "sistema": {
+    "EC1": {
+      "peso": 0.10,
+      "subNotas": {
+        "Quiz 1": 0.083333, 
+        "Quiz 2": 0.083333,
+        "Quiz 3": 0.083333,
+        "Quiz 4": 0.083333,
+        "Quiz 5": 0.083333,
+        "Quiz 6": 0.083333,
+        "Hackaton 0": 0.1,
+        "Hackaton 1": 0.2,
+        "Hackaton 2": 0.2
+      }
+    },
+    "EC2": {
+      "peso": 0.10,
+      "subNotas": {
+        "Postman": 0.25, 
+        "6 Laboratorios": 0.75
+      }
+    },
+    "P1": 0.20, "P2": 0.20, "EP": 0.20, "EF": 0.20
+  }
+},
+{
+  "id": "CC2101",
+  "nombre": "Ecuaciones Diferenciales",
+  "carrera": "Ciencia de la Computación",
+  "sistema": {
+    "EC1": {
+      "peso": 0.25,
+      "subNotas": {
+        "Quiz 1": 0.233, 
+        "Quiz 2": 0.233,
+        "Quiz 3": 0.233,
+        "Tarea 1": 0.05,
+        "Tarea 2": 0.05,
+        "AG 1": 0.10,
+        "AG 2": 0.10,
+        "ABP 1": 0.05
+      }
+    },
+    "EC2": {
+      "peso": 0.25,
+      "subNotas": {
+        "Quiz 4": 0.2,
+        "Quiz 5": 0.2,
+        "Quiz 6": 0.2,
+        "Tarea 3": 0.05,
+        "Tarea 4": 0.05,
+        "AG 3": 0.10,
+        "AG 4": 0.10,
+        "ABP 2": 0.05
+      }
+    },
+    "EP": 0.20,
+    "EF": 0.30
+  }
+},
+  {
+    "id": "CS2013",
+    "nombre": "Programación III",
+    "carrera": "Ciencia de la Computación",
+    "sistema": { "EC1": 0.15, "EC2": 0.15, "P1": 0.10, "P2": 0.20, "EP": 0.10, "EF": 0.30 }
+  },
+  {
+    "id": "CC1105",
+    "nombre": "Estadística y Probabilidades I",
+    "carrera": "Ciencia de la Computación",
+    "sistema": { "Quiz 1": 0.05, "Quiz 2": 0.05,"Tarea 1": 0.10, "Tarea 2": 0.10, "PG1": 0.15, "PG2": 0.15, "EP": 0.20, "EF": 0.20 }
+  }
+
+]
+>>>>>>> 0b29bea426e57a78137196ebb15dbac6e4fe04b8
