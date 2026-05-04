@@ -118,7 +118,7 @@
     "carrera": "Ciencia de la Computación",
     "sistema": { "Quiz 1": 0.05, "Quiz 2": 0.05,"Tarea 1": 0.10, "Tarea 2": 0.10, "PG1": 0.15, "PG2": 0.15, "EP": 0.20, "EF": 0.20 }
   },
-  {
+{
   "id": "CC1103",
   "nombre": "Álgebra Lineal",
   "carrera": "Ciencia de la Computación",
