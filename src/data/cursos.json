@@ -60,7 +60,12 @@
       "peso": 0.10,
       "subNotas": {
         "Postman": 0.25, 
-        "6 Laboratorios": 0.75
+        "Backed 1 Lab": 0.125,
+        "Backed 2 Lab": 0.125,
+        "Backend 3 Lab": 0.125,
+        "Backend 4 Lab": 0.125,
+        "Fronted 1 Lab": 0.125,
+        "Fronted 2 Lab": 0.125
       }
     },
     "P1": 0.20, "P2": 0.20, "EP": 0.20, "EF": 0.20
