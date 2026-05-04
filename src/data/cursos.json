@@ -117,6 +117,43 @@
     "nombre": "Estadística y Probabilidades I",
     "carrera": "Ciencia de la Computación",
     "sistema": { "Quiz 1": 0.05, "Quiz 2": 0.05,"Tarea 1": 0.10, "Tarea 2": 0.10, "PG1": 0.15, "PG2": 0.15, "EP": 0.20, "EF": 0.20 }
+  },
+  {
+  "id": "CC1103",
+  "nombre": "Álgebra Lineal",
+  "carrera": "Ciencia de la Computación",
+  "sistema": {
+    "EC1": {
+      "peso": 0.20,
+      "subNotas": {
+        "EA1": 0.5,
+        "EA2": 0.5,
+        "AP1": 0.166667,
+        "AP2": 0.166667,
+        "AP3": 0.166667,
+        "AP4": 0.166667,
+        "AP5": 0.166667,
+        "AP6": 0.166667
+      }
+    },
+    "EC2": {
+      "peso": 0.30,
+      "subNotas": {
+        "EA3": 0.5,
+        "EA4": 0.5,
+        "AP7": 0.166667,
+        "AP8": 0.166667,
+        "AP9": 0.166667,
+        "AP10": 0.166667,
+        "AP11": 0.166667,
+        "AP12": 0.166667,
+        "RC1": 0.5,
+        "RC2": 0.5
+      }
+    },
+    "Examen Parcial": 0.20,
+    "Examen Final": 0.30
   }
+}
 
 ]
