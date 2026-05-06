@@ -31,9 +31,8 @@ export default function App() {
                   </div>
 
                   <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-                    Calculadora{' '}
                     <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-violet-300 bg-clip-text text-transparent">
-                      de Notas
+                      Calculadora de Notas
                     </span>
                   </h1>
                   <p className="text-cyan-300/70 mb-10 text-[10px] uppercase tracking-[4px] font-bold">
