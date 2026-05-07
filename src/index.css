@@ -1,19 +1,45 @@
 @import "tailwindcss";
 
+/* =====================================================================
+   QUANTUM DESIGN TOKENS — Cool Blue Trinity (cyan → teal → sky)
+   ===================================================================== */
 @theme {
   --color-bg-base: #07061a;
   --color-bg-surface: #110d2c;
+  --color-bg-card: #0c0824;
   --color-accent-cyan: #22d3ee;
-  --color-accent-fuchsia: #e879f9;
-  --color-accent-violet: #a78bfa;
+  --color-accent-teal: #14b8a6;
+  --color-accent-sky: #38bdf8;
 }
 
 :root {
+  /* Backdrop */
+  --q-bg-base: #07061a;
+  --q-bg-card: #0c0824;
+  --q-ink-on-accent: #0a0420;
+
+  /* Trinity accents (cool blue) */
+  --q-cyan-300: #67e8f9;
+  --q-cyan: #22d3ee;
+  --q-teal-300: #5eead4;
+  --q-teal: #14b8a6;
+  --q-sky-300: #93c5fd;
+  --q-sky: #38bdf8;
+
+  /* Ink ramp */
+  --q-ink-100: #f1f5f9;
+  --q-ink-300: #cbd5e1;
+  --q-ink-400: #94a3b8;
+  --q-ink-500: #64748b;
+
+  /* Type */
+  --q-font-sans: 'Quicksand', ui-sans-serif, system-ui, sans-serif;
+
   margin: 0;
   padding: 0;
-  font-family: 'Quicksand', sans-serif;
-  color: #f1f5f9;
-  background-color: #07061a;
+  font-family: var(--q-font-sans);
+  color: var(--q-ink-100);
+  background-color: var(--q-bg-base);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -23,8 +49,8 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(ellipse 70% 50% at 10% 0%, rgba(34, 211, 238, 0.18), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(232, 121, 249, 0.18), transparent 60%),
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(167, 139, 250, 0.20), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(20, 184, 166, 0.18), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(56, 189, 248, 0.20), transparent 60%),
     #07061a;
   background-attachment: fixed;
 }
@@ -40,6 +66,7 @@ body::before {
   pointer-events: none;
   z-index: 0;
   mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black, transparent 80%);
 }
 
 #root {
@@ -47,6 +74,12 @@ body::before {
   z-index: 1;
 }
 
+::selection {
+  background: rgba(20, 184, 166, 0.4);
+  color: white;
+}
+
+/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -54,13 +87,14 @@ body::before {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #22d3ee, #a78bfa);
+  background: linear-gradient(180deg, #22d3ee, #38bdf8);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #67e8f9, #c4b5fd);
+  background: linear-gradient(180deg, #67e8f9, #7dd3fc);
 }
 
+/* Animations */
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
@@ -78,13 +112,14 @@ body::before {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 30px -5px rgba(34, 211, 238, 0.5), 0 0 60px -20px rgba(232, 121, 249, 0.4); }
-  50% { box-shadow: 0 0 45px -5px rgba(34, 211, 238, 0.7), 0 0 80px -20px rgba(232, 121, 249, 0.6); }
+  0%, 100% { box-shadow: 0 0 30px -5px rgba(34, 211, 238, 0.5), 0 0 60px -20px rgba(20, 184, 166, 0.4); }
+  50% { box-shadow: 0 0 45px -5px rgba(34, 211, 238, 0.7), 0 0 80px -20px rgba(20, 184, 166, 0.6); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
+/* Number input — hide spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
