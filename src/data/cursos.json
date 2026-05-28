@@ -1,11 +1,28 @@
 [
-  {
-    "id": "CS1022",
-    "nombre": "Matemáticas Discretas II",
-    "carrera": ["Ciencia de la Computación", "Sistemas de Información"],
-    "sistema": { "EC1": 0.20, "EC2": 0.20, "EP": 0.30, "EF": 0.30 }
-  },
-  {
+{
+  "id": "CS1022",
+  "nombre": "Matemáticas Discretas II",
+  "carrera": ["Ciencia de la Computación", "Sistemas de Información"],
+  "sistema": {
+    "EC1": {
+      "peso": 0.20,
+      "subNotas": {
+        "Tests": 0.5,
+        "PC1": 0.5
+      }
+    },
+    "EC2": {
+      "peso": 0.20,
+      "subNotas": {
+        "PC2": 0.5,
+        "Tests": 0.5
+      }
+    },
+    "EP": 0.30,
+    "EF": 0.30
+  }
+},
+{
   "id": "CS2041",
   "nombre": "Base de Datos I",
   "carrera": "Ciencia de la Computación",
