@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 const MIN_APROBATORIO = 10.5
+const redondear = (n) => Math.round(n)   // al entero más cercano (10.5 -> 11)
 
 export const useCalculadora = () => {
   const [busqueda, setBusqueda] = useState("")
@@ -58,26 +59,26 @@ export const useCalculadora = () => {
   const actualizarNota = (cursoId, llaveNota, valor) => setNotasGlobales(prev => ({ ...prev, [cursoId]: { ...(prev[cursoId] || {}), [llaveNota]: valor } }));
   const limpiarNotasCurso = (cursoId) => setNotasGlobales(prev => ({ ...prev, [cursoId]: {} }));
 
-  // Suma ponderada de un sistema: sum(nota * peso)
+  // Suma ponderada. CADA componente se redondea al entero antes de sumar.
   const calcularSistemaSimple = (sistema, notasDelCurso, prefijo = '') => {
     let total = 0
     Object.keys(sistema).forEach(key => {
       if (key === 'candado' || key === 'partes') return
       const config = sistema[key]
       if (typeof config === 'number') {
-        total += (parseFloat(notasDelCurso[`${prefijo}${key}`]) || 0) * config
+        const v = redondear(parseFloat(notasDelCurso[`${prefijo}${key}`]) || 0)
+        total += v * config
       } else if (config && config.subNotas) {
         let acc = 0
         Object.keys(config.subNotas).forEach(sk => {
           acc += (parseFloat(notasDelCurso[`${prefijo}${key}_${sk}`]) || 0) * config.subNotas[sk]
         })
-        total += acc * config.peso
+        total += redondear(acc) * config.peso
       }
     })
     return total
   }
 
-  // Suma de los pesos de los componentes de nivel superior de un sistema
   const pesoTotalSistema = (sistema) => {
     let w = 0
     Object.keys(sistema).forEach(key => {
@@ -89,23 +90,6 @@ export const useCalculadora = () => {
     return w
   }
 
-  // Hojas con su peso efectivo
-  const hojasDeSistema = (sistema, prefijo = '') => {
-    const hojas = []
-    Object.keys(sistema).forEach(key => {
-      if (key === 'candado' || key === 'partes') return
-      const config = sistema[key]
-      if (typeof config === 'number') {
-        hojas.push({ key: `${prefijo}${key}`, pesoEf: config })
-      } else if (config && config.subNotas) {
-        Object.keys(config.subNotas).forEach(sk => {
-          hojas.push({ key: `${prefijo}${key}_${sk}`, pesoEf: config.peso * config.subNotas[sk] })
-        })
-      }
-    })
-    return hojas
-  }
-
   const calcularPromedio = (curso) => {
     const notasDelCurso = notasGlobales[curso.id] || {}
     setNecesario(null)
@@ -113,7 +97,7 @@ export const useCalculadora = () => {
     if (curso.sistema && curso.sistema.candado) {
       const partes = curso.sistema.partes.map((parte, pIdx) => {
         const contribucion = calcularSistemaSimple(parte.sistema, notasDelCurso, `P${pIdx}_`)
-        const esViejo = parte.peso !== undefined  // compat: modelo anterior (% por parte)
+        const esViejo = parte.peso !== undefined
         const pesoParte = esViejo ? parte.peso : pesoTotalSistema(parte.sistema)
         const nota = esViejo ? contribucion : (pesoParte > 0 ? contribucion / pesoParte : 0)
         const contribFinal = esViejo ? parte.peso * contribucion : contribucion
@@ -135,21 +119,46 @@ export const useCalculadora = () => {
     setResultado({ candado: false, final: total.toFixed(2), aprobado: total >= MIN_APROBATORIO - 1e-9, partes: null })
   }
 
+  // Calculadora inversa, consciente del redondeo de componentes ya completos.
   const calcularNecesario = (curso) => {
     const notasDelCurso = notasGlobales[curso.id] || {}
     setResultado(null)
 
     const resolver = (sistema, prefijo = '') => {
-      const hojas = hojasDeSistema(sistema, prefijo)
-      const pesoTotal = hojas.reduce((a, h) => a + h.pesoEf, 0) || 1
-      let lleno = 0, pesoVacio = 0, hayVacios = false
-      hojas.forEach(({ key, pesoEf }) => {
-        const raw = notasDelCurso[key]; const val = parseFloat(raw)
-        if (raw === undefined || raw === '' || isNaN(val)) { pesoVacio += pesoEf; hayVacios = true }
-        else lleno += val * pesoEf
+      let pesoTotal = 0, constante = 0, coefX = 0, hayVacios = false
+      Object.keys(sistema).forEach(key => {
+        if (key === 'candado' || key === 'partes') return
+        const config = sistema[key]
+        if (typeof config === 'number') {
+          pesoTotal += config
+          const raw = notasDelCurso[`${prefijo}${key}`]
+          const val = parseFloat(raw)
+          if (raw === undefined || raw === '' || isNaN(val)) { coefX += config; hayVacios = true }
+          else constante += redondear(val) * config
+        } else if (config && config.subNotas) {
+          pesoTotal += config.peso
+          let filledSub = 0, emptySubW = 0, algunoVacio = false
+          Object.keys(config.subNotas).forEach(sk => {
+            const raw = notasDelCurso[`${prefijo}${key}_${sk}`]
+            const val = parseFloat(raw)
+            const w = config.subNotas[sk]
+            if (raw === undefined || raw === '' || isNaN(val)) { emptySubW += w; algunoVacio = true }
+            else filledSub += val * w
+          })
+          if (!algunoVacio) {
+            constante += redondear(filledSub) * config.peso
+          } else {
+            hayVacios = true
+            constante += filledSub * config.peso     // parte conocida (sin redondear, aprox)
+            coefX += emptySubW * config.peso          // parte que depende de X
+          }
+        }
       })
-      if (!hayVacios) return { completo: true, notaActual: Number((lleno / pesoTotal).toFixed(2)) }
-      const req = (MIN_APROBATORIO * pesoTotal - lleno) / pesoVacio
+      if (!hayVacios || coefX < 1e-12) {
+        return { completo: true, notaActual: Number((constante / (pesoTotal || 1)).toFixed(2)) }
+      }
+      const target = MIN_APROBATORIO * pesoTotal
+      const req = (target - constante) / coefX
       return { completo: false, necesario: Number(req.toFixed(2)), yaAprobado: req <= 1e-9, posible: req <= 20 + 1e-9 }
     }
 
