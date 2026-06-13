@@ -9,6 +9,7 @@ export const SearchHome = ({
   misCursosIds, toggleFavorito,
   onCalcular,
   isAdmin, onAddCurso, onEditarCurso,
+  isOwner, onGestionarAdmins, onVerHistorial,
 }) => {
   const hayBusqueda = busqueda.trim().length > 0
   const hayFavoritos = misCursosIds.length > 0
@@ -83,6 +84,24 @@ export const SearchHome = ({
             >
               <span className="text-sm leading-none">+</span>
               Agregar curso
+            </button>
+          )}
+
+          {isAdmin && (
+            <button
+              onClick={onVerHistorial}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-white/10 bg-white/[0.04] text-slate-300 hover:text-cyan-200 hover:border-cyan-300/30 transition-all cursor-pointer active:scale-95"
+            >
+              🕓 Historial
+            </button>
+          )}
+
+          {isOwner && (
+            <button
+              onClick={onGestionarAdmins}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-amber-400/10 text-amber-200 hover:from-amber-300/25 hover:to-amber-400/20 transition-all cursor-pointer active:scale-95"
+            >
+              ★ Admins
             </button>
           )}
         </div>

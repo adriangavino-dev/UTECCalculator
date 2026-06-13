@@ -2,17 +2,17 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
- * Maneja la sesión del usuario y si es admin o no.
- * - user: objeto del usuario logueado (o null)
- * - isAdmin: true si su user_id está en la tabla `admins`
- * - loading: true mientras se resuelve la sesión inicial
+ * Maneja la sesión del usuario y su rol.
+ * - user: usuario logueado (o null)
+ * - isAdmin: true si está en la tabla admins (admin u owner)
+ * - isOwner: true si su rol es 'owner'
  */
 export const useAuth = () => {
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  // 1. Sesión inicial + escuchar cambios de login/logout
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -28,28 +28,30 @@ export const useAuth = () => {
     return () => subscription.unsubscribe()
   }, [])
 
-  // 2. Cada vez que cambia el usuario, verificar si es admin
   useEffect(() => {
     let cancelled = false
 
-    const checkAdmin = async () => {
+    const checkRol = async () => {
       if (!user) {
         setIsAdmin(false)
+        setIsOwner(false)
         return
       }
       const { data, error } = await supabase
         .from('admins')
-        .select('user_id')
+        .select('rol')
         .eq('user_id', user.id)
         .maybeSingle()
 
-      if (!cancelled) setIsAdmin(!!data && !error)
+      if (!cancelled) {
+        const esAdmin = !!data && !error
+        setIsAdmin(esAdmin)
+        setIsOwner(esAdmin && data.rol === 'owner')
+      }
     }
 
-    checkAdmin()
-    return () => {
-      cancelled = true
-    }
+    checkRol()
+    return () => { cancelled = true }
   }, [user])
 
   const signInWithGoogle = async () => {
@@ -64,5 +66,5 @@ export const useAuth = () => {
     await supabase.auth.signOut()
   }
 
-  return { user, isAdmin, loading, signInWithGoogle, signOut }
+  return { user, isAdmin, isOwner, loading, signInWithGoogle, signOut }
 }

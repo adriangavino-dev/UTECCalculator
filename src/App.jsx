@@ -5,6 +5,8 @@ import { ModalCalculo } from './components/ModalCalculo'
 import { SearchHome } from './components/SearchHome'
 import { LoginButton } from './components/LoginButton'
 import { CursoFormModal } from './components/CursoFormModal'
+import { AdminsModal } from './components/AdminsModal'
+import { HistorialModal } from './components/HistorialModal'
 import { ToastProvider } from './components/Toast'
 
 export default function App() {
@@ -24,13 +26,14 @@ export default function App() {
   const auth = useAuth()
   const [formAbierto, setFormAbierto] = useState(false)
   const [cursoEditar, setCursoEditar] = useState(null)
+  const [adminsAbierto, setAdminsAbierto] = useState(false)
+  const [historialAbierto, setHistorialAbierto] = useState(false)
   const yaAbrioCompartido = useRef(false)
 
   const abrirAgregar = () => { setCursoEditar(null); setFormAbierto(true) }
   const abrirEditar = (curso) => { setCursoEditar(curso); setFormAbierto(true) }
   const cerrarForm = () => { setFormAbierto(false); setCursoEditar(null) }
 
-  // Deep-link: ?curso=CS2041 abre ese curso directo
   useEffect(() => {
     if (cargandoCursos || yaAbrioCompartido.current) return
     const params = new URLSearchParams(window.location.search)
@@ -70,6 +73,9 @@ export default function App() {
         isAdmin={auth.isAdmin}
         onAddCurso={abrirAgregar}
         onEditarCurso={abrirEditar}
+        isOwner={auth.isOwner}
+        onGestionarAdmins={() => setAdminsAbierto(true)}
+        onVerHistorial={() => setHistorialAbierto(true)}
       />
 
       <ModalCalculo
@@ -89,6 +95,16 @@ export default function App() {
         cursoEditar={cursoEditar}
         onClose={cerrarForm}
         onSaved={() => { /* realtime refresca el grid solo */ }}
+      />
+
+      <AdminsModal
+        isOpen={adminsAbierto}
+        onClose={() => setAdminsAbierto(false)}
+      />
+
+      <HistorialModal
+        isOpen={historialAbierto}
+        onClose={() => setHistorialAbierto(false)}
       />
     </div>
     </ToastProvider>
