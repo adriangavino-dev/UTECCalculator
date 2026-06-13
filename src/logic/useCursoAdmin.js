@@ -27,17 +27,10 @@ export const useCursoAdmin = () => {
 
   const construirCandado = (partes) => ({
     candado: true,
-    partes: partes.map((parte) => {
-      const sistemaParte = {}
-      for (const comp of parte.componentes) {
-        sistemaParte[comp.nombre.trim()] = (parseFloat(comp.porcentaje) || 0) / 100
-      }
-      return {
-        nombre: parte.nombre.trim(),
-        peso: (parseFloat(parte.peso) || 0) / 100,
-        sistema: sistemaParte,
-      }
-    }),
+    partes: partes.map((parte) => ({
+      nombre: parte.nombre.trim(),
+      sistema: construirSimple(parte.componentes),
+    })),
   })
 
   const construirSistema = (cursoForm) =>

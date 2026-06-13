@@ -19,6 +19,18 @@ export const ModalCalculo = ({
   const notasDelCurso = notasGlobales[curso.id] || {}
   const esCandado = !!(curso.sistema && curso.sistema.candado)
 
+  // Peso de una parte: si no está guardado (modelo nuevo), se deriva sumando sus componentes
+  const pesoDeParte = (parte) => {
+    if (parte.peso !== undefined) return parte.peso
+    let w = 0
+    Object.keys(parte.sistema).forEach((k) => {
+      const cfg = parte.sistema[k]
+      if (typeof cfg === 'number') w += cfg
+      else if (cfg && cfg.subNotas) w += cfg.peso
+    })
+    return w
+  }
+
   const compartir = async () => {
     const url = `${window.location.origin}/?curso=${encodeURIComponent(curso.id)}`
     try {
@@ -200,7 +212,7 @@ export const ModalCalculo = ({
                         <span className="font-bold text-cyan-100 text-sm uppercase tracking-[2px] flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
                           {parte.nombre}
-                          <span className="text-cyan-300/60 text-[10px]">· {Math.round(parte.peso * 100)}%</span>
+                          <span className="text-cyan-300/60 text-[10px]">· {Math.round(pesoDeParte(parte) * 100)}%</span>
                         </span>
                         {parteRes && (
                           <span
