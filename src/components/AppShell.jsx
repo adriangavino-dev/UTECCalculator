@@ -1,5 +1,3 @@
-import { BrandMark } from './BrandMark'
-
 export const AppShell = ({
   carrera,
   onBack,
@@ -10,7 +8,7 @@ export const AppShell = ({
   children,
 }) => {
   return (
-    <div className="max-w-6xl mx-auto animate-fade-in">
+    <div className="max-w-6xl mx-auto animate-fade-in pt-12 md:pt-4">
 
       <div className="flex items-center justify-between mb-10">
         <button
@@ -20,8 +18,6 @@ export const AppShell = ({
           <span className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 group-hover:border-cyan-300/50 group-hover:-translate-x-0.5 group-hover:shadow-[0_0_15px_-3px_rgba(34,211,238,0.5)] transition-all">←</span>
           <span className="text-[10px] uppercase tracking-[3px] font-bold">Cambiar Carrera</span>
         </button>
-
-        <BrandMark size="md" />
       </div>
 
       <div className="relative p-[1px] rounded-3xl bg-gradient-to-r from-cyan-400/40 via-teal-400/20 to-sky-500/40 mb-10">
