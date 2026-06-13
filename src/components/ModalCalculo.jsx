@@ -1,4 +1,5 @@
 import React from 'react'
+import { useToast } from './Toast'
 
 const MIN_APROBATORIO = 10.5
 
@@ -8,12 +9,32 @@ export const ModalCalculo = ({
   actualizarNota,
   limpiarNotasCurso,
   resultado,
+  necesario,
   onCalcular,
+  onCalcularNecesario,
   onCerrar,
 }) => {
+  const { showToast } = useToast()
   if (!curso) return null
   const notasDelCurso = notasGlobales[curso.id] || {}
   const esCandado = !!(curso.sistema && curso.sistema.candado)
+
+  const compartir = async () => {
+    const url = `${window.location.origin}/?curso=${encodeURIComponent(curso.id)}`
+    try {
+      await navigator.clipboard.writeText(url)
+      showToast('Link del curso copiado', 'success')
+    } catch {
+      showToast(url, 'info')
+    }
+  }
+
+  const textoNecesario = (r) => {
+    if (r.completo) return `Ya tienes todas las notas (actual: ${r.notaActual})`
+    if (r.yaAprobado) return '¡Ya está aprobado, saques lo que saques en lo que falta!'
+    if (!r.posible) return `Necesitarías ${r.necesario} (más de 20) — ya no alcanza para 10.5`
+    return `Necesitas ${r.necesario} en promedio en lo que te falta`
+  }
 
   // Renderiza los inputs de un "sistema" simple (componentes número o subNotas)
   const renderSistema = (sistema, prefijo = '') => (
@@ -134,6 +155,16 @@ export const ModalCalculo = ({
 
             <div className="flex items-center gap-2 shrink-0">
               <button
+                onClick={compartir}
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-cyan-200 hover:border-cyan-300/40 transition-all active:scale-90 cursor-pointer"
+                title="Copiar link del curso"
+                aria-label="Compartir curso"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+              </button>
+              <button
                 onClick={() => limpiarNotasCurso(curso.id)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/30 text-rose-300 hover:shadow-[0_0_18px_-3px_rgba(244,114,182,0.7)] transition-all active:scale-90 cursor-pointer group"
                 title="Limpiar todas las notas"
@@ -225,12 +256,43 @@ export const ModalCalculo = ({
                 )
               })()}
 
+            {necesario !== null && (
+              <div className="mb-4 animate-fade-in">
+                <div className="relative bg-[#0c0824]/80 border border-sky-300/30 p-4 rounded-2xl">
+                  <p className="text-sky-200 text-[10px] font-black uppercase tracking-[3px] mb-2 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-300 shadow-[0_0_8px_rgba(56,189,248,0.9)]"></span>
+                    ¿Cuánto necesito para aprobar (10.5)?
+                  </p>
+                  {necesario.candado ? (
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[1.5px]">
+                        Cada parte debe llegar a 10.5:
+                      </p>
+                      {necesario.partes.map((p, i) => (
+                        <p key={i} className="text-sm font-semibold text-slate-200">
+                          <span className="text-cyan-200 font-bold">{p.nombre}:</span> {textoNecesario(p)}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm font-semibold text-slate-200">{textoNecesario(necesario)}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col-reverse sm:flex-row gap-3">
               <button
                 onClick={onCerrar}
                 className="sm:flex-1 py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-xs uppercase tracking-[2.5px] transition-all cursor-pointer"
               >
                 Cerrar
+              </button>
+              <button
+                onClick={onCalcularNecesario}
+                className="sm:flex-1 py-3.5 rounded-2xl bg-sky-300/10 border border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50 font-bold text-xs uppercase tracking-[2px] transition-all cursor-pointer"
+              >
+                ¿Cuánto necesito?
               </button>
               <button
                 onClick={onCalcular}

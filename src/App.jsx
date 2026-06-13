@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useCalculadora } from './logic/useCalculadora'
 import { useAuth } from './logic/useAuth'
 import { ModalCalculo } from './components/ModalCalculo'
@@ -11,21 +11,38 @@ export default function App() {
   const {
     busqueda, setBusqueda,
     verMisCursos, setVerMisCursos,
-    filtrados, totalCursos, cargandoCursos,
+    orden, setOrden, soloCandado, setSoloCandado,
+    filtrados, totalCursos, cargandoCursos, cursos,
     cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota,
     misCursosIds, toggleFavorito,
     resultado, calcularPromedio, reset,
+    necesario, calcularNecesario,
     limpiarNotasCurso,
   } = useCalculadora()
 
   const auth = useAuth()
   const [formAbierto, setFormAbierto] = useState(false)
   const [cursoEditar, setCursoEditar] = useState(null)
+  const yaAbrioCompartido = useRef(false)
 
   const abrirAgregar = () => { setCursoEditar(null); setFormAbierto(true) }
   const abrirEditar = (curso) => { setCursoEditar(curso); setFormAbierto(true) }
   const cerrarForm = () => { setFormAbierto(false); setCursoEditar(null) }
+
+  // Deep-link: ?curso=CS2041 abre ese curso directo
+  useEffect(() => {
+    if (cargandoCursos || yaAbrioCompartido.current) return
+    const params = new URLSearchParams(window.location.search)
+    const cursoId = params.get('curso')
+    if (cursoId) {
+      const found = cursos.find((c) => c.id.toLowerCase() === cursoId.toLowerCase())
+      if (found) {
+        setCursoSeleccionado(found)
+        yaAbrioCompartido.current = true
+      }
+    }
+  }, [cargandoCursos, cursos, setCursoSeleccionado])
 
   return (
     <ToastProvider>
@@ -40,6 +57,10 @@ export default function App() {
         setBusqueda={setBusqueda}
         verMisCursos={verMisCursos}
         setVerMisCursos={setVerMisCursos}
+        orden={orden}
+        setOrden={setOrden}
+        soloCandado={soloCandado}
+        setSoloCandado={setSoloCandado}
         filtrados={filtrados}
         totalCursos={totalCursos}
         cargandoCursos={cargandoCursos}
@@ -57,7 +78,9 @@ export default function App() {
         actualizarNota={actualizarNota}
         limpiarNotasCurso={limpiarNotasCurso}
         resultado={resultado}
+        necesario={necesario}
         onCalcular={() => calcularPromedio(cursoSeleccionado)}
+        onCalcularNecesario={() => calcularNecesario(cursoSeleccionado)}
         onCerrar={reset}
       />
 

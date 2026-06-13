@@ -4,6 +4,7 @@ import { CourseGrid } from './CourseGrid'
 export const SearchHome = ({
   busqueda, setBusqueda,
   verMisCursos, setVerMisCursos,
+  orden, setOrden, soloCandado, setSoloCandado,
   filtrados, totalCursos, cargandoCursos,
   misCursosIds, toggleFavorito,
   onCalcular,
@@ -11,6 +12,13 @@ export const SearchHome = ({
 }) => {
   const hayBusqueda = busqueda.trim().length > 0
   const hayFavoritos = misCursosIds.length > 0
+
+  const pill = (activo) =>
+    `px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border transition-all cursor-pointer active:scale-95 ${
+      activo
+        ? 'bg-gradient-to-r from-cyan-300/20 to-teal-300/10 text-cyan-200 border-cyan-300/40'
+        : 'bg-white/[0.04] text-slate-400 border-white/10 hover:text-slate-100'
+    }`
 
   return (
     <div className="relative px-5 md:px-10 pt-24 md:pt-20 pb-16">
@@ -43,12 +51,13 @@ export const SearchHome = ({
           )}
         </div>
 
+        {/* Contador + favoritos + agregar */}
         <div className="flex items-center justify-center flex-wrap gap-3 mt-6">
           <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[2px] font-bold text-slate-400">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
             {cargandoCursos
               ? 'Cargando…'
-              : hayBusqueda || verMisCursos
+              : hayBusqueda || verMisCursos || soloCandado
                 ? `${filtrados.length} ${filtrados.length === 1 ? 'resultado' : 'resultados'}`
                 : `${totalCursos} cursos disponibles`}
           </span>
@@ -76,6 +85,15 @@ export const SearchHome = ({
               Agregar curso
             </button>
           )}
+        </div>
+
+        {/* Ordenar + filtro candado */}
+        <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
+          <span className="text-[9px] uppercase tracking-[2px] text-slate-500 font-bold mr-1">Ordenar</span>
+          <button onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
+          <button onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
+          <span className="w-px h-4 bg-white/10 mx-1"></span>
+          <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
         </div>
       </div>
 
