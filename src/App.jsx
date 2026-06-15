@@ -7,6 +7,7 @@ import { LoginButton } from './components/LoginButton'
 import { CursoFormModal } from './components/CursoFormModal'
 import { AdminsModal } from './components/AdminsModal'
 import { HistorialModal } from './components/HistorialModal'
+import { DonateModal } from './components/DonateModal'
 import { ToastProvider } from './components/Toast'
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
   const [cursoEditar, setCursoEditar] = useState(null)
   const [adminsAbierto, setAdminsAbierto] = useState(false)
   const [historialAbierto, setHistorialAbierto] = useState(false)
+  const [donarAbierto, setDonarAbierto] = useState(false)
   const yaAbrioCompartido = useRef(false)
 
   const abrirAgregar = () => { setCursoEditar(null); setFormAbierto(true) }
@@ -94,18 +96,23 @@ export default function App() {
         isOpen={formAbierto}
         cursoEditar={cursoEditar}
         onClose={cerrarForm}
-        onSaved={() => { /* realtime refresca el grid solo */ }}
+        onSaved={() => {}}
       />
 
-      <AdminsModal
-        isOpen={adminsAbierto}
-        onClose={() => setAdminsAbierto(false)}
-      />
+      <AdminsModal isOpen={adminsAbierto} onClose={() => setAdminsAbierto(false)} />
+      <HistorialModal isOpen={historialAbierto} onClose={() => setHistorialAbierto(false)} />
 
-      <HistorialModal
-        isOpen={historialAbierto}
-        onClose={() => setHistorialAbierto(false)}
-      />
+      {/* Botón flotante de donación */}
+      <button
+        onClick={() => setDonarAbierto(true)}
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] shadow-[0_10px_35px_-8px_rgba(56,189,248,0.7)] hover:shadow-[0_12px_45px_-8px_rgba(56,189,248,0.9)] hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
+        aria-label="Donar"
+      >
+        <span className="text-sm leading-none">♥</span>
+        Donar
+      </button>
+
+      <DonateModal isOpen={donarAbierto} onClose={() => setDonarAbierto(false)} />
     </div>
     </ToastProvider>
   )

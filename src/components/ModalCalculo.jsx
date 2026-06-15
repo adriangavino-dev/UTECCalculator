@@ -59,7 +59,7 @@ export const ModalCalculo = ({
           return (
             <div
               key={key}
-              className="group flex items-center justify-between gap-4 bg-white/[0.03] hover:bg-white/[0.06] p-5 rounded-2xl border border-white/10 hover:border-cyan-300/40 hover:shadow-[0_0_25px_-10px_rgba(34,211,238,0.5)] transition-all"
+              className="group flex items-center justify-between gap-3 md:gap-4 bg-white/[0.03] hover:bg-white/[0.06] p-4 md:p-5 rounded-2xl border border-white/10 hover:border-cyan-300/40 hover:shadow-[0_0_25px_-10px_rgba(34,211,238,0.5)] transition-all"
             >
               <div className="flex flex-col min-w-0">
                 <span className="font-bold text-slate-100 text-sm uppercase tracking-[2px] group-hover:text-cyan-100 transition-colors">
@@ -86,7 +86,7 @@ export const ModalCalculo = ({
         return (
           <div
             key={key}
-            className="bg-white/[0.03] rounded-2xl p-5 border border-white/10 md:col-span-2 relative overflow-hidden"
+            className="bg-white/[0.03] rounded-2xl p-4 md:p-5 border border-white/10 md:col-span-2 relative overflow-hidden"
           >
             <div className="absolute -top-16 -right-16 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
             <div className="relative">
@@ -137,38 +137,38 @@ export const ModalCalculo = ({
 
   return (
     <div
-      className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in"
+      className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCerrar()
       }}
     >
-      <div className="relative w-full max-w-md md:max-w-4xl max-h-[92vh] p-[1.5px] rounded-[34px] bg-gradient-to-br from-cyan-400/60 via-teal-400/40 to-sky-500/60 shadow-[0_25px_80px_-20px_rgba(56,189,248,0.4)]">
-        <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-[#0c0824]/95 backdrop-blur-2xl rounded-[33px] overflow-hidden">
+      <div className="relative w-full max-w-md md:max-w-4xl max-h-[90vh] p-[1.5px] rounded-[28px] md:rounded-[34px] bg-gradient-to-br from-cyan-400/60 via-teal-400/40 to-sky-500/60 shadow-[0_25px_80px_-20px_rgba(56,189,248,0.4)]">
+        <div className="relative w-full h-full max-h-[calc(90vh-3px)] flex flex-col bg-[#0c0824]/95 backdrop-blur-2xl rounded-[27px] md:rounded-[33px] overflow-hidden">
 
           <div className="absolute -top-32 -right-24 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute -bottom-32 -left-24 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
           {/* Header */}
-          <div className="relative z-10 flex items-start justify-between gap-4 px-6 md:px-10 pt-7 pb-5 border-b border-white/[0.08]">
+          <div className="relative z-10 flex items-start justify-between gap-3 px-5 md:px-10 pt-5 md:pt-7 pb-4 md:pb-5 border-b border-white/[0.08]">
             <div className="flex-1 min-w-0">
               <p className="text-[10px] uppercase tracking-[3px] text-cyan-300 font-bold mb-2 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
                 {curso.id} · Configuración
-                {esCandado && (
-                  <span className="inline-flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-amber-300/15 border border-amber-300/30 text-amber-200 text-[9px] tracking-[1.5px]">
-                    🔒 Candado
-                  </span>
-                )}
               </p>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight leading-tight bg-gradient-to-r from-white via-cyan-100 to-teal-100 bg-clip-text text-transparent">
                 {curso.nombre}
               </h3>
+              {esCandado && (
+                <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md bg-amber-300/15 border border-amber-300/30 text-amber-200 text-[9px] tracking-[1.5px] font-bold">
+                  🔒 Candado
+                </span>
+              )}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
               <button
                 onClick={compartir}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-cyan-200 hover:border-cyan-300/40 transition-all active:scale-90 cursor-pointer"
+                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-cyan-200 hover:border-cyan-300/40 transition-all active:scale-90 cursor-pointer"
                 title="Copiar link del curso"
                 aria-label="Compartir curso"
               >
@@ -178,7 +178,7 @@ export const ModalCalculo = ({
               </button>
               <button
                 onClick={() => limpiarNotasCurso(curso.id)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/30 text-rose-300 hover:shadow-[0_0_18px_-3px_rgba(244,114,182,0.7)] transition-all active:scale-90 cursor-pointer group"
+                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/30 text-rose-300 hover:shadow-[0_0_18px_-3px_rgba(244,114,182,0.7)] transition-all active:scale-90 cursor-pointer group"
                 title="Limpiar todas las notas"
                 aria-label="Limpiar notas"
               >
@@ -188,7 +188,7 @@ export const ModalCalculo = ({
               </button>
               <button
                 onClick={onCerrar}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer"
+                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer"
                 aria-label="Cerrar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -199,7 +199,7 @@ export const ModalCalculo = ({
           </div>
 
           {/* Body */}
-          <div className="relative z-10 flex-1 overflow-y-auto custom-scrollbar px-6 md:px-10 py-6">
+          <div className="relative z-10 flex-1 overflow-y-auto custom-scrollbar px-4 md:px-10 py-4 md:py-6">
             {esCandado ? (
               <div className="space-y-6">
                 {curso.sistema.partes.map((parte, pIdx) => {
@@ -237,7 +237,7 @@ export const ModalCalculo = ({
           </div>
 
           {/* Footer */}
-          <div className="relative z-10 px-6 md:px-10 py-5 border-t border-white/[0.08] bg-black/20">
+          <div className="relative z-10 px-4 md:px-10 py-4 md:py-5 border-t border-white/[0.08] bg-black/20">
             {resultado !== null &&
               (() => {
                 const { grad, glow } = veredictoColor(resultado.aprobado)
@@ -293,25 +293,27 @@ export const ModalCalculo = ({
               </div>
             )}
 
-            <div className="flex flex-col-reverse sm:flex-row gap-3">
-              <button
-                onClick={onCerrar}
-                className="sm:flex-1 py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-xs uppercase tracking-[2.5px] transition-all cursor-pointer"
-              >
-                Cerrar
-              </button>
-              <button
-                onClick={onCalcularNecesario}
-                className="sm:flex-1 py-3.5 rounded-2xl bg-sky-300/10 border border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50 font-bold text-xs uppercase tracking-[2px] transition-all cursor-pointer"
-              >
-                ¿Cuánto necesito?
-              </button>
+            <div className="flex flex-col gap-2.5">
               <button
                 onClick={onCalcular}
-                className="relative sm:flex-[2] py-3.5 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] hover:shadow-[0_10px_40px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer overflow-hidden"
+                className="relative w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] hover:shadow-[0_10px_40px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer overflow-hidden"
               >
                 ◢ Calcular Promedio ◣
               </button>
+              <div className="flex gap-2.5">
+                <button
+                  onClick={onCalcularNecesario}
+                  className="flex-1 py-3 rounded-2xl bg-sky-300/10 border border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50 font-bold text-[11px] uppercase tracking-[1.5px] transition-all cursor-pointer"
+                >
+                  ¿Cuánto necesito?
+                </button>
+                <button
+                  onClick={onCerrar}
+                  className="flex-1 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
