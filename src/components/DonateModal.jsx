@@ -19,8 +19,9 @@ export const DonateModal = ({ isOpen, onClose }) => {
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
                 Apoya el proyecto
               </p>
-              <h3 className="text-xl font-bold tracking-tight bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 bg-clip-text text-transparent">
-                Invítame un café ☕
+              <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <span className="bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 bg-clip-text text-transparent">Invítame un café</span>
+                <span aria-hidden="true">☕</span>
               </h3>
             </div>
             <button onClick={onClose} className="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
@@ -42,7 +43,7 @@ export const DonateModal = ({ isOpen, onClose }) => {
             <div className="relative inline-block p-[1.5px] rounded-3xl bg-gradient-to-br from-cyan-400/60 to-teal-400/60 shadow-[0_0_30px_-8px_rgba(34,211,238,0.6)]">
               <div className="bg-white rounded-[22px] p-3">
                 <img
-                  src="/yape-qr.jpeg"
+                  src="/yape-qr.png"
                   alt="QR de Yape para donar"
                   className="w-56 h-56 object-contain rounded-xl"
                 />
