@@ -12,6 +12,7 @@ export const AppShell = ({
 
       <div className="flex items-center justify-between mb-10">
         <button
+          type="button"
           onClick={onBack}
           className="group flex items-center gap-2 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
         >
@@ -36,6 +37,7 @@ export const AppShell = ({
 
             <div className="inline-flex gap-1 p-1 rounded-2xl bg-black/30 border border-white/[0.06] w-fit">
               <button
+                type="button"
                 onClick={() => setVerMisCursos(false)}
                 className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[2px] transition-all cursor-pointer ${
                   !verMisCursos
@@ -46,6 +48,7 @@ export const AppShell = ({
                 Todos
               </button>
               <button
+                type="button"
                 onClick={() => setVerMisCursos(true)}
                 className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[2px] transition-all flex items-center gap-1.5 cursor-pointer ${
                   verMisCursos

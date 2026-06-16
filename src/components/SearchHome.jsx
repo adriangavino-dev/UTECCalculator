@@ -48,7 +48,7 @@ export const SearchHome = ({
             className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[#0c0824]/80 backdrop-blur-xl border border-white/10 text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 focus:shadow-[0_0_35px_-8px_rgba(34,211,238,0.6)] transition-all font-medium text-base shadow-[0_10px_40px_-15px_rgba(0,0,0,0.6)]"
           />
           {hayBusqueda && (
-            <button onClick={() => setBusqueda('')} className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white transition-all cursor-pointer" aria-label="Limpiar búsqueda">✕</button>
+            <button type="button" onClick={() => setBusqueda('')} className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white transition-all cursor-pointer" aria-label="Limpiar búsqueda">✕</button>
           )}
         </div>
 
@@ -65,6 +65,7 @@ export const SearchHome = ({
 
           {(hayFavoritos || verMisCursos) && (
             <button
+              type="button"
               onClick={() => setVerMisCursos(!verMisCursos)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border transition-all cursor-pointer active:scale-95 ${
                 verMisCursos
@@ -79,6 +80,7 @@ export const SearchHome = ({
 
           {isAdmin && (
             <button
+              type="button"
               onClick={onAddCurso}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-cyan-300/40 bg-gradient-to-r from-cyan-300/15 to-teal-300/10 text-cyan-200 hover:from-cyan-300/25 hover:to-teal-300/20 hover:shadow-[0_0_15px_-3px_rgba(34,211,238,0.5)] transition-all cursor-pointer active:scale-95"
             >
@@ -89,6 +91,7 @@ export const SearchHome = ({
 
           {isAdmin && (
             <button
+              type="button"
               onClick={onVerHistorial}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-white/10 bg-white/[0.04] text-slate-300 hover:text-cyan-200 hover:border-cyan-300/30 transition-all cursor-pointer active:scale-95"
             >
@@ -98,6 +101,7 @@ export const SearchHome = ({
 
           {isOwner && (
             <button
+              type="button"
               onClick={onGestionarAdmins}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-amber-400/10 text-amber-200 hover:from-amber-300/25 hover:to-amber-400/20 transition-all cursor-pointer active:scale-95"
             >
@@ -109,10 +113,10 @@ export const SearchHome = ({
         {/* Ordenar + filtro candado */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
           <span className="text-[9px] uppercase tracking-[2px] text-slate-500 font-bold mr-1">Ordenar</span>
-          <button onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
-          <button onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
+          <button type="button" onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
+          <button type="button" onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
           <span className="w-px h-4 bg-white/10 mx-1"></span>
-          <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
+          <button type="button" onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
         </div>
       </div>
 

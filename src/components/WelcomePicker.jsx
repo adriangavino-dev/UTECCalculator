@@ -27,6 +27,7 @@ export const WelcomePicker = ({ carreras, onPick }) => {
               {carreras.map((nombre) => (
                 <button
                   key={nombre}
+                  type="button"
                   onClick={() => onPick(nombre)}
                   className="group relative w-full overflow-hidden bg-white/[0.03] hover:bg-white/[0.06] text-slate-100 font-semibold py-4 px-5 rounded-2xl border border-white/10 hover:border-cyan-300/50 transition-all active:scale-[0.98] text-base flex items-center justify-between cursor-pointer"
                 >

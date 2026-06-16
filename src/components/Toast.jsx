@@ -48,7 +48,7 @@ const Toast = ({ mensaje, tipo, onClose }) => {
         {s.icon}
       </span>
       <span className={`text-sm font-semibold ${s.text} flex-1`}>{mensaje}</span>
-      <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors cursor-pointer text-xs" aria-label="Cerrar aviso">
+      <button type="button" onClick={onClose} className="text-slate-500 hover:text-white transition-colors cursor-pointer text-xs" aria-label="Cerrar aviso">
         ✕
       </button>
     </div>

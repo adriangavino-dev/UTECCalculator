@@ -13,6 +13,7 @@ export const LoginButton = ({ user, isAdmin, loading, signInWithGoogle, signOut 
   if (!user) {
     return (
       <button
+        type="button"
         onClick={signInWithGoogle}
         className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyan-300/50 hover:bg-white/[0.07] hover:shadow-[0_0_18px_-3px_rgba(34,211,238,0.5)] transition-all active:scale-95 cursor-pointer"
       >
@@ -61,6 +62,7 @@ export const LoginButton = ({ user, isAdmin, loading, signInWithGoogle, signOut 
         )}
       </div>
       <button
+        type="button"
         onClick={signOut}
         className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 hover:border-rose-400/40 hover:text-rose-300 text-slate-400 transition-all active:scale-90 cursor-pointer"
         title="Cerrar sesión"

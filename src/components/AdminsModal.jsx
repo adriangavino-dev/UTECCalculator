@@ -2,16 +2,14 @@ import { useState, useEffect } from 'react'
 import { useAdmins } from '../logic/useAdmins'
 import { useToast } from './Toast'
 
-export const AdminsModal = ({ isOpen, onClose }) => {
+export const AdminsModal = ({ onClose }) => {
   const { admins, cargando, procesando, listar, agregar, quitar } = useAdmins()
   const { showToast } = useToast()
   const [email, setEmail] = useState('')
 
   useEffect(() => {
-    if (isOpen) { listar(); setEmail('') }
-  }, [isOpen, listar])
-
-  if (!isOpen) return null
+    listar()
+  }, [listar])
 
   const handleAgregar = async () => {
     if (!email.trim()) return
@@ -51,7 +49,7 @@ export const AdminsModal = ({ isOpen, onClose }) => {
                 Gestionar admins
               </h3>
             </div>
-            <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
+            <button type="button" onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -76,6 +74,7 @@ export const AdminsModal = ({ isOpen, onClose }) => {
                   className="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-slate-100 placeholder:text-slate-600 outline-none focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 transition-all text-sm font-medium"
                 />
                 <button
+                  type="button"
                   onClick={handleAgregar}
                   disabled={procesando || !email.trim()}
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-300 to-teal-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[1.5px] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
@@ -108,6 +107,7 @@ export const AdminsModal = ({ isOpen, onClose }) => {
                       </div>
                       {!esOwner && (
                         <button
+                          type="button"
                           onClick={() => handleQuitar(a)}
                           disabled={procesando}
                           className="shrink-0 px-3 py-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/20 text-rose-300 font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer disabled:opacity-40 active:scale-95"

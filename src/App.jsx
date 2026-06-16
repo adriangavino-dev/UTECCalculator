@@ -92,18 +92,21 @@ export default function App() {
         onCerrar={reset}
       />
 
-      <CursoFormModal
-        isOpen={formAbierto}
-        cursoEditar={cursoEditar}
-        onClose={cerrarForm}
-        onSaved={() => {}}
-      />
+      {formAbierto && (
+        <CursoFormModal
+          key={cursoEditar?.id ?? 'new'}
+          cursoEditar={cursoEditar}
+          onClose={cerrarForm}
+          onSaved={() => {}}
+        />
+      )}
 
-      <AdminsModal isOpen={adminsAbierto} onClose={() => setAdminsAbierto(false)} />
-      <HistorialModal isOpen={historialAbierto} onClose={() => setHistorialAbierto(false)} />
+      {adminsAbierto && <AdminsModal onClose={() => setAdminsAbierto(false)} />}
+      {historialAbierto && <HistorialModal onClose={() => setHistorialAbierto(false)} />}
 
       {/* Botón flotante de donación */}
       <button
+        type="button"
         onClick={() => setDonarAbierto(true)}
         className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] shadow-[0_10px_35px_-8px_rgba(56,189,248,0.7)] hover:shadow-[0_12px_45px_-8px_rgba(56,189,248,0.9)] hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
         aria-label="Donar"

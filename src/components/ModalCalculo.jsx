@@ -167,6 +167,7 @@ export const ModalCalculo = ({
 
             <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
               <button
+                type="button"
                 onClick={compartir}
                 className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-cyan-200 hover:border-cyan-300/40 transition-all active:scale-90 cursor-pointer"
                 title="Copiar link del curso"
@@ -177,6 +178,7 @@ export const ModalCalculo = ({
                 </svg>
               </button>
               <button
+                type="button"
                 onClick={() => limpiarNotasCurso(curso.id)}
                 className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/30 text-rose-300 hover:shadow-[0_0_18px_-3px_rgba(244,114,182,0.7)] transition-all active:scale-90 cursor-pointer group"
                 title="Limpiar todas las notas"
@@ -187,6 +189,7 @@ export const ModalCalculo = ({
                 </svg>
               </button>
               <button
+                type="button"
                 onClick={onCerrar}
                 className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer"
                 aria-label="Cerrar"
@@ -295,6 +298,7 @@ export const ModalCalculo = ({
 
             <div className="flex flex-col gap-2.5">
               <button
+                type="button"
                 onClick={onCalcular}
                 className="relative w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] hover:shadow-[0_10px_40px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer overflow-hidden"
               >
@@ -302,12 +306,14 @@ export const ModalCalculo = ({
               </button>
               <div className="flex gap-2.5">
                 <button
+                  type="button"
                   onClick={onCalcularNecesario}
                   className="flex-1 py-3 rounded-2xl bg-sky-300/10 border border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50 font-bold text-[11px] uppercase tracking-[1.5px] transition-all cursor-pointer"
                 >
                   ¿Cuánto necesito?
                 </button>
                 <button
+                  type="button"
                   onClick={onCerrar}
                   className="flex-1 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer"
                 >

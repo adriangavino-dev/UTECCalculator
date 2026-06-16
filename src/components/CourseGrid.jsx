@@ -36,6 +36,7 @@ export const CourseGrid = ({
             <div className="absolute top-5 right-5 flex items-center gap-1.5 z-10">
               {isAdmin && (
                 <button
+                  type="button"
                   onClick={() => onEditar(curso)}
                   className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all active:scale-90 cursor-pointer"
                   title="Editar curso"
@@ -47,6 +48,7 @@ export const CourseGrid = ({
                 </button>
               )}
               <button
+                type="button"
                 onClick={() => onToggleFav(curso.id)}
                 className={`w-9 h-9 flex items-center justify-center rounded-xl border transition-all active:scale-90 cursor-pointer ${
                   esFavorito
@@ -76,6 +78,7 @@ export const CourseGrid = ({
             </div>
 
             <button
+              type="button"
               onClick={() => onCalcular(curso)}
               className="relative mt-auto w-full py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-200 font-bold text-xs uppercase tracking-[2.5px] hover:bg-gradient-to-r hover:from-cyan-300 hover:to-teal-300 hover:text-[#0a0420] hover:border-transparent hover:shadow-[0_0_25px_-5px_rgba(20,184,166,0.6)] transition-all active:scale-[0.98] cursor-pointer overflow-hidden"
             >
