@@ -12,7 +12,6 @@ export const useCalculadora = () => {
   const [necesario, setNecesario] = useState(null)
   const [verMisCursos, setVerMisCursos] = useState(false)
   const [soloCandado, setSoloCandado] = useState(false)
-  const [cicloFiltro, setCicloFiltro] = useState('')   // '' = todos
   const [paginaActual, setPaginaActual] = useState(1)
 
   const [cursos, setCursos] = useState([])
@@ -48,7 +47,7 @@ export const useCalculadora = () => {
   useEffect(() => { localStorage.setItem('quantum_favoritos', JSON.stringify(misCursosIds)) }, [misCursosIds]);
 
   // Reiniciar a la página 1 cuando cambian los filtros/búsqueda
-  useEffect(() => { setPaginaActual(1) }, [busqueda, soloCandado, verMisCursos, cicloFiltro])
+  useEffect(() => { setPaginaActual(1) }, [busqueda, soloCandado, verMisCursos])
 
   const q = busqueda.trim().toLowerCase();
   let lista = cursos.filter(c => {
@@ -57,12 +56,8 @@ export const useCalculadora = () => {
     return verMisCursos ? (estaEnMisCursos && coincideBusqueda) : coincideBusqueda;
   });
   if (soloCandado) lista = lista.filter(c => c.sistema && c.sistema.candado)
-  if (cicloFiltro !== '') lista = lista.filter(c => String(c.ciclo) === String(cicloFiltro))
   lista = [...lista].sort((a, b) => a.nombre.localeCompare(b.nombre))
   const filtrados = lista
-
-  // Ciclos disponibles (para el filtro)
-  const ciclosDisponibles = [...new Set(cursos.map(c => c.ciclo).filter(x => x !== null && x !== undefined))].sort((a, b) => a - b)
 
   // Paginación
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / PER_PAGE))
@@ -187,7 +182,6 @@ export const useCalculadora = () => {
   return {
     busqueda, setBusqueda, verMisCursos, setVerMisCursos,
     soloCandado, setSoloCandado,
-    cicloFiltro, setCicloFiltro, ciclosDisponibles,
     filtrados, paginados, paginaActual: paginaSegura, setPaginaActual, totalPaginas, perPage: PER_PAGE,
     cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota, misCursosIds, toggleFavorito,

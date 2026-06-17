@@ -118,7 +118,6 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
   const [componentes, setComponentes] = useState([nuevoComponente()])
   const [partes, setPartes] = useState([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
   const [confirmarBorrar, setConfirmarBorrar] = useState(false)
-  const [ciclo, setCiclo] = useState('')
 
   const esEdicion = !!cursoEditar
 
@@ -129,7 +128,6 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
     if (cursoEditar) {
       setId(cursoEditar.id)
       setNombre(cursoEditar.nombre)
-      setCiclo(cursoEditar.ciclo != null ? String(cursoEditar.ciclo) : '')
       const sis = cursoEditar.sistema || {}
       if (sis.candado) {
         setCandado(true)
@@ -160,7 +158,6 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
       }
     } else {
       setId(''); setNombre(''); setCandado(false)
-      setCiclo('')
       setComponentes([nuevoComponente()])
       setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
     }
@@ -202,7 +199,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
       return
     }
 
-    const payload = { id, nombre, candado, componentes, partes, ciclo }
+    const payload = { id, nombre, candado, componentes, partes }
     const res = esEdicion ? await editarCurso(cursoEditar.id, payload) : await agregarCurso(payload)
     if (res.ok) {
       showToast(esEdicion ? 'Cambios guardados' : `Curso ${id.trim()} agregado`, 'success')
@@ -247,28 +244,18 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
           {/* Body */}
           <div className="relative z-10 flex-1 overflow-y-auto custom-scrollbar px-6 md:px-8 py-5 space-y-6">
 
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-              <div className="col-span-1 sm:col-span-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
                 <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">
-                  Código {esEdicion && <span className="text-slate-500">(fijo)</span>}
+                  Código {esEdicion && <span className="text-slate-500">(no editable)</span>}
                 </label>
                 <input type="text" placeholder="CS3041" value={id} disabled={esEdicion} onChange={(e) => setId(e.target.value)}
                   className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-bold text-sm uppercase disabled:opacity-50 disabled:cursor-not-allowed`} />
               </div>
-              <div className="col-span-2 sm:col-span-3 order-last sm:order-none">
+              <div className="sm:col-span-2">
                 <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">Nombre del curso</label>
                 <input type="text" placeholder="Algoritmos y Estructuras de Datos" value={nombre} onChange={(e) => setNombre(e.target.value)}
                   className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-medium text-sm`} />
-              </div>
-              <div className="col-span-1 sm:col-span-2">
-                <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">Ciclo</label>
-                <select value={ciclo} onChange={(e) => setCiclo(e.target.value)}
-                  className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-semibold text-sm cursor-pointer`}>
-                  <option value="">Sin ciclo</option>
-                  {[1,2,3,4,5,6,7,8,9,10].map((n) => (
-                    <option key={n} value={n}>Ciclo {n}</option>
-                  ))}
-                </select>
               </div>
             </div>
 

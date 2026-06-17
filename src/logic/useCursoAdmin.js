@@ -33,9 +33,6 @@ export const useCursoAdmin = () => {
   const construirSistema = (cursoForm) =>
     cursoForm.candado ? construirCandado(cursoForm.partes) : construirSimple(cursoForm.componentes)
 
-  const parseCiclo = (ciclo) =>
-    (ciclo === '' || ciclo === null || ciclo === undefined) ? null : parseInt(ciclo, 10)
-
   const mensajeDuplicado = (err) => {
     const msg = (err.message || '').toLowerCase()
     if (msg.includes('nombre')) return 'Ya existe un curso con ese nombre.'
@@ -52,7 +49,6 @@ export const useCursoAdmin = () => {
         id: cursoForm.id.trim(),
         nombre: cursoForm.nombre.trim(),
         carrera: [],
-        ciclo: parseCiclo(cursoForm.ciclo),
         sistema: construirSistema(cursoForm),
       })
       .select()
@@ -78,7 +74,6 @@ export const useCursoAdmin = () => {
       .from('cursos')
       .update({
         nombre: cursoForm.nombre.trim(),
-        ciclo: parseCiclo(cursoForm.ciclo),
         sistema: construirSistema(cursoForm),
       })
       .eq('id', originalId)

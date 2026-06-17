@@ -49,7 +49,6 @@ export const SearchHome = ({
   busqueda, setBusqueda,
   verMisCursos, setVerMisCursos,
   soloCandado, setSoloCandado,
-  cicloFiltro, setCicloFiltro, ciclosDisponibles,
   filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
   totalCursos, cargandoCursos,
   misCursosIds, toggleFavorito,
@@ -104,7 +103,7 @@ export const SearchHome = ({
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
             {cargandoCursos
               ? 'Cargando…'
-              : hayBusqueda || verMisCursos || soloCandado || cicloFiltro !== ''
+              : hayBusqueda || verMisCursos || soloCandado
                 ? `${filtrados.length} ${filtrados.length === 1 ? 'resultado' : 'resultados'}`
                 : `${totalCursos} cursos disponibles`}
           </span>
@@ -144,20 +143,6 @@ export const SearchHome = ({
         {/* Filtros */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
           <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
-          <select
-            value={cicloFiltro}
-            onChange={(e) => setCicloFiltro(e.target.value)}
-            className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[1.5px] border cursor-pointer outline-none transition-all ${
-              cicloFiltro !== ''
-                ? 'bg-gradient-to-r from-cyan-300/20 to-teal-300/10 text-cyan-200 border-cyan-300/40'
-                : 'bg-white/[0.04] text-slate-400 border-white/10 hover:text-slate-100'
-            }`}
-          >
-            <option value="">Todos los ciclos</option>
-            {ciclosDisponibles.map((c) => (
-              <option key={c} value={c}>Ciclo {c}</option>
-            ))}
-          </select>
         </div>
       </div>
 
