@@ -15,7 +15,9 @@ export default function App() {
     busqueda, setBusqueda,
     verMisCursos, setVerMisCursos,
     orden, setOrden, soloCandado, setSoloCandado,
-    filtrados, totalCursos, cargandoCursos, cursos,
+    cicloFiltro, setCicloFiltro, ciclosDisponibles,
+    filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
+    totalCursos, cargandoCursos, cursos,
     cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota,
     misCursosIds, toggleFavorito,
@@ -66,7 +68,14 @@ export default function App() {
         setOrden={setOrden}
         soloCandado={soloCandado}
         setSoloCandado={setSoloCandado}
+        cicloFiltro={cicloFiltro}
+        setCicloFiltro={setCicloFiltro}
+        ciclosDisponibles={ciclosDisponibles}
         filtrados={filtrados}
+        paginados={paginados}
+        paginaActual={paginaActual}
+        setPaginaActual={setPaginaActual}
+        totalPaginas={totalPaginas}
         totalCursos={totalCursos}
         cargandoCursos={cargandoCursos}
         misCursosIds={misCursosIds}
@@ -92,21 +101,19 @@ export default function App() {
         onCerrar={reset}
       />
 
-      {formAbierto && (
-        <CursoFormModal
-          key={cursoEditar?.id ?? 'new'}
-          cursoEditar={cursoEditar}
-          onClose={cerrarForm}
-          onSaved={() => {}}
-        />
-      )}
+      <CursoFormModal
+        isOpen={formAbierto}
+        cursoEditar={cursoEditar}
+        cursosExistentes={cursos}
+        onClose={cerrarForm}
+        onSaved={() => {}}
+      />
 
-      {adminsAbierto && <AdminsModal onClose={() => setAdminsAbierto(false)} />}
-      {historialAbierto && <HistorialModal onClose={() => setHistorialAbierto(false)} />}
+      <AdminsModal isOpen={adminsAbierto} onClose={() => setAdminsAbierto(false)} />
+      <HistorialModal isOpen={historialAbierto} onClose={() => setHistorialAbierto(false)} />
 
       {/* Botón flotante de donación */}
       <button
-        type="button"
         onClick={() => setDonarAbierto(true)}
         className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] shadow-[0_10px_35px_-8px_rgba(56,189,248,0.7)] hover:shadow-[0_12px_45px_-8px_rgba(56,189,248,0.9)] hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
         aria-label="Donar"

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 const MIN_APROBATORIO = 10.5
-const redondear = (n) => Math.round(n)   // al entero más cercano (10.5 -> 11)
+const PER_PAGE = 9
+const redondear = (n) => Math.round(n)
 
 export const useCalculadora = () => {
   const [busqueda, setBusqueda] = useState("")
@@ -12,6 +13,8 @@ export const useCalculadora = () => {
   const [verMisCursos, setVerMisCursos] = useState(false)
   const [orden, setOrden] = useState('codigo')
   const [soloCandado, setSoloCandado] = useState(false)
+  const [cicloFiltro, setCicloFiltro] = useState('')   // '' = todos
+  const [paginaActual, setPaginaActual] = useState(1)
 
   const [cursos, setCursos] = useState([])
   const [cargandoCursos, setCargandoCursos] = useState(true)
@@ -45,6 +48,9 @@ export const useCalculadora = () => {
   useEffect(() => { localStorage.setItem('quantum_notas', JSON.stringify(notasGlobales)) }, [notasGlobales]);
   useEffect(() => { localStorage.setItem('quantum_favoritos', JSON.stringify(misCursosIds)) }, [misCursosIds]);
 
+  // Reiniciar a la página 1 cuando cambian los filtros/búsqueda
+  useEffect(() => { setPaginaActual(1) }, [busqueda, orden, soloCandado, verMisCursos, cicloFiltro])
+
   const q = busqueda.trim().toLowerCase();
   let lista = cursos.filter(c => {
     const coincideBusqueda = q === '' ? true : (c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
@@ -52,14 +58,22 @@ export const useCalculadora = () => {
     return verMisCursos ? (estaEnMisCursos && coincideBusqueda) : coincideBusqueda;
   });
   if (soloCandado) lista = lista.filter(c => c.sistema && c.sistema.candado)
+  if (cicloFiltro !== '') lista = lista.filter(c => String(c.ciclo) === String(cicloFiltro))
   lista = [...lista].sort((a, b) => orden === 'nombre' ? a.nombre.localeCompare(b.nombre) : a.id.localeCompare(b.id))
   const filtrados = lista
+
+  // Ciclos disponibles (para el filtro)
+  const ciclosDisponibles = [...new Set(cursos.map(c => c.ciclo).filter(x => x !== null && x !== undefined))].sort((a, b) => a - b)
+
+  // Paginación
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / PER_PAGE))
+  const paginaSegura = Math.min(paginaActual, totalPaginas)
+  const paginados = filtrados.slice((paginaSegura - 1) * PER_PAGE, paginaSegura * PER_PAGE)
 
   const toggleFavorito = (id) => setMisCursosIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   const actualizarNota = (cursoId, llaveNota, valor) => setNotasGlobales(prev => ({ ...prev, [cursoId]: { ...(prev[cursoId] || {}), [llaveNota]: valor } }));
   const limpiarNotasCurso = (cursoId) => setNotasGlobales(prev => ({ ...prev, [cursoId]: {} }));
 
-  // Suma ponderada. CADA componente se redondea al entero antes de sumar.
   const calcularSistemaSimple = (sistema, notasDelCurso, prefijo = '') => {
     let total = 0
     Object.keys(sistema).forEach(key => {
@@ -119,7 +133,6 @@ export const useCalculadora = () => {
     setResultado({ candado: false, final: total.toFixed(2), aprobado: total >= MIN_APROBATORIO - 1e-9, partes: null })
   }
 
-  // Calculadora inversa, consciente del redondeo de componentes ya completos.
   const calcularNecesario = (curso) => {
     const notasDelCurso = notasGlobales[curso.id] || {}
     setResultado(null)
@@ -149,8 +162,8 @@ export const useCalculadora = () => {
             constante += redondear(filledSub) * config.peso
           } else {
             hayVacios = true
-            constante += filledSub * config.peso     // parte conocida (sin redondear, aprox)
-            coefX += emptySubW * config.peso          // parte que depende de X
+            constante += filledSub * config.peso
+            coefX += emptySubW * config.peso
           }
         }
       })
@@ -175,7 +188,9 @@ export const useCalculadora = () => {
   return {
     busqueda, setBusqueda, verMisCursos, setVerMisCursos,
     orden, setOrden, soloCandado, setSoloCandado,
-    filtrados, cursoSeleccionado, setCursoSeleccionado,
+    cicloFiltro, setCicloFiltro, ciclosDisponibles,
+    filtrados, paginados, paginaActual: paginaSegura, setPaginaActual, totalPaginas, perPage: PER_PAGE,
+    cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota, misCursosIds, toggleFavorito,
     resultado, calcularPromedio, reset, limpiarNotasCurso,
     necesario, calcularNecesario,

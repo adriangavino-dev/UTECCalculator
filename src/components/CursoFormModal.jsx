@@ -47,8 +47,6 @@ const IconoBorrar = () => (
   </svg>
 )
 
-const pesoParte = (parte) => sumaPct(parte.componentes)
-
 // Editor reusable de una lista de componentes (con subnotas)
 const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) => (
   <div className="space-y-3">
@@ -66,7 +64,7 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
                 className={`w-full pl-3 pr-7 py-2 ${inputBase} border-cyan-300/20 text-center text-cyan-200 font-bold text-sm focus:border-cyan-300/60`} />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cyan-300/60 text-xs font-bold">%</span>
             </div>
-            <button type="button" onClick={() => update(compRemove(componentes, comp.key))} disabled={componentes.length === 1}
+            <button onClick={() => update(compRemove(componentes, comp.key))} disabled={componentes.length === 1}
               className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/20 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer" aria-label="Eliminar">
               <IconoBorrar />
             </button>
@@ -92,76 +90,85 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
                       className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-black/50 border-teal-300/20 text-center text-teal-100 font-bold text-xs focus:border-teal-300/60`} />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-teal-300/50 text-[10px] font-bold">%</span>
                   </div>
-                  <button type="button" onClick={() => update(subRemove(componentes, comp.key, sub.key))} disabled={comp.subNotas.length === 1}
+                  <button onClick={() => update(subRemove(componentes, comp.key, sub.key))} disabled={comp.subNotas.length === 1}
                     className="w-7 h-7 shrink-0 flex items-center justify-center rounded-md bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer text-xs" aria-label="Eliminar subnota">✕</button>
                 </div>
               ))}
               <div className="flex items-center gap-2 pt-1">
-                <button type="button" onClick={() => update(subAdd(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300 hover:text-teal-200 transition-colors cursor-pointer">+ Subnota</button>
+                <button onClick={() => update(subAdd(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300 hover:text-teal-200 transition-colors cursor-pointer">+ Subnota</button>
                 <span className="text-slate-600">·</span>
-                <button type="button" onClick={() => update(subRepartir(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-cyan-300/80 hover:text-cyan-200 transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
+                <button onClick={() => update(subRepartir(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-cyan-300/80 hover:text-cyan-200 transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
               </div>
             </div>
           )}
         </div>
       )
     })}
-    <button type="button" onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all text-[10px] uppercase tracking-[2px] font-bold cursor-pointer">+ Agregar {nombreItem}</button>
+    <button onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all text-[10px] uppercase tracking-[2px] font-bold cursor-pointer">+ Agregar {nombreItem}</button>
   </div>
 )
 
-const initComponentes = (cursoEditar) => {
-  if (!cursoEditar) return [nuevoComponente()]
-  const sis = cursoEditar.sistema || {}
-  if (sis.candado) return [nuevoComponente()]
-  return Object.entries(sis)
-    .filter(([k]) => k !== 'candado' && k !== 'partes')
-    .map(([nom, cfg]) => {
-      if (typeof cfg === 'number') return { key: uid(), nombre: nom, porcentaje: pesoAPct(cfg), tieneSubnotas: false, subNotas: [] }
-      return {
-        key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso), tieneSubnotas: true,
-        subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
-      }
-    })
-}
-
-const initPartes = (cursoEditar) => {
-  if (!cursoEditar) return [nuevaParte('Teoría'), nuevaParte('Laboratorio')]
-  const sis = cursoEditar.sistema || {}
-  if (!sis.candado) return [nuevaParte('Teoría'), nuevaParte('Laboratorio')]
-  return sis.partes.map((parte) => {
-    const factor = parte.peso !== undefined ? parte.peso : 1
-    const comps = Object.entries(parte.sistema).map(([nom, cfg]) => {
-      if (typeof cfg === 'number') {
-        return { key: uid(), nombre: nom, porcentaje: pesoAPct(cfg * factor), tieneSubnotas: false, subNotas: [] }
-      }
-      return {
-        key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso * factor), tieneSubnotas: true,
-        subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
-      }
-    })
-    return { key: uid(), nombre: parte.nombre, componentes: comps }
-  })
-}
-
-export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
+export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosExistentes = [] }) => {
   const { agregarCurso, editarCurso, eliminarCurso, guardando, error, setError } = useCursoAdmin()
   const { showToast } = useToast()
 
-  const [id, setId] = useState(cursoEditar?.id || '')
-  const [nombre, setNombre] = useState(cursoEditar?.nombre || '')
-  const [candado, setCandado] = useState(() => !!(cursoEditar?.sistema?.candado))
-  const [componentes, setComponentes] = useState(() => initComponentes(cursoEditar))
-  const [partes, setPartes] = useState(() => initPartes(cursoEditar))
+  const [id, setId] = useState('')
+  const [nombre, setNombre] = useState('')
+  const [candado, setCandado] = useState(false)
+  const [componentes, setComponentes] = useState([nuevoComponente()])
+  const [partes, setPartes] = useState([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
   const [confirmarBorrar, setConfirmarBorrar] = useState(false)
-
-  useEffect(() => {
-    setError(null)
-  }, [setError])
+  const [ciclo, setCiclo] = useState('')
 
   const esEdicion = !!cursoEditar
 
-  const cerrar = () => onClose()
+  useEffect(() => {
+    if (!isOpen) return
+    setError(null)
+    setConfirmarBorrar(false)
+    if (cursoEditar) {
+      setId(cursoEditar.id)
+      setNombre(cursoEditar.nombre)
+      setCiclo(cursoEditar.ciclo != null ? String(cursoEditar.ciclo) : '')
+      const sis = cursoEditar.sistema || {}
+      if (sis.candado) {
+        setCandado(true)
+        setPartes(sis.partes.map((parte) => {
+          const factor = parte.peso !== undefined ? parte.peso : 1 // compat modelo viejo
+          const comps = Object.entries(parte.sistema).map(([nom, cfg]) => {
+            if (typeof cfg === 'number') {
+              return { key: uid(), nombre: nom, porcentaje: pesoAPct(cfg * factor), tieneSubnotas: false, subNotas: [] }
+            }
+            return {
+              key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso * factor), tieneSubnotas: true,
+              subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
+            }
+          })
+          return { key: uid(), nombre: parte.nombre, componentes: comps }
+        }))
+        setComponentes([nuevoComponente()])
+      } else {
+        setCandado(false)
+        setComponentes(Object.entries(sis).filter(([k]) => k !== 'candado' && k !== 'partes').map(([nom, cfg]) => {
+          if (typeof cfg === 'number') return { key: uid(), nombre: nom, porcentaje: pesoAPct(cfg), tieneSubnotas: false, subNotas: [] }
+          return {
+            key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso), tieneSubnotas: true,
+            subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
+          }
+        }))
+        setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
+      }
+    } else {
+      setId(''); setNombre(''); setCandado(false)
+      setCiclo('')
+      setComponentes([nuevoComponente()])
+      setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
+    }
+  }, [isOpen, cursoEditar, setError])
+
+  if (!isOpen) return null
+
+  const cerrar = () => { setError(null); onClose() }
 
   const setComponentesParte = (parteKey, nuevoArr) =>
     setPartes((prev) => prev.map((p) => (p.key === parteKey ? { ...p, componentes: nuevoArr } : p)))
@@ -173,6 +180,7 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
   const normalOk = Math.abs(totalNormal - 100) < EPSILON
   const puedeGuardarSimple = normalOk && componentes.every(subnotaOkComp) && nombresOkArr(componentes) && id.trim() && nombre.trim()
 
+  const pesoParte = (parte) => sumaPct(parte.componentes)
   const totalCandado = partes.reduce((acc, p) => acc + pesoParte(p), 0)
   const candadoTotalOk = Math.abs(totalCandado - 100) < EPSILON
   const subnotasCandadoOk = partes.every((p) => p.componentes.every(subnotaOkComp))
@@ -183,7 +191,18 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
 
   const handleGuardar = async () => {
     if (!puedeGuardar) return
-    const payload = { id, nombre, candado, componentes, partes }
+
+    // Nombre único (chequeo en cliente, sin distinguir mayúsculas/espacios)
+    const nombreNorm = nombre.trim().toLowerCase()
+    const duplicado = cursosExistentes.some(
+      (c) => c.nombre.trim().toLowerCase() === nombreNorm && c.id !== (cursoEditar?.id)
+    )
+    if (duplicado) {
+      showToast('Ya existe un curso con ese nombre', 'error')
+      return
+    }
+
+    const payload = { id, nombre, candado, componentes, partes, ciclo }
     const res = esEdicion ? await editarCurso(cursoEditar.id, payload) : await agregarCurso(payload)
     if (res.ok) {
       showToast(esEdicion ? 'Cambios guardados' : `Curso ${id.trim()} agregado`, 'success')
@@ -218,7 +237,7 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
                 {esEdicion ? cursoEditar.id : 'Agregar curso'}
               </h3>
             </div>
-            <button type="button" onClick={cerrar} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
+            <button onClick={cerrar} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -228,18 +247,28 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
           {/* Body */}
           <div className="relative z-10 flex-1 overflow-y-auto custom-scrollbar px-6 md:px-8 py-5 space-y-6">
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
+              <div className="col-span-1 sm:col-span-1">
                 <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">
-                  Código {esEdicion && <span className="text-slate-500">(no editable)</span>}
+                  Código {esEdicion && <span className="text-slate-500">(fijo)</span>}
                 </label>
                 <input type="text" placeholder="CS3041" value={id} disabled={esEdicion} onChange={(e) => setId(e.target.value)}
                   className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-bold text-sm uppercase disabled:opacity-50 disabled:cursor-not-allowed`} />
               </div>
-              <div className="sm:col-span-2">
+              <div className="col-span-2 sm:col-span-3 order-last sm:order-none">
                 <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">Nombre del curso</label>
                 <input type="text" placeholder="Algoritmos y Estructuras de Datos" value={nombre} onChange={(e) => setNombre(e.target.value)}
                   className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-medium text-sm`} />
+              </div>
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">Ciclo</label>
+                <select value={ciclo} onChange={(e) => setCiclo(e.target.value)}
+                  className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-semibold text-sm cursor-pointer`}>
+                  <option value="">Sin ciclo</option>
+                  {[1,2,3,4,5,6,7,8,9,10].map((n) => (
+                    <option key={n} value={n}>Ciclo {n}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -249,7 +278,7 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
                 <span className="text-sm font-bold text-slate-100 flex items-center gap-2">🔒 Curso candado</span>
                 <span className="text-[10px] text-slate-400 font-medium">Dos partes (ej. Teoría/Lab); cada una debe llegar a 10.5</span>
               </div>
-              <button type="button" onClick={() => setCandado((v) => !v)}
+              <button onClick={() => setCandado((v) => !v)}
                 className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${candado ? 'bg-gradient-to-r from-cyan-300 to-teal-300' : 'bg-white/10'}`} aria-label="Activar candado">
                 <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${candado ? 'left-[26px]' : 'left-0.5'}`}></span>
               </button>
@@ -315,15 +344,15 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
                 confirmarBorrar ? (
                   <>
                     <span className="text-[10px] text-rose-300 font-black uppercase tracking-wider hidden sm:block">¿Eliminar?</span>
-                    <button type="button" onClick={handleEliminar} disabled={guardando}
+                    <button onClick={handleEliminar} disabled={guardando}
                       className="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-200 hover:bg-rose-500/30 font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer disabled:opacity-40">
                       {guardando ? 'Borrando…' : 'Sí, borrar'}
                     </button>
-                    <button type="button" onClick={() => setConfirmarBorrar(false)}
+                    <button onClick={() => setConfirmarBorrar(false)}
                       className="px-3 py-2 rounded-lg bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer">No</button>
                   </>
                 ) : (
-                  <button type="button" onClick={() => setConfirmarBorrar(true)}
+                  <button onClick={() => setConfirmarBorrar(true)}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-400/20 text-rose-300 hover:bg-rose-500/20 hover:border-rose-400/40 font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer" title="Eliminar curso">
                     <IconoBorrar /> Eliminar
                   </button>
@@ -331,8 +360,8 @@ export const CursoFormModal = ({ onClose, onSaved, cursoEditar }) => {
               )}
             </div>
             <div className="flex gap-2">
-              <button type="button" onClick={cerrar} className="px-5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer">Cancelar</button>
-              <button type="button" onClick={handleGuardar} disabled={!puedeGuardar}
+              <button onClick={cerrar} className="px-5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer">Cancelar</button>
+              <button onClick={handleGuardar} disabled={!puedeGuardar}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] hover:shadow-[0_10px_30px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none">
                 {guardando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Guardar curso'}
               </button>

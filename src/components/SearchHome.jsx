@@ -1,11 +1,57 @@
 import { BrandMark } from './BrandMark'
 import { CourseGrid } from './CourseGrid'
 
+const Pager = ({ paginaActual, totalPaginas, setPaginaActual }) => {
+  if (totalPaginas <= 1) return null
+
+  // ventana de páginas alrededor de la actual
+  const paginas = []
+  const win = 1
+  const push = (p) => paginas.push(p)
+  push(1)
+  for (let p = paginaActual - win; p <= paginaActual + win; p++) {
+    if (p > 1 && p < totalPaginas) push(p)
+  }
+  if (totalPaginas > 1) push(totalPaginas)
+  const unicas = [...new Set(paginas)].sort((a, b) => a - b)
+  const conGaps = []
+  unicas.forEach((p, i) => {
+    if (i > 0 && p - unicas[i - 1] > 1) conGaps.push('...')
+    conGaps.push(p)
+  })
+
+  const btn = 'min-w-[36px] h-9 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 border'
+  const ir = (p) => setPaginaActual(Math.min(Math.max(1, p), totalPaginas))
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-10 flex-wrap">
+      <button onClick={() => ir(paginaActual - 1)} disabled={paginaActual === 1}
+        className={`${btn} bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30 disabled:opacity-30 disabled:cursor-not-allowed`}>‹</button>
+      {conGaps.map((p, i) =>
+        p === '...' ? (
+          <span key={`g${i}`} className="px-1 text-slate-600 text-xs">…</span>
+        ) : (
+          <button key={p} onClick={() => ir(p)}
+            className={`${btn} ${p === paginaActual
+              ? 'bg-gradient-to-r from-cyan-300 to-teal-300 text-[#0a0420] border-transparent shadow-[0_0_15px_-4px_rgba(34,211,238,0.7)]'
+              : 'bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30'}`}>
+            {p}
+          </button>
+        )
+      )}
+      <button onClick={() => ir(paginaActual + 1)} disabled={paginaActual === totalPaginas}
+        className={`${btn} bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30 disabled:opacity-30 disabled:cursor-not-allowed`}>›</button>
+    </div>
+  )
+}
+
 export const SearchHome = ({
   busqueda, setBusqueda,
   verMisCursos, setVerMisCursos,
   orden, setOrden, soloCandado, setSoloCandado,
-  filtrados, totalCursos, cargandoCursos,
+  cicloFiltro, setCicloFiltro, ciclosDisponibles,
+  filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
+  totalCursos, cargandoCursos,
   misCursosIds, toggleFavorito,
   onCalcular,
   isAdmin, onAddCurso, onEditarCurso,
@@ -48,24 +94,23 @@ export const SearchHome = ({
             className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[#0c0824]/80 backdrop-blur-xl border border-white/10 text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 focus:shadow-[0_0_35px_-8px_rgba(34,211,238,0.6)] transition-all font-medium text-base shadow-[0_10px_40px_-15px_rgba(0,0,0,0.6)]"
           />
           {hayBusqueda && (
-            <button type="button" onClick={() => setBusqueda('')} className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white transition-all cursor-pointer" aria-label="Limpiar búsqueda">✕</button>
+            <button onClick={() => setBusqueda('')} className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white transition-all cursor-pointer" aria-label="Limpiar búsqueda">✕</button>
           )}
         </div>
 
-        {/* Contador + favoritos + agregar */}
+        {/* Contador + favoritos + acciones admin */}
         <div className="flex items-center justify-center flex-wrap gap-3 mt-6">
           <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[2px] font-bold text-slate-400">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
             {cargandoCursos
               ? 'Cargando…'
-              : hayBusqueda || verMisCursos || soloCandado
+              : hayBusqueda || verMisCursos || soloCandado || cicloFiltro !== ''
                 ? `${filtrados.length} ${filtrados.length === 1 ? 'resultado' : 'resultados'}`
                 : `${totalCursos} cursos disponibles`}
           </span>
 
           {(hayFavoritos || verMisCursos) && (
             <button
-              type="button"
               onClick={() => setVerMisCursos(!verMisCursos)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border transition-all cursor-pointer active:scale-95 ${
                 verMisCursos
@@ -79,44 +124,44 @@ export const SearchHome = ({
           )}
 
           {isAdmin && (
-            <button
-              type="button"
-              onClick={onAddCurso}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-cyan-300/40 bg-gradient-to-r from-cyan-300/15 to-teal-300/10 text-cyan-200 hover:from-cyan-300/25 hover:to-teal-300/20 hover:shadow-[0_0_15px_-3px_rgba(34,211,238,0.5)] transition-all cursor-pointer active:scale-95"
-            >
+            <button onClick={onAddCurso} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-cyan-300/40 bg-gradient-to-r from-cyan-300/15 to-teal-300/10 text-cyan-200 hover:from-cyan-300/25 hover:to-teal-300/20 hover:shadow-[0_0_15px_-3px_rgba(34,211,238,0.5)] transition-all cursor-pointer active:scale-95">
               <span className="text-sm leading-none">+</span>
               Agregar curso
             </button>
           )}
-
           {isAdmin && (
-            <button
-              type="button"
-              onClick={onVerHistorial}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-white/10 bg-white/[0.04] text-slate-300 hover:text-cyan-200 hover:border-cyan-300/30 transition-all cursor-pointer active:scale-95"
-            >
+            <button onClick={onVerHistorial} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-white/10 bg-white/[0.04] text-slate-300 hover:text-cyan-200 hover:border-cyan-300/30 transition-all cursor-pointer active:scale-95">
               🕓 Historial
             </button>
           )}
-
           {isOwner && (
-            <button
-              type="button"
-              onClick={onGestionarAdmins}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-amber-400/10 text-amber-200 hover:from-amber-300/25 hover:to-amber-400/20 transition-all cursor-pointer active:scale-95"
-            >
+            <button onClick={onGestionarAdmins} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-amber-400/10 text-amber-200 hover:from-amber-300/25 hover:to-amber-400/20 transition-all cursor-pointer active:scale-95">
               ★ Admins
             </button>
           )}
         </div>
 
-        {/* Ordenar + filtro candado */}
+        {/* Ordenar + filtros */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
           <span className="text-[9px] uppercase tracking-[2px] text-slate-500 font-bold mr-1">Ordenar</span>
-          <button type="button" onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
-          <button type="button" onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
+          <button onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
+          <button onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
           <span className="w-px h-4 bg-white/10 mx-1"></span>
-          <button type="button" onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
+          <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
+          <select
+            value={cicloFiltro}
+            onChange={(e) => setCicloFiltro(e.target.value)}
+            className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[1.5px] border cursor-pointer outline-none transition-all ${
+              cicloFiltro !== ''
+                ? 'bg-gradient-to-r from-cyan-300/20 to-teal-300/10 text-cyan-200 border-cyan-300/40'
+                : 'bg-white/[0.04] text-slate-400 border-white/10 hover:text-slate-100'
+            }`}
+          >
+            <option value="">Todos los ciclos</option>
+            {ciclosDisponibles.map((c) => (
+              <option key={c} value={c}>Ciclo {c}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -129,15 +174,18 @@ export const SearchHome = ({
             <p className="text-slate-400 text-xs uppercase tracking-[3px] font-bold mt-4">Cargando cursos…</p>
           </div>
         ) : (
-          <CourseGrid
-            cursos={filtrados}
-            misCursosIds={misCursosIds}
-            onCalcular={onCalcular}
-            onToggleFav={toggleFavorito}
-            verMisCursos={verMisCursos}
-            isAdmin={isAdmin}
-            onEditar={onEditarCurso}
-          />
+          <>
+            <CourseGrid
+              cursos={paginados}
+              misCursosIds={misCursosIds}
+              onCalcular={onCalcular}
+              onToggleFav={toggleFavorito}
+              verMisCursos={verMisCursos}
+              isAdmin={isAdmin}
+              onEditar={onEditarCurso}
+            />
+            <Pager paginaActual={paginaActual} totalPaginas={totalPaginas} setPaginaActual={setPaginaActual} />
+          </>
         )}
       </div>
     </div>

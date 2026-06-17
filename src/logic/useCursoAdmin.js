@@ -14,10 +14,7 @@ export const useCursoAdmin = () => {
         for (const sub of comp.subNotas) {
           subNotas[sub.nombre.trim()] = (parseFloat(sub.porcentaje) || 0) / 100
         }
-        sistema[nombreComp] = {
-          peso: (parseFloat(comp.porcentaje) || 0) / 100,
-          subNotas,
-        }
+        sistema[nombreComp] = { peso: (parseFloat(comp.porcentaje) || 0) / 100, subNotas }
       } else {
         sistema[nombreComp] = (parseFloat(comp.porcentaje) || 0) / 100
       }
@@ -34,9 +31,16 @@ export const useCursoAdmin = () => {
   })
 
   const construirSistema = (cursoForm) =>
-    cursoForm.candado
-      ? construirCandado(cursoForm.partes)
-      : construirSimple(cursoForm.componentes)
+    cursoForm.candado ? construirCandado(cursoForm.partes) : construirSimple(cursoForm.componentes)
+
+  const parseCiclo = (ciclo) =>
+    (ciclo === '' || ciclo === null || ciclo === undefined) ? null : parseInt(ciclo, 10)
+
+  const mensajeDuplicado = (err) => {
+    const msg = (err.message || '').toLowerCase()
+    if (msg.includes('nombre')) return 'Ya existe un curso con ese nombre.'
+    return 'Ya existe un curso con ese código. Usa otro ID.'
+  }
 
   const agregarCurso = async (cursoForm) => {
     setGuardando(true)
@@ -48,6 +52,7 @@ export const useCursoAdmin = () => {
         id: cursoForm.id.trim(),
         nombre: cursoForm.nombre.trim(),
         carrera: [],
+        ciclo: parseCiclo(cursoForm.ciclo),
         sistema: construirSistema(cursoForm),
       })
       .select()
@@ -57,7 +62,7 @@ export const useCursoAdmin = () => {
 
     if (insertError) {
       const message = insertError.code === '23505'
-        ? 'Ya existe un curso con ese código. Usa otro ID.'
+        ? mensajeDuplicado(insertError)
         : (insertError.message || 'Error al guardar el curso.')
       setError(message)
       return { ok: false, message }
@@ -73,6 +78,7 @@ export const useCursoAdmin = () => {
       .from('cursos')
       .update({
         nombre: cursoForm.nombre.trim(),
+        ciclo: parseCiclo(cursoForm.ciclo),
         sistema: construirSistema(cursoForm),
       })
       .eq('id', originalId)
@@ -82,7 +88,9 @@ export const useCursoAdmin = () => {
     setGuardando(false)
 
     if (updError) {
-      const message = updError.message || 'Error al actualizar el curso.'
+      const message = updError.code === '23505'
+        ? mensajeDuplicado(updError)
+        : (updError.message || 'Error al actualizar el curso.')
       setError(message)
       return { ok: false, message }
     }
@@ -92,14 +100,8 @@ export const useCursoAdmin = () => {
   const eliminarCurso = async (id) => {
     setGuardando(true)
     setError(null)
-
-    const { error: delError } = await supabase
-      .from('cursos')
-      .delete()
-      .eq('id', id)
-
+    const { error: delError } = await supabase.from('cursos').delete().eq('id', id)
     setGuardando(false)
-
     if (delError) {
       const message = delError.message || 'Error al eliminar el curso.'
       setError(message)
