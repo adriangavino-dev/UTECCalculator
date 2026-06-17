@@ -14,7 +14,7 @@ export default function App() {
   const {
     busqueda, setBusqueda,
     verMisCursos, setVerMisCursos,
-    orden, setOrden, soloCandado, setSoloCandado,
+    soloCandado, setSoloCandado,
     cicloFiltro, setCicloFiltro, ciclosDisponibles,
     filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
     totalCursos, cargandoCursos, cursos,
@@ -64,8 +64,6 @@ export default function App() {
         setBusqueda={setBusqueda}
         verMisCursos={verMisCursos}
         setVerMisCursos={setVerMisCursos}
-        orden={orden}
-        setOrden={setOrden}
         soloCandado={soloCandado}
         setSoloCandado={setSoloCandado}
         cicloFiltro={cicloFiltro}

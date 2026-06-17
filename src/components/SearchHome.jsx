@@ -48,7 +48,7 @@ const Pager = ({ paginaActual, totalPaginas, setPaginaActual }) => {
 export const SearchHome = ({
   busqueda, setBusqueda,
   verMisCursos, setVerMisCursos,
-  orden, setOrden, soloCandado, setSoloCandado,
+  soloCandado, setSoloCandado,
   cicloFiltro, setCicloFiltro, ciclosDisponibles,
   filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
   totalCursos, cargandoCursos,
@@ -141,12 +141,8 @@ export const SearchHome = ({
           )}
         </div>
 
-        {/* Ordenar + filtros */}
+        {/* Filtros */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
-          <span className="text-[9px] uppercase tracking-[2px] text-slate-500 font-bold mr-1">Ordenar</span>
-          <button onClick={() => setOrden('codigo')} className={pill(orden === 'codigo')}>Código</button>
-          <button onClick={() => setOrden('nombre')} className={pill(orden === 'nombre')}>A–Z</button>
-          <span className="w-px h-4 bg-white/10 mx-1"></span>
           <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
           <select
             value={cicloFiltro}
