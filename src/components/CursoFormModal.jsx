@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useCursoAdmin } from '../logic/useCursoAdmin'
 import { useToast } from './Toast'
+import { DndContext, closestCenter, PointerSensor, TouchSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
+import { CSS } from '@dnd-kit/utilities'
 
 const uid = () => (crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`)
 const nuevaSubnota = () => ({ key: uid(), nombre: '', porcentaje: '' })
@@ -34,6 +38,7 @@ const subAdd = (arr, ck) => arr.map((c) => (c.key === ck ? { ...c, subNotas: [..
 const subUpdate = (arr, ck, sk, ch) => arr.map((c) => (c.key === ck ? { ...c, subNotas: c.subNotas.map((s) => (s.key === sk ? { ...s, ...ch } : s)) } : c))
 const subRemove = (arr, ck, sk) => arr.map((c) => (c.key === ck ? { ...c, subNotas: c.subNotas.filter((s) => s.key !== sk) } : c))
 const subRepartir = (arr, ck) => arr.map((c) => (c.key === ck ? { ...c, subNotas: repartir(c.subNotas) } : c))
+const subReorder = (arr, ck, from, to) => arr.map((c) => (c.key === ck ? { ...c, subNotas: arrayMove(c.subNotas, from, to) } : c))
 
 const subnotaSumArr = (comp) => sumaPct(comp.subNotas)
 const subnotaOkComp = (comp) => !comp.tieneSubnotas || Math.abs(subnotaSumArr(comp) - 100) < EPSILON
@@ -47,66 +52,130 @@ const IconoBorrar = () => (
   </svg>
 )
 
-// Editor reusable de una lista de componentes (con subnotas)
-const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) => (
-  <div className="space-y-3">
-    {componentes.map((comp) => {
-      const sOk = subnotaOkComp(comp)
-      return (
-        <div key={comp.key} className="bg-white/[0.03] rounded-2xl border border-white/10 p-4">
-          <div className="flex items-center gap-2">
-            <input type="text" placeholder="EC1" value={comp.nombre}
-              onChange={(e) => update(compUpdate(componentes, comp.key, { nombre: e.target.value }))}
-              className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-white/10 focus:border-cyan-300/50 font-bold text-sm uppercase`} />
-            <div className="relative w-24 shrink-0">
-              <input type="number" placeholder="0" min="0" max="100" step="0.01" value={comp.porcentaje}
-                onChange={(e) => update(compUpdate(componentes, comp.key, { porcentaje: e.target.value }))}
-                className={`w-full pl-3 pr-7 py-2 ${inputBase} border-cyan-300/20 text-center text-cyan-200 font-bold text-sm focus:border-cyan-300/60`} />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cyan-300/60 text-xs font-bold">%</span>
-            </div>
-            <button onClick={() => update(compRemove(componentes, comp.key))} disabled={componentes.length === 1}
-              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/20 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer" aria-label="Eliminar">
-              <IconoBorrar />
-            </button>
-          </div>
-
-          <label className="flex items-center gap-2 mt-3 cursor-pointer w-fit">
-            <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-cyan-400 w-3.5 h-3.5" />
-            <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-slate-400">Tiene subnotas</span>
-          </label>
-
-          {comp.tieneSubnotas && (
-            <div className="mt-3 pl-3 border-l-2 border-teal-300/20 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] uppercase tracking-[1.5px] font-bold text-teal-300/80">Subnotas (suman 100% de {comp.nombre || 'este'})</span>
-                <span className={`text-[10px] font-black ${sOk ? 'text-teal-300' : 'text-amber-300'}`}>{round2(subnotaSumArr(comp))}%{sOk ? ' ✓' : ''}</span>
-              </div>
-              {comp.subNotas.map((sub) => (
-                <div key={sub.key} className="flex items-center gap-2">
-                  <input type="text" placeholder="Tests" value={sub.nombre} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { nombre: e.target.value }))}
-                    className={`flex-1 min-w-0 px-2.5 py-1.5 ${inputBase} bg-black/50 border-white/[0.06] focus:border-teal-300/50 text-xs font-semibold`} />
-                  <div className="relative w-20 shrink-0">
-                    <input type="number" placeholder="0" min="0" max="100" step="0.0001" value={sub.porcentaje} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { porcentaje: e.target.value }))}
-                      className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-black/50 border-teal-300/20 text-center text-teal-100 font-bold text-xs focus:border-teal-300/60`} />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-teal-300/50 text-[10px] font-bold">%</span>
-                  </div>
-                  <button onClick={() => update(subRemove(componentes, comp.key, sub.key))} disabled={comp.subNotas.length === 1}
-                    className="w-7 h-7 shrink-0 flex items-center justify-center rounded-md bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer text-xs" aria-label="Eliminar subnota">✕</button>
-                </div>
-              ))}
-              <div className="flex items-center gap-2 pt-1">
-                <button onClick={() => update(subAdd(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300 hover:text-teal-200 transition-colors cursor-pointer">+ Subnota</button>
-                <span className="text-slate-600">·</span>
-                <button onClick={() => update(subRepartir(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-cyan-300/80 hover:text-cyan-200 transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
-              </div>
-            </div>
-          )}
-        </div>
-      )
-    })}
-    <button onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all text-[10px] uppercase tracking-[2px] font-bold cursor-pointer">+ Agregar {nombreItem}</button>
-  </div>
+const IconoGrip = () => (
+  <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <circle cx="5" cy="3" r="1.3" /><circle cx="11" cy="3" r="1.3" />
+    <circle cx="5" cy="8" r="1.3" /><circle cx="11" cy="8" r="1.3" />
+    <circle cx="5" cy="13" r="1.3" /><circle cx="11" cy="13" r="1.3" />
+  </svg>
 )
+
+// Fila de subnota arrastrable (drag por el grip ⠿)
+const SortableSub = ({ sub, comp, componentes, update }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: sub.key })
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 50 : undefined,
+    position: 'relative',
+  }
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        style={{ touchAction: 'none' }}
+        className="shrink-0 w-6 h-7 flex items-center justify-center rounded-md text-slate-500 hover:text-cyan-200 hover:bg-white/[0.06] cursor-grab active:cursor-grabbing transition-colors"
+        aria-label="Arrastrar para reordenar"
+        title="Arrastra para reordenar"
+      >
+        <IconoGrip />
+      </button>
+      <input type="text" placeholder="Tests" value={sub.nombre} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { nombre: e.target.value }))}
+        className={`flex-1 min-w-0 px-2.5 py-1.5 ${inputBase} bg-black/50 border-white/[0.06] focus:border-teal-300/50 text-xs font-semibold`} />
+      <div className="relative w-20 shrink-0">
+        <input type="number" placeholder="0" min="0" max="100" step="0.0001" value={sub.porcentaje} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { porcentaje: e.target.value }))}
+          className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-black/50 border-teal-300/20 text-center text-teal-100 font-bold text-xs focus:border-teal-300/60`} />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-teal-300/50 text-[10px] font-bold">%</span>
+      </div>
+      <button onClick={() => update(subRemove(componentes, comp.key, sub.key))} disabled={comp.subNotas.length === 1}
+        className="w-7 h-7 shrink-0 flex items-center justify-center rounded-md bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer text-xs" aria-label="Eliminar subnota">✕</button>
+    </div>
+  )
+}
+
+// Editor reusable de una lista de componentes (con subnotas arrastrables)
+const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  const onDragEndSub = (comp) => (event) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const from = comp.subNotas.findIndex((s) => s.key === active.id)
+    const to = comp.subNotas.findIndex((s) => s.key === over.id)
+    if (from === -1 || to === -1) return
+    update(subReorder(componentes, comp.key, from, to))
+  }
+
+  return (
+    <div className="space-y-3">
+      {componentes.map((comp) => {
+        const sOk = subnotaOkComp(comp)
+        return (
+          <div key={comp.key} className="bg-white/[0.03] rounded-2xl border border-white/10 p-4">
+            <div className="flex items-center gap-2">
+              <input type="text" placeholder="EC1" value={comp.nombre}
+                onChange={(e) => update(compUpdate(componentes, comp.key, { nombre: e.target.value }))}
+                className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-white/10 focus:border-cyan-300/50 font-bold text-sm uppercase`} />
+              <div className="relative w-24 shrink-0">
+                <input type="number" placeholder="0" min="0" max="100" step="0.01" value={comp.porcentaje}
+                  onChange={(e) => update(compUpdate(componentes, comp.key, { porcentaje: e.target.value }))}
+                  className={`w-full pl-3 pr-7 py-2 ${inputBase} border-cyan-300/20 text-center text-cyan-200 font-bold text-sm focus:border-cyan-300/60`} />
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cyan-300/60 text-xs font-bold">%</span>
+              </div>
+              <button onClick={() => update(compRemove(componentes, comp.key))} disabled={componentes.length === 1}
+                className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/20 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer" aria-label="Eliminar">
+                <IconoBorrar />
+              </button>
+            </div>
+
+            <label className="flex items-center gap-2 mt-3 cursor-pointer w-fit">
+              <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-cyan-400 w-3.5 h-3.5" />
+              <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-slate-400">Tiene subnotas</span>
+            </label>
+
+            {comp.tieneSubnotas && (
+              <div className="mt-3 pl-3 border-l-2 border-teal-300/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] uppercase tracking-[1.5px] font-bold text-teal-300/80">Subnotas (suman 100% de {comp.nombre || 'este'}) · arrastra ⠿</span>
+                  <span className={`text-[10px] font-black ${sOk ? 'text-teal-300' : 'text-amber-300'}`}>{round2(subnotaSumArr(comp))}%{sOk ? ' ✓' : ''}</span>
+                </div>
+
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                  onDragEnd={onDragEndSub(comp)}
+                >
+                  <SortableContext items={comp.subNotas.map((s) => s.key)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-2">
+                      {comp.subNotas.map((sub) => (
+                        <SortableSub key={sub.key} sub={sub} comp={comp} componentes={componentes} update={update} />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button onClick={() => update(subAdd(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300 hover:text-teal-200 transition-colors cursor-pointer">+ Subnota</button>
+                  <span className="text-slate-600">·</span>
+                  <button onClick={() => update(subRepartir(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-cyan-300/80 hover:text-cyan-200 transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
+      <button onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all text-[10px] uppercase tracking-[2px] font-bold cursor-pointer">+ Agregar {nombreItem}</button>
+    </div>
+  )
+}
 
 export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosExistentes = [] }) => {
   const { agregarCurso, editarCurso, eliminarCurso, guardando, error, setError } = useCursoAdmin()
