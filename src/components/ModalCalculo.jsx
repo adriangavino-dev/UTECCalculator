@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useToast } from './Toast'
+import { calcularResultado, notasSimuladas } from '../logic/useCalculadora'
 
 const MIN_APROBATORIO = 10.5
 
@@ -10,14 +11,25 @@ export const ModalCalculo = ({
   limpiarNotasCurso,
   resultado,
   necesario,
-  onCalcular,
-  onCalcularNecesario,
+  verNecesario,
+  onToggleNecesario,
   onCerrar,
 }) => {
   const { showToast } = useToast()
+  const [simular, setSimular] = useState('')
+
+  // Reiniciar el simulador al cambiar de curso
+  useEffect(() => { setSimular('') }, [curso?.id])
+
   if (!curso) return null
   const notasDelCurso = notasGlobales[curso.id] || {}
   const esCandado = !!(curso.sistema && curso.sistema.candado)
+
+  // Simulador "¿qué pasa si…?": rellena lo vacío con la nota hipotética
+  const simVal = parseFloat(simular)
+  const resultadoSim = simular !== '' && !isNaN(simVal)
+    ? calcularResultado(curso, notasSimuladas(curso, notasDelCurso, Math.min(20, Math.max(0, simVal))))
+    : null
 
   // Peso de una parte: si no está guardado (modelo nuevo), se deriva sumando sus componentes
   const pesoDeParte = (parte) => {
@@ -76,6 +88,7 @@ export const ModalCalculo = ({
                 min="0"
                 max="20"
                 value={notasDelCurso[`${prefijo}${key}`] || ''}
+                aria-label={`Nota de ${key}`}
                 className="w-20 p-2.5 bg-black/50 border border-cyan-300/20 rounded-xl text-center font-bold text-lg text-cyan-200 outline-none focus:border-cyan-300/60 transition-colors placeholder:text-slate-700"
                 onChange={(e) => actualizarNota(curso.id, `${prefijo}${key}`, e.target.value)}
               />
@@ -126,6 +139,7 @@ export const ModalCalculo = ({
                   min="0"
                   max="20"
                   value={notaDirecta}
+                  aria-label={`Nota completa de ${key} (opcional)`}
                   className="w-16 p-2 bg-black/60 border border-teal-300/25 rounded-lg text-center font-bold text-base text-teal-100 outline-none focus:border-teal-300/60 transition-colors placeholder:text-slate-700 shrink-0"
                   onChange={(e) => actualizarNota(curso.id, llaveDirecta, e.target.value)}
                 />
@@ -149,6 +163,7 @@ export const ModalCalculo = ({
                     max="20"
                     disabled={bloqueado}
                     value={notasDelCurso[`${prefijo}${key}_${subKey}`] || ''}
+                    aria-label={`Nota de ${subKey} de ${key}`}
                     className="w-14 p-1.5 bg-black/60 border border-teal-300/20 rounded-lg text-center font-bold text-sm text-teal-100 outline-none focus:border-teal-300/60 placeholder:text-slate-700 shrink-0 disabled:cursor-not-allowed"
                     onChange={(e) =>
                       actualizarNota(curso.id, `${prefijo}${key}_${subKey}`, e.target.value)
@@ -167,6 +182,9 @@ export const ModalCalculo = ({
   return (
     <div
       className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Calculadora de ${curso.nombre}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCerrar()
       }}
@@ -267,15 +285,17 @@ export const ModalCalculo = ({
 
           {/* Footer */}
           <div className="relative z-10 px-4 md:px-10 py-4 md:py-5 border-t border-white/[0.08] bg-black/20">
-            {resultado !== null && (
-              <div className="mb-4 animate-fade-in">
+            {resultado !== null ? (
+              <div className="mb-4">
                 <div
                   className={`p-5 rounded-2xl text-center ${
                     resultado.aprobado ? 'bg-teal-300' : 'bg-rose-400'
                   }`}
+                  role="status"
+                  aria-live="polite"
                 >
                   <p className="text-[#0a0420]/70 text-[10px] font-black uppercase tracking-[3px] mb-1">
-                    Promedio Final · {resultado.aprobado ? 'Aprobado ✓' : 'Desaprobado ✕'}
+                    Promedio · {resultado.aprobado ? 'Aprobado ✓' : 'Desaprobado ✕'} · se actualiza al escribir
                   </p>
                   <p className="text-5xl md:text-6xl font-black text-[#0a0420] tracking-tight">
                     {resultado.final}
@@ -287,6 +307,10 @@ export const ModalCalculo = ({
                   )}
                 </div>
               </div>
+            ) : (
+              <p className="mb-4 text-center text-[11px] text-slate-500 font-bold uppercase tracking-[2px]">
+                Escribe tus notas y el promedio aparece al instante
+              </p>
             )}
 
             {necesario !== null && (
@@ -314,30 +338,60 @@ export const ModalCalculo = ({
               </div>
             )}
 
-            <div className="flex flex-col gap-2.5">
+            {/* Simulador ¿qué pasa si…? */}
+            <div className="mb-4 flex items-center justify-between gap-3 bg-white/[0.03] border border-white/10 px-3.5 py-2.5 rounded-2xl">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[11px] text-slate-200 font-bold uppercase tracking-wider">¿Y si saco…?</span>
+                <span className="text-[10px] text-slate-500 font-medium">Simula esa nota en todo lo que te falta</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {resultadoSim && (
+                  <span
+                    className={`text-sm font-black px-2.5 py-1.5 rounded-lg border ${
+                      resultadoSim.aprobado
+                        ? 'text-teal-200 bg-teal-300/10 border-teal-300/30'
+                        : 'text-rose-200 bg-rose-400/10 border-rose-400/30'
+                    }`}
+                    role="status"
+                    aria-live="polite"
+                  >
+                    → {resultadoSim.final} {resultadoSim.aprobado ? '✓' : '✕'}
+                  </span>
+                )}
+                <input
+                  type="number"
+                  placeholder="—"
+                  step="0.5"
+                  min="0"
+                  max="20"
+                  value={simular}
+                  aria-label="Nota hipotética para todo lo que falta"
+                  className="w-16 p-2 bg-black/60 border border-sky-300/25 rounded-lg text-center font-bold text-base text-sky-100 outline-none focus:border-sky-300/60 transition-colors placeholder:text-slate-700"
+                  onChange={(e) => setSimular(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2.5">
               <button
                 type="button"
-                onClick={onCalcular}
-                className="relative w-full py-3.5 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] active:scale-[0.98] transition-colors cursor-pointer"
+                onClick={onToggleNecesario}
+                aria-pressed={verNecesario}
+                className={`flex-1 py-3 rounded-2xl border font-bold text-[11px] uppercase tracking-[1.5px] transition-colors cursor-pointer ${
+                  verNecesario
+                    ? 'bg-sky-300/15 border-sky-300/50 text-sky-100'
+                    : 'bg-sky-300/10 border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50'
+                }`}
               >
-                Calcular Promedio
+                ¿Cuánto necesito?
               </button>
-              <div className="flex gap-2.5">
-                <button
-                  type="button"
-                  onClick={onCalcularNecesario}
-                  className="flex-1 py-3 rounded-2xl bg-sky-300/10 border border-sky-300/30 text-sky-200 hover:bg-sky-300/20 hover:border-sky-300/50 font-bold text-[11px] uppercase tracking-[1.5px] transition-all cursor-pointer"
-                >
-                  ¿Cuánto necesito?
-                </button>
-                <button
-                  type="button"
-                  onClick={onCerrar}
-                  className="flex-1 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer"
-                >
-                  Cerrar
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={onCerrar}
+                className="flex-1 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-colors cursor-pointer"
+              >
+                Cerrar
+              </button>
             </div>
           </div>
         </div>

@@ -1,6 +1,9 @@
+import { calcularResultado, hayNotas } from '../logic/useCalculadora'
+
 export const CourseGrid = ({
   cursos,
   misCursosIds,
+  notasGlobales,
   onCalcular,
   onToggleFav,
   verMisCursos,
@@ -25,6 +28,8 @@ export const CourseGrid = ({
       {cursos.map((curso) => {
         const esFavorito = misCursosIds.includes(curso.id)
         const esCandado = !!(curso.sistema && curso.sistema.candado)
+        const notas = (notasGlobales && notasGlobales[curso.id]) || {}
+        const prom = hayNotas(notas) ? calcularResultado(curso, notas) : null
         return (
           <div
             key={curso.id}
@@ -67,6 +72,18 @@ export const CourseGrid = ({
                 {esCandado && (
                   <span className="inline-block text-[8px] font-bold text-amber-200 uppercase tracking-[1.5px] bg-amber-300/10 px-1.5 py-0.5 rounded border border-amber-300/30">
                     🔒 Candado
+                  </span>
+                )}
+                {prom && (
+                  <span
+                    className={`inline-block text-[9px] font-black uppercase tracking-[1.5px] px-2 py-0.5 rounded-md border ${
+                      prom.aprobado
+                        ? 'text-teal-200 bg-teal-300/10 border-teal-300/30'
+                        : 'text-rose-200 bg-rose-400/10 border-rose-400/30'
+                    }`}
+                    title="Promedio con tus notas guardadas"
+                  >
+                    Prom. {prom.final}
                   </span>
                 )}
               </div>

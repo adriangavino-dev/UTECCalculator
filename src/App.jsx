@@ -20,8 +20,8 @@ export default function App() {
     cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota,
     misCursosIds, toggleFavorito,
-    resultado, calcularPromedio, reset,
-    necesario, calcularNecesario,
+    resultado, reset,
+    necesario, toggleNecesario, verNecesario,
     limpiarNotasCurso,
   } = useCalculadora()
 
@@ -74,6 +74,7 @@ export default function App() {
         cargandoCursos={cargandoCursos}
         misCursosIds={misCursosIds}
         toggleFavorito={toggleFavorito}
+        notasGlobales={notasGlobales}
         onCalcular={setCursoSeleccionado}
         isAdmin={auth.isAdmin}
         onAddCurso={abrirAgregar}
@@ -90,8 +91,8 @@ export default function App() {
         limpiarNotasCurso={limpiarNotasCurso}
         resultado={resultado}
         necesario={necesario}
-        onCalcular={() => calcularPromedio(cursoSeleccionado)}
-        onCalcularNecesario={() => calcularNecesario(cursoSeleccionado)}
+        verNecesario={verNecesario}
+        onToggleNecesario={toggleNecesario}
         onCerrar={reset}
       />
 

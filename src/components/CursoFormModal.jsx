@@ -83,10 +83,10 @@ const SortableSub = ({ sub, comp, componentes, update }) => {
       >
         <IconoGrip />
       </button>
-      <input type="text" placeholder="Tests" value={sub.nombre} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { nombre: e.target.value }))}
+      <input type="text" placeholder="Tests" value={sub.nombre} aria-label="Nombre de la subnota" onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { nombre: e.target.value }))}
         className={`flex-1 min-w-0 px-2.5 py-1.5 ${inputBase} bg-black/50 border-white/[0.06] focus:border-teal-300/50 text-xs font-semibold`} />
       <div className="relative w-20 shrink-0">
-        <input type="number" placeholder="0" min="0" max="100" step="0.0001" value={sub.porcentaje} onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { porcentaje: e.target.value }))}
+        <input type="number" placeholder="0" min="0" max="100" step="0.0001" value={sub.porcentaje} aria-label="Porcentaje de la subnota" onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { porcentaje: e.target.value }))}
           className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-black/50 border-teal-300/20 text-center text-teal-100 font-bold text-xs focus:border-teal-300/60`} />
         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-teal-300/50 text-[10px] font-bold">%</span>
       </div>
@@ -120,11 +120,11 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
         return (
           <div key={comp.key} className="bg-white/[0.03] rounded-2xl border border-white/10 p-4">
             <div className="flex items-center gap-2">
-              <input type="text" placeholder="EC1" value={comp.nombre}
+              <input type="text" placeholder="EC1" value={comp.nombre} aria-label="Nombre del componente"
                 onChange={(e) => update(compUpdate(componentes, comp.key, { nombre: e.target.value }))}
                 className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-white/10 focus:border-cyan-300/50 font-bold text-sm uppercase`} />
               <div className="relative w-24 shrink-0">
-                <input type="number" placeholder="0" min="0" max="100" step="0.01" value={comp.porcentaje}
+                <input type="number" placeholder="0" min="0" max="100" step="0.01" value={comp.porcentaje} aria-label="Porcentaje del componente"
                   onChange={(e) => update(compUpdate(componentes, comp.key, { porcentaje: e.target.value }))}
                   className={`w-full pl-3 pr-7 py-2 ${inputBase} border-cyan-300/20 text-center text-cyan-200 font-bold text-sm focus:border-cyan-300/60`} />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cyan-300/60 text-xs font-bold">%</span>
@@ -380,7 +380,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
                 {partes.map((parte) => (
                   <div key={parte.key} className="bg-white/[0.02] rounded-2xl border border-cyan-300/20 p-4">
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <input type="text" placeholder="Teoría" value={parte.nombre} onChange={(e) => updateParteNombre(parte.key, e.target.value)}
+                      <input type="text" placeholder="Teoría" value={parte.nombre} aria-label="Nombre de la parte" onChange={(e) => updateParteNombre(parte.key, e.target.value)}
                         className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-cyan-300/30 focus:border-cyan-300/60 font-bold text-sm`} />
                       <span className="shrink-0 text-[10px] uppercase tracking-[1.5px] font-black text-cyan-200 bg-cyan-300/10 border border-cyan-300/30 px-3 py-2 rounded-lg">
                         Peso {round2(pesoParte(parte))}%

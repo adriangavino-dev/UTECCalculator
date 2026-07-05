@@ -25,13 +25,13 @@ const Pager = ({ paginaActual, totalPaginas, setPaginaActual }) => {
 
   return (
     <div className="flex items-center justify-center gap-1.5 mt-10 flex-wrap">
-      <button onClick={() => ir(paginaActual - 1)} disabled={paginaActual === 1}
+      <button onClick={() => ir(paginaActual - 1)} disabled={paginaActual === 1} aria-label="Página anterior"
         className={`${btn} bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30 disabled:opacity-30 disabled:cursor-not-allowed`}>‹</button>
       {conGaps.map((p, i) =>
         p === '...' ? (
           <span key={`g${i}`} className="px-1 text-slate-600 text-xs">…</span>
         ) : (
-          <button key={p} onClick={() => ir(p)}
+          <button key={p} onClick={() => ir(p)} aria-label={`Página ${p}`} aria-current={p === paginaActual ? 'page' : undefined}
             className={`${btn} ${p === paginaActual
               ? 'bg-cyan-300 text-[#0a0420] border-transparent'
               : 'bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30'}`}>
@@ -39,7 +39,7 @@ const Pager = ({ paginaActual, totalPaginas, setPaginaActual }) => {
           </button>
         )
       )}
-      <button onClick={() => ir(paginaActual + 1)} disabled={paginaActual === totalPaginas}
+      <button onClick={() => ir(paginaActual + 1)} disabled={paginaActual === totalPaginas} aria-label="Página siguiente"
         className={`${btn} bg-white/[0.04] border-white/10 text-slate-300 hover:text-white hover:border-cyan-300/30 disabled:opacity-30 disabled:cursor-not-allowed`}>›</button>
     </div>
   )
@@ -52,6 +52,7 @@ export const SearchHome = ({
   filtrados, paginados, paginaActual, setPaginaActual, totalPaginas,
   totalCursos, cargandoCursos,
   misCursosIds, toggleFavorito,
+  notasGlobales,
   onCalcular,
   isAdmin, onAddCurso, onEditarCurso,
   isOwner, onGestionarAdmins, onVerHistorial,
@@ -87,6 +88,7 @@ export const SearchHome = ({
             type="text"
             placeholder="Busca tu curso o código (ej. Base de Datos, CS2041)…"
             value={busqueda}
+            aria-label="Buscar curso por nombre o código"
             onChange={(e) => setBusqueda(e.target.value)}
             className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[#0c0824] border border-white/10 text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-300/60 transition-colors font-medium text-base"
           />
@@ -109,6 +111,7 @@ export const SearchHome = ({
           {(hayFavoritos || verMisCursos) && (
             <button
               onClick={() => setVerMisCursos(!verMisCursos)}
+              aria-pressed={verMisCursos}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[2px] border transition-all cursor-pointer active:scale-95 ${
                 verMisCursos
                   ? 'bg-amber-300/15 text-amber-200 border-amber-300/40'
@@ -140,7 +143,7 @@ export const SearchHome = ({
 
         {/* Filtros */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-3">
-          <button onClick={() => setSoloCandado(!soloCandado)} className={pill(soloCandado)}>🔒 Solo candado</button>
+          <button onClick={() => setSoloCandado(!soloCandado)} aria-pressed={soloCandado} className={pill(soloCandado)}>🔒 Solo candado</button>
         </div>
       </div>
 
@@ -157,6 +160,7 @@ export const SearchHome = ({
             <CourseGrid
               cursos={paginados}
               misCursosIds={misCursosIds}
+              notasGlobales={notasGlobales}
               onCalcular={onCalcular}
               onToggleFav={toggleFavorito}
               verMisCursos={verMisCursos}
