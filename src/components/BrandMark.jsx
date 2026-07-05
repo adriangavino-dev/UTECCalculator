@@ -11,10 +11,8 @@ export const BrandMark = ({ size = 'md', float = false }) => {
         width: dims,
         height: dims,
         borderRadius: radii,
-        background:
-          'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(20,184,166,0.15), rgba(14,165,233,0.15))',
+        background: 'rgba(34,211,238,0.12)',
         border: '1px solid rgba(103,232,249,0.30)',
-        boxShadow: '0 0 45px -5px rgba(56,189,248,0.7)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

@@ -52,18 +52,16 @@ export const HistorialModal = ({ isOpen, onClose }) => {
       className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-4 z-[60] animate-fade-in"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="relative w-full max-w-lg max-h-[88vh] p-[1.5px] rounded-[34px] bg-gradient-to-br from-cyan-400/60 via-teal-400/40 to-sky-500/60 shadow-[0_25px_80px_-20px_rgba(56,189,248,0.4)]">
-        <div className="relative w-full h-full max-h-[calc(88vh-3px)] flex flex-col bg-[#0c0824]/95 backdrop-blur-2xl rounded-[33px] overflow-hidden">
-
-          <div className="absolute -top-32 -right-24 w-80 h-80 bg-cyan-400/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="relative w-full max-w-lg max-h-[88vh] rounded-[34px] border border-white/10 shadow-2xl shadow-black/50">
+        <div className="relative w-full h-full max-h-[calc(88vh-3px)] flex flex-col bg-[#0c0824] rounded-[33px] overflow-hidden">
 
           <div className="relative z-10 flex items-center justify-between gap-4 px-6 md:px-8 pt-6 pb-4 border-b border-white/[0.08]">
             <div>
               <p className="text-[10px] uppercase tracking-[3px] text-cyan-300 font-bold mb-1 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
                 Últimos 50 cambios
               </p>
-              <h3 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold tracking-tight text-slate-100">
                 Historial de cursos
               </h3>
             </div>

@@ -8,7 +8,7 @@ import { CSS } from '@dnd-kit/utilities'
 
 const uid = () => (crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`)
 const nuevaSubnota = () => ({ key: uid(), nombre: '', porcentaje: '' })
-const nuevoComponente = () => ({ key: uid(), nombre: '', porcentaje: '', tieneSubnotas: false, subNotas: [] })
+const nuevoComponente = () => ({ key: uid(), nombre: '', porcentaje: '', tieneSubnotas: false, subNotas: [], permiteDirecta: false })
 const nuevaParte = (nombre) => ({ key: uid(), nombre, componentes: [nuevoComponente()] })
 
 const EPSILON = 0.01
@@ -33,7 +33,7 @@ const repartir = (items) => {
 const compAdd = (arr) => [...arr, nuevoComponente()]
 const compRemove = (arr, key) => arr.filter((c) => c.key !== key)
 const compUpdate = (arr, key, ch) => arr.map((c) => (c.key === key ? { ...c, ...ch } : c))
-const compToggleSub = (arr, key, v) => compUpdate(arr, key, { tieneSubnotas: v, subNotas: v ? [nuevaSubnota()] : [] })
+const compToggleSub = (arr, key, v) => compUpdate(arr, key, { tieneSubnotas: v, subNotas: v ? [nuevaSubnota()] : [], ...(v ? {} : { permiteDirecta: false }) })
 const subAdd = (arr, ck) => arr.map((c) => (c.key === ck ? { ...c, subNotas: [...c.subNotas, nuevaSubnota()] } : c))
 const subUpdate = (arr, ck, sk, ch) => arr.map((c) => (c.key === ck ? { ...c, subNotas: c.subNotas.map((s) => (s.key === sk ? { ...s, ...ch } : s)) } : c))
 const subRemove = (arr, ck, sk) => arr.map((c) => (c.key === ck ? { ...c, subNotas: c.subNotas.filter((s) => s.key !== sk) } : c))
@@ -135,10 +135,18 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
               </button>
             </div>
 
-            <label className="flex items-center gap-2 mt-3 cursor-pointer w-fit">
-              <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-cyan-400 w-3.5 h-3.5" />
-              <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-slate-400">Tiene subnotas</span>
-            </label>
+            <div className="flex items-center gap-4 mt-3 flex-wrap">
+              <label className="flex items-center gap-2 cursor-pointer w-fit">
+                <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-cyan-400 w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-slate-400">Tiene subnotas</span>
+              </label>
+              {comp.tieneSubnotas && (
+                <label className="flex items-center gap-2 cursor-pointer w-fit" title="Muestra un cuadro opcional para ingresar la nota completa de esta evaluación sin llenar las subnotas">
+                  <input type="checkbox" checked={!!comp.permiteDirecta} onChange={(e) => update(compUpdate(componentes, comp.key, { permiteDirecta: e.target.checked }))} className="accent-teal-400 w-3.5 h-3.5" />
+                  <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300/80">Permitir nota completa</span>
+                </label>
+              )}
+            </div>
 
             {comp.tieneSubnotas && (
               <div className="mt-3 pl-3 border-l-2 border-teal-300/20 space-y-2">
@@ -209,6 +217,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
             return {
               key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso * factor), tieneSubnotas: true,
               subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
+              permiteDirecta: !!cfg.directa,
             }
           })
           return { key: uid(), nombre: parte.nombre, componentes: comps }
@@ -221,6 +230,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
           return {
             key: uid(), nombre: nom, porcentaje: pesoAPct(cfg.peso), tieneSubnotas: true,
             subNotas: Object.entries(cfg.subNotas).map(([sn, sp]) => ({ key: uid(), nombre: sn, porcentaje: pesoAPct(sp) })),
+            permiteDirecta: !!cfg.directa,
           }
         }))
         setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
@@ -287,19 +297,17 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
   return (
     <div className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-4 z-[60] animate-fade-in"
       onClick={(e) => { if (e.target === e.currentTarget) cerrar() }}>
-      <div className="relative w-full max-w-2xl max-h-[92vh] p-[1.5px] rounded-[34px] bg-gradient-to-br from-cyan-400/60 via-teal-400/40 to-sky-500/60 shadow-[0_25px_80px_-20px_rgba(56,189,248,0.4)]">
-        <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-[#0c0824]/95 backdrop-blur-2xl rounded-[33px] overflow-hidden">
-
-          <div className="absolute -top-32 -right-24 w-80 h-80 bg-cyan-400/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="relative w-full max-w-2xl max-h-[92vh] rounded-[34px] border border-white/10 shadow-2xl shadow-black/50">
+        <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-[#0c0824] rounded-[33px] overflow-hidden">
 
           {/* Header */}
           <div className="relative z-10 flex items-center justify-between gap-4 px-6 md:px-8 pt-6 pb-4 border-b border-white/[0.08]">
             <div>
               <p className="text-[10px] uppercase tracking-[3px] text-cyan-300 font-bold mb-1 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
                 {esEdicion ? 'Editar curso' : 'Nuevo curso'}
               </p>
-              <h3 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold tracking-tight text-slate-100">
                 {esEdicion ? cursoEditar.id : 'Agregar curso'}
               </h3>
             </div>
@@ -335,7 +343,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
                 <span className="text-[10px] text-slate-400 font-medium">Dos partes (ej. Teoría/Lab); cada una debe llegar a 10.5</span>
               </div>
               <button onClick={() => setCandado((v) => !v)}
-                className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${candado ? 'bg-gradient-to-r from-cyan-300 to-teal-300' : 'bg-white/10'}`} aria-label="Activar candado">
+                className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${candado ? 'bg-cyan-300' : 'bg-white/10'}`} aria-label="Activar candado">
                 <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${candado ? 'left-[26px]' : 'left-0.5'}`}></span>
               </button>
             </div>
@@ -345,7 +353,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] uppercase tracking-[2px] text-teal-300 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300 shadow-[0_0_8px_rgba(20,184,166,0.9)]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300"></span>
                     Sistema de evaluación
                   </span>
                   <span className={`text-[11px] font-black ${normalOk ? 'text-teal-300' : 'text-amber-300'}`}>
@@ -361,7 +369,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-[2px] text-teal-300 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300 shadow-[0_0_8px_rgba(20,184,166,0.9)]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300"></span>
                     Partes (los % son sobre el total del curso)
                   </span>
                   <span className={`text-[11px] font-black ${candadoTotalOk ? 'text-teal-300' : 'text-amber-300'}`}>
@@ -418,7 +426,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
             <div className="flex gap-2">
               <button onClick={cerrar} className="px-5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer">Cancelar</button>
               <button onClick={handleGuardar} disabled={!puedeGuardar}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] hover:shadow-[0_10px_30px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none">
+                className="px-6 py-2.5 rounded-xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                 {guardando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Guardar curso'}
               </button>
             </div>

@@ -109,7 +109,7 @@ export default function App() {
       {/* Botón flotante de donación */}
       <button
         onClick={() => setDonarAbierto(true)}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] shadow-[0_10px_35px_-8px_rgba(56,189,248,0.7)] hover:shadow-[0_12px_45px_-8px_rgba(56,189,248,0.9)] hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
         aria-label="Donar"
       >
         <span className="text-sm leading-none">♥</span>

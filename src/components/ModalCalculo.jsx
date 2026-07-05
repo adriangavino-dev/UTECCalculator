@@ -59,7 +59,7 @@ export const ModalCalculo = ({
           return (
             <div
               key={key}
-              className="group flex items-center justify-between gap-3 md:gap-4 bg-white/[0.03] hover:bg-white/[0.06] p-4 md:p-5 rounded-2xl border border-white/10 hover:border-cyan-300/40 hover:shadow-[0_0_25px_-10px_rgba(34,211,238,0.5)] transition-all"
+              className="group flex items-center justify-between gap-3 md:gap-4 bg-white/[0.03] hover:bg-white/[0.05] p-4 md:p-5 rounded-2xl border border-white/10 hover:border-cyan-300/30 transition-colors"
             >
               <div className="flex flex-col min-w-0">
                 <span className="font-bold text-slate-100 text-sm uppercase tracking-[2px] group-hover:text-cyan-100 transition-colors">
@@ -76,53 +76,86 @@ export const ModalCalculo = ({
                 min="0"
                 max="20"
                 value={notasDelCurso[`${prefijo}${key}`] || ''}
-                className="w-20 p-2.5 bg-black/50 border border-cyan-300/20 rounded-xl text-center font-bold text-lg text-cyan-200 outline-none focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 focus:shadow-[0_0_15px_-3px_rgba(34,211,238,0.6)] transition-all placeholder:text-slate-700"
+                className="w-20 p-2.5 bg-black/50 border border-cyan-300/20 rounded-xl text-center font-bold text-lg text-cyan-200 outline-none focus:border-cyan-300/60 transition-colors placeholder:text-slate-700"
                 onChange={(e) => actualizarNota(curso.id, `${prefijo}${key}`, e.target.value)}
               />
             </div>
           )
         }
 
+        // Evaluación con subnotas; puede permitir nota directa (config.directa)
+        const llaveDirecta = `${prefijo}${key}__directa`
+        const notaDirecta = config.directa ? (notasDelCurso[llaveDirecta] ?? '') : ''
+        const bloqueado = notaDirecta !== ''
+
         return (
           <div
             key={key}
-            className="bg-white/[0.03] rounded-2xl p-4 md:p-5 border border-white/10 md:col-span-2 relative overflow-hidden"
+            className="bg-white/[0.03] rounded-2xl p-4 md:p-5 border border-white/10 md:col-span-2"
           >
-            <div className="absolute -top-16 -right-16 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="relative">
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-bold text-teal-200 text-sm uppercase tracking-[2px] flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-300 shadow-[0_0_8px_rgba(20,184,166,0.9)]"></span>
-                  {key}
-                </span>
-                <span className="bg-gradient-to-r from-cyan-300/15 to-teal-300/15 text-teal-200 text-[10px] px-2.5 py-1 rounded-md font-bold border border-teal-300/25 uppercase tracking-[2px]">
-                  {Math.round(config.peso * 100)}%
-                </span>
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-bold text-teal-200 text-sm uppercase tracking-[2px] flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-300"></span>
+                {key}
+              </span>
+              <span className="bg-teal-300/10 text-teal-200 text-[10px] px-2.5 py-1 rounded-md font-bold border border-teal-300/25 uppercase tracking-[2px]">
+                {Math.round(config.peso * 100)}%
+              </span>
+            </div>
+
+            {config.directa && (
+              <div
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl border mb-3 transition-colors ${
+                  bloqueado ? 'bg-teal-300/[0.07] border-teal-300/35' : 'bg-black/40 border-white/[0.08]'
+                }`}
+              >
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] text-slate-200 font-bold uppercase tracking-wider">
+                    Nota completa de {key} <span className="text-slate-500 normal-case tracking-normal font-semibold">(opcional)</span>
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    {bloqueado
+                      ? 'Subnotas bloqueadas — borra esta nota para editarlas'
+                      : 'Si ya la sabes, ponla aquí y omite las subnotas'}
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  placeholder="—"
+                  step="0.1"
+                  min="0"
+                  max="20"
+                  value={notaDirecta}
+                  className="w-16 p-2 bg-black/60 border border-teal-300/25 rounded-lg text-center font-bold text-base text-teal-100 outline-none focus:border-teal-300/60 transition-colors placeholder:text-slate-700 shrink-0"
+                  onChange={(e) => actualizarNota(curso.id, llaveDirecta, e.target.value)}
+                />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {Object.keys(config.subNotas).map((subKey) => (
-                  <div
-                    key={subKey}
-                    className="flex items-center justify-between gap-3 bg-black/40 px-3.5 py-2.5 rounded-xl border border-white/[0.06] hover:border-teal-300/30 transition-colors"
-                  >
-                    <span className="text-[11px] text-slate-300 font-semibold uppercase tracking-wider truncate">
-                      {subKey}
-                    </span>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      step="0.1"
-                      min="0"
-                      max="20"
-                      value={notasDelCurso[`${prefijo}${key}_${subKey}`] || ''}
-                      className="w-14 p-1.5 bg-black/60 border border-teal-300/20 rounded-lg text-center font-bold text-sm text-teal-100 outline-none focus:border-teal-300/60 focus:shadow-[0_0_12px_-3px_rgba(20,184,166,0.6)] placeholder:text-slate-700 shrink-0"
-                      onChange={(e) =>
-                        actualizarNota(curso.id, `${prefijo}${key}_${subKey}`, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
+            )}
+
+            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 transition-opacity ${bloqueado ? 'opacity-40' : ''}`}>
+              {Object.keys(config.subNotas).map((subKey) => (
+                <div
+                  key={subKey}
+                  className="flex items-center justify-between gap-3 bg-black/40 px-3.5 py-2.5 rounded-xl border border-white/[0.06] hover:border-teal-300/30 transition-colors"
+                >
+                  <span className="text-[11px] text-slate-300 font-semibold uppercase tracking-wider truncate">
+                    {subKey}
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    step="0.1"
+                    min="0"
+                    max="20"
+                    disabled={bloqueado}
+                    value={notasDelCurso[`${prefijo}${key}_${subKey}`] || ''}
+                    className="w-14 p-1.5 bg-black/60 border border-teal-300/20 rounded-lg text-center font-bold text-sm text-teal-100 outline-none focus:border-teal-300/60 placeholder:text-slate-700 shrink-0 disabled:cursor-not-allowed"
+                    onChange={(e) =>
+                      actualizarNota(curso.id, `${prefijo}${key}_${subKey}`, e.target.value)
+                    }
+                  />
+                </div>
+              ))}
             </div>
           </div>
         )
@@ -130,10 +163,6 @@ export const ModalCalculo = ({
     </div>
   )
 
-  const veredictoColor = (aprobado) =>
-    aprobado
-      ? { grad: 'from-cyan-300 via-teal-300 to-sky-300', glow: 'rgba(34,211,238,0.6)' }
-      : { grad: 'from-rose-400 via-pink-400 to-rose-300', glow: 'rgba(244,114,182,0.6)' }
 
   return (
     <div
@@ -142,20 +171,17 @@ export const ModalCalculo = ({
         if (e.target === e.currentTarget) onCerrar()
       }}
     >
-      <div className="relative w-full max-w-md md:max-w-4xl max-h-[90vh] p-[1.5px] rounded-[28px] md:rounded-[34px] bg-gradient-to-br from-cyan-400/60 via-teal-400/40 to-sky-500/60 shadow-[0_25px_80px_-20px_rgba(56,189,248,0.4)]">
-        <div className="relative w-full h-full max-h-[calc(90vh-3px)] flex flex-col bg-[#0c0824]/95 backdrop-blur-2xl rounded-[27px] md:rounded-[33px] overflow-hidden">
-
-          <div className="absolute -top-32 -right-24 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -bottom-32 -left-24 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="relative w-full max-w-md md:max-w-4xl max-h-[90vh] rounded-[28px] md:rounded-[34px] border border-white/10 shadow-2xl shadow-black/50">
+        <div className="relative w-full h-full max-h-[calc(90vh-3px)] flex flex-col bg-[#0c0824] rounded-[27px] md:rounded-[33px] overflow-hidden">
 
           {/* Header */}
           <div className="relative z-10 flex items-start justify-between gap-3 px-5 md:px-10 pt-5 md:pt-7 pb-4 md:pb-5 border-b border-white/[0.08]">
             <div className="flex-1 min-w-0">
               <p className="text-[10px] uppercase tracking-[3px] text-cyan-300 font-bold mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
                 {curso.id} · Configuración
               </p>
-              <h3 className="text-xl md:text-2xl font-bold tracking-tight leading-tight bg-gradient-to-r from-white via-cyan-100 to-teal-100 bg-clip-text text-transparent">
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight leading-tight text-slate-100">
                 {curso.nombre}
               </h3>
               {esCandado && (
@@ -180,7 +206,7 @@ export const ModalCalculo = ({
               <button
                 type="button"
                 onClick={() => limpiarNotasCurso(curso.id)}
-                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/30 text-rose-300 hover:shadow-[0_0_18px_-3px_rgba(244,114,182,0.7)] transition-all active:scale-90 cursor-pointer group"
+                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-300 transition-colors active:scale-90 cursor-pointer group"
                 title="Limpiar todas las notas"
                 aria-label="Limpiar notas"
               >
@@ -213,7 +239,7 @@ export const ModalCalculo = ({
                     <div key={pIdx} className="relative">
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-bold text-cyan-100 text-sm uppercase tracking-[2px] flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.9)]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
                           {parte.nombre}
                           <span className="text-cyan-300/60 text-[10px]">· {Math.round(pesoDeParte(parte) * 100)}%</span>
                         </span>
@@ -241,41 +267,33 @@ export const ModalCalculo = ({
 
           {/* Footer */}
           <div className="relative z-10 px-4 md:px-10 py-4 md:py-5 border-t border-white/[0.08] bg-black/20">
-            {resultado !== null &&
-              (() => {
-                const { grad, glow } = veredictoColor(resultado.aprobado)
-                return (
-                  <div className="mb-4 animate-fade-in">
-                    <div
-                      className={`relative bg-gradient-to-br ${grad} p-5 rounded-2xl text-center overflow-hidden`}
-                      style={{ boxShadow: `0 15px 50px -15px ${glow}` }}
-                    >
-                      <div className="absolute inset-0 bg-[#0a0420]/15 pointer-events-none"></div>
-                      <div className="relative">
-                        <p className="text-[#0a0420]/80 text-[10px] font-black uppercase tracking-[3px] mb-1">
-                          Promedio Final · {resultado.aprobado ? 'Aprobado ✓' : 'Desaprobado ✕'}
-                        </p>
-                        <p className="text-5xl md:text-6xl font-black text-[#0a0420] tracking-tight">
-                          {resultado.final}
-                        </p>
-                        {resultado.candado && !resultado.aprobado && (
-                          <p className="text-[#0a0420]/80 text-[10px] font-bold uppercase tracking-[2px] mt-2">
-                            {resultado.partes.some((p) => !p.aprobada)
-                              ? '🔒 Jalas por candado: una parte no llega a 10.5'
-                              : ''}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })()}
+            {resultado !== null && (
+              <div className="mb-4 animate-fade-in">
+                <div
+                  className={`p-5 rounded-2xl text-center ${
+                    resultado.aprobado ? 'bg-teal-300' : 'bg-rose-400'
+                  }`}
+                >
+                  <p className="text-[#0a0420]/70 text-[10px] font-black uppercase tracking-[3px] mb-1">
+                    Promedio Final · {resultado.aprobado ? 'Aprobado ✓' : 'Desaprobado ✕'}
+                  </p>
+                  <p className="text-5xl md:text-6xl font-black text-[#0a0420] tracking-tight">
+                    {resultado.final}
+                  </p>
+                  {resultado.candado && !resultado.aprobado && resultado.partes.some((p) => !p.aprobada) && (
+                    <p className="text-[#0a0420]/70 text-[10px] font-bold uppercase tracking-[2px] mt-2">
+                      🔒 Jalas por candado: una parte no llega a 10.5
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {necesario !== null && (
               <div className="mb-4 animate-fade-in">
                 <div className="relative bg-[#0c0824]/80 border border-sky-300/30 p-4 rounded-2xl">
                   <p className="text-sky-200 text-[10px] font-black uppercase tracking-[3px] mb-2 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sky-300 shadow-[0_0_8px_rgba(56,189,248,0.9)]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-300"></span>
                     ¿Cuánto necesito para aprobar (10.5)?
                   </p>
                   {necesario.candado ? (
@@ -300,9 +318,9 @@ export const ModalCalculo = ({
               <button
                 type="button"
                 onClick={onCalcular}
-                className="relative w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-300 via-teal-300 to-sky-300 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] hover:shadow-[0_10px_40px_-10px_rgba(56,189,248,0.8)] hover:-translate-y-0.5 active:scale-[0.98] transition-all cursor-pointer overflow-hidden"
+                className="relative w-full py-3.5 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-xs uppercase tracking-[2.5px] active:scale-[0.98] transition-colors cursor-pointer"
               >
-                ◢ Calcular Promedio ◣
+                Calcular Promedio
               </button>
               <div className="flex gap-2.5">
                 <button

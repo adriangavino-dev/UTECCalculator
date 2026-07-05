@@ -48,25 +48,11 @@ body {
   padding: 0;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(34, 211, 238, 0.18), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(20, 184, 166, 0.18), transparent 60%),
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(56, 189, 248, 0.20), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(34, 211, 238, 0.06), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(20, 184, 166, 0.06), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(56, 189, 248, 0.07), transparent 60%),
     #07061a;
   background-attachment: fixed;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
-  background-size: 56px 56px;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black, transparent 80%);
 }
 
 #root {
@@ -87,11 +73,11 @@ body::before {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #22d3ee, #38bdf8);
+  background: rgba(34, 211, 238, 0.35);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #67e8f9, #7dd3fc);
+  background: rgba(34, 211, 238, 0.6);
 }
 
 /* Animations */
@@ -109,14 +95,6 @@ body::before {
 }
 .animate-fade-in {
   animation: fade-in-up 0.4s ease-out;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 30px -5px rgba(34, 211, 238, 0.5), 0 0 60px -20px rgba(20, 184, 166, 0.4); }
-  50% { box-shadow: 0 0 45px -5px rgba(34, 211, 238, 0.7), 0 0 80px -20px rgba(20, 184, 166, 0.6); }
-}
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
 }
 
 /* Number input — hide spinners */

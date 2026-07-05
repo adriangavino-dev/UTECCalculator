@@ -15,6 +15,8 @@ export const useCursoAdmin = () => {
           subNotas[sub.nombre.trim()] = (parseFloat(sub.porcentaje) || 0) / 100
         }
         sistema[nombreComp] = { peso: (parseFloat(comp.porcentaje) || 0) / 100, subNotas }
+        // Cuadro opcional de nota completa (configurable por evaluación)
+        if (comp.permiteDirecta) sistema[nombreComp].directa = true
       } else {
         sistema[nombreComp] = (parseFloat(comp.porcentaje) || 0) / 100
       }

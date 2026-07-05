@@ -77,6 +77,14 @@ export const useCalculadora = () => {
         const v = redondear(parseFloat(notasDelCurso[`${prefijo}${key}`]) || 0)
         total += v * config
       } else if (config && config.subNotas) {
+        // Si la evaluación permite nota directa y el usuario la puso,
+        // se usa esa nota y se ignoran las subnotas
+        const directaRaw = config.directa ? notasDelCurso[`${prefijo}${key}__directa`] : undefined
+        const directa = parseFloat(directaRaw)
+        if (directaRaw !== undefined && directaRaw !== '' && !isNaN(directa)) {
+          total += redondear(directa) * config.peso
+          return
+        }
         let acc = 0
         Object.keys(config.subNotas).forEach(sk => {
           acc += (parseFloat(notasDelCurso[`${prefijo}${key}_${sk}`]) || 0) * config.subNotas[sk]
@@ -144,6 +152,13 @@ export const useCalculadora = () => {
           else constante += redondear(val) * config
         } else if (config && config.subNotas) {
           pesoTotal += config.peso
+          // Nota directa: la evaluación cuenta como completa con esa nota
+          const directaRaw = config.directa ? notasDelCurso[`${prefijo}${key}__directa`] : undefined
+          const directa = parseFloat(directaRaw)
+          if (directaRaw !== undefined && directaRaw !== '' && !isNaN(directa)) {
+            constante += redondear(directa) * config.peso
+            return
+          }
           let filledSub = 0, emptySubW = 0, algunoVacio = false
           Object.keys(config.subNotas).forEach(sk => {
             const raw = notasDelCurso[`${prefijo}${key}_${sk}`]

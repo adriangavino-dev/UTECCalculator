@@ -35,16 +35,16 @@ export const ToastProvider = ({ children }) => {
 }
 
 const estilos = {
-  success: { border: 'border-teal-300/40', icon: '✓', iconBg: 'from-cyan-300 to-teal-300', text: 'text-teal-100' },
-  error: { border: 'border-rose-400/40', icon: '✕', iconBg: 'from-rose-400 to-pink-400', text: 'text-rose-100' },
-  info: { border: 'border-sky-300/40', icon: 'ℹ', iconBg: 'from-sky-300 to-cyan-300', text: 'text-sky-100' },
+  success: { border: 'border-teal-300/40', icon: '✓', iconBg: 'bg-teal-300', text: 'text-teal-100' },
+  error: { border: 'border-rose-400/40', icon: '✕', iconBg: 'bg-rose-400', text: 'text-rose-100' },
+  info: { border: 'border-sky-300/40', icon: 'ℹ', iconBg: 'bg-sky-300', text: 'text-sky-100' },
 }
 
 const Toast = ({ mensaje, tipo, onClose }) => {
   const s = estilos[tipo] || estilos.success
   return (
-    <div className={`pointer-events-auto flex items-center gap-3 pl-3 pr-4 py-3 rounded-2xl bg-[#0c0824]/95 backdrop-blur-xl border ${s.border} shadow-[0_15px_40px_-15px_rgba(0,0,0,0.7)] animate-fade-in min-w-[240px] max-w-sm`}>
-      <span className={`w-7 h-7 shrink-0 rounded-lg bg-gradient-to-br ${s.iconBg} text-[#0a0420] font-black flex items-center justify-center text-sm`}>
+    <div className={`pointer-events-auto flex items-center gap-3 pl-3 pr-4 py-3 rounded-2xl bg-[#0c0824] border ${s.border} shadow-lg shadow-black/40 animate-fade-in min-w-[240px] max-w-sm`}>
+      <span className={`w-7 h-7 shrink-0 rounded-lg ${s.iconBg} text-[#0a0420] font-black flex items-center justify-center text-sm`}>
         {s.icon}
       </span>
       <span className={`text-sm font-semibold ${s.text} flex-1`}>{mensaje}</span>

@@ -15,7 +15,7 @@ export const LoginButton = ({ user, isAdmin, loading, signInWithGoogle, signOut 
       <button
         type="button"
         onClick={signInWithGoogle}
-        className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyan-300/50 hover:bg-white/[0.07] hover:shadow-[0_0_18px_-3px_rgba(34,211,238,0.5)] transition-all active:scale-95 cursor-pointer"
+        className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyan-300/50 hover:bg-white/[0.07] transition-colors active:scale-95 cursor-pointer"
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -48,7 +48,7 @@ export const LoginButton = ({ user, isAdmin, loading, signInWithGoogle, signOut 
             className="w-6 h-6 rounded-full object-cover"
           />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-300 to-teal-300 flex items-center justify-center text-[#0a0420] text-xs font-black">
+          <div className="w-6 h-6 rounded-full bg-cyan-300 flex items-center justify-center text-[#0a0420] text-xs font-black">
             {inicial}
           </div>
         )}
@@ -56,7 +56,7 @@ export const LoginButton = ({ user, isAdmin, loading, signInWithGoogle, signOut 
           {nombre}
         </span>
         {isAdmin && (
-          <span className="text-[8px] uppercase tracking-[1.5px] font-black px-1.5 py-0.5 rounded bg-gradient-to-r from-cyan-300/20 to-teal-300/20 text-cyan-200 border border-cyan-300/30">
+          <span className="text-[8px] uppercase tracking-[1.5px] font-black px-1.5 py-0.5 rounded bg-cyan-300/15 text-cyan-200 border border-cyan-300/30">
             Admin
           </span>
         )}
