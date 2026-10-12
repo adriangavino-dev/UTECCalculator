@@ -121,17 +121,15 @@ export default function App() {
 
       <DonateModal isOpen={donarAbierto} onClose={() => setDonarAbierto(false)} />
 
-      {/* Botón flotante para solicitar agregar/modificar un curso (solo no admins) */}
-      {!auth.isAdmin && (
-        <button
-          onClick={() => setSolicitarAbierto(true)}
-          className="fixed bottom-5 left-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-[#0c0824] hover:bg-[#161036] border border-cyan-300/40 text-cyan-200 font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
-          aria-label="Solicitar agregar o modificar un curso"
-        >
-          <span className="text-sm leading-none">+</span>
-          Solicitar curso
-        </button>
-      )}
+      {/* Botón flotante para solicitar agregar/modificar un curso */}
+      <button
+        onClick={() => setSolicitarAbierto(true)}
+        className="fixed bottom-5 left-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-[#0c0824] hover:bg-[#161036] border border-cyan-300/40 text-cyan-200 font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
+        aria-label="Solicitar agregar o modificar un curso"
+      >
+        <span className="text-sm leading-none">+</span>
+        Solicitar curso
+      </button>
 
       <SolicitarCursoModal
         isOpen={solicitarAbierto}
