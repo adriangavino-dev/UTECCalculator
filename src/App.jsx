@@ -8,6 +8,7 @@ import { CursoFormModal } from './components/CursoFormModal'
 import { AdminsModal } from './components/AdminsModal'
 import { HistorialModal } from './components/HistorialModal'
 import { DonateModal } from './components/DonateModal'
+import { SolicitarCursoModal } from './components/SolicitarCursoModal'
 import { ToastProvider } from './components/Toast'
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
   const [adminsAbierto, setAdminsAbierto] = useState(false)
   const [historialAbierto, setHistorialAbierto] = useState(false)
   const [donarAbierto, setDonarAbierto] = useState(false)
+  const [solicitarAbierto, setSolicitarAbierto] = useState(false)
   const yaAbrioCompartido = useRef(false)
 
   const abrirAgregar = () => { setCursoEditar(null); setFormAbierto(true) }
@@ -118,6 +120,24 @@ export default function App() {
       </button>
 
       <DonateModal isOpen={donarAbierto} onClose={() => setDonarAbierto(false)} />
+
+      {/* Botón flotante para solicitar agregar/modificar un curso (solo no admins) */}
+      {!auth.isAdmin && (
+        <button
+          onClick={() => setSolicitarAbierto(true)}
+          className="fixed bottom-5 left-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-[#0c0824] hover:bg-[#161036] border border-cyan-300/40 text-cyan-200 font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
+          aria-label="Solicitar agregar o modificar un curso"
+        >
+          <span className="text-sm leading-none">+</span>
+          Solicitar curso
+        </button>
+      )}
+
+      <SolicitarCursoModal
+        isOpen={solicitarAbierto}
+        onClose={() => setSolicitarAbierto(false)}
+        cursos={cursos}
+      />
     </div>
     </ToastProvider>
   )
