@@ -3,7 +3,7 @@ import { useCalculadora } from './logic/useCalculadora'
 import { useAuth } from './logic/useAuth'
 import { ModalCalculo } from './components/ModalCalculo'
 import { SearchHome } from './components/SearchHome'
-import { LoginButton } from './components/LoginButton'
+import { TopBar, MobileNav } from './components/TopBar'
 import { CursoFormModal } from './components/CursoFormModal'
 import { AdminsModal } from './components/AdminsModal'
 import { HistorialModal } from './components/HistorialModal'
@@ -21,9 +21,8 @@ export default function App() {
     cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota,
     misCursosIds, toggleFavorito,
-    resultado, reset,
-    necesario, toggleNecesario, verNecesario,
-    limpiarNotasCurso,
+    reset, limpiarNotasCurso,
+    estados, ciclo,
   } = useCalculadora()
 
   const auth = useAuth()
@@ -32,12 +31,21 @@ export default function App() {
   const [adminsAbierto, setAdminsAbierto] = useState(false)
   const [historialAbierto, setHistorialAbierto] = useState(false)
   const [donarAbierto, setDonarAbierto] = useState(false)
-  const [solicitarAbierto, setSolicitarAbierto] = useState(false)
+  // null = cerrado; { tipo, curso } = abierto (con valores iniciales opcionales)
+  const [solicitud, setSolicitud] = useState(null)
   const yaAbrioCompartido = useRef(false)
 
   const abrirAgregar = () => { setCursoEditar(null); setFormAbierto(true) }
   const abrirEditar = (curso) => { setCursoEditar(curso); setFormAbierto(true) }
   const cerrarForm = () => { setFormAbierto(false); setCursoEditar(null) }
+
+  const irACursos = () => { setVerMisCursos(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const irAMiCiclo = () => {
+    setVerMisCursos(true)
+    document.getElementById('lista-cursos')?.scrollIntoView({ behavior: 'smooth' })
+  }
+  const abrirSolicitud = () => setSolicitud({})
+  const reportarCurso = (curso) => setSolicitud({ tipo: 'modificar', curso: `${curso.id} ${curso.nombre}` })
 
   useEffect(() => {
     if (cargandoCursos || yaAbrioCompartido.current) return
@@ -56,9 +64,13 @@ export default function App() {
     <ToastProvider>
     <div className="min-h-screen text-slate-100 font-['Quicksand'] antialiased selection:bg-teal-400/40 selection:text-white">
 
-      <div className="fixed top-5 right-5 z-50">
-        <LoginButton {...auth} />
-      </div>
+      <TopBar
+        auth={auth}
+        verMisCursos={verMisCursos}
+        onCursos={irACursos}
+        onMiCiclo={irAMiCiclo}
+        onSolicitar={abrirSolicitud}
+      />
 
       <SearchHome
         busqueda={busqueda}
@@ -76,8 +88,11 @@ export default function App() {
         cargandoCursos={cargandoCursos}
         misCursosIds={misCursosIds}
         toggleFavorito={toggleFavorito}
-        notasGlobales={notasGlobales}
+        estados={estados}
+        ciclo={ciclo}
         onCalcular={setCursoSeleccionado}
+        onMiCiclo={irAMiCiclo}
+        onSolicitar={abrirSolicitud}
         isAdmin={auth.isAdmin}
         onAddCurso={abrirAgregar}
         onEditarCurso={abrirEditar}
@@ -86,15 +101,16 @@ export default function App() {
         onVerHistorial={() => setHistorialAbierto(true)}
       />
 
+      {/* key: el simulador se reinicia al cambiar de curso */}
       <ModalCalculo
+        key={cursoSeleccionado?.id}
         curso={cursoSeleccionado}
         notasGlobales={notasGlobales}
         actualizarNota={actualizarNota}
         limpiarNotasCurso={limpiarNotasCurso}
-        resultado={resultado}
-        necesario={necesario}
-        verNecesario={verNecesario}
-        onToggleNecesario={toggleNecesario}
+        esFavorito={!!cursoSeleccionado && misCursosIds.includes(cursoSeleccionado.id)}
+        onToggleFav={toggleFavorito}
+        onReportar={reportarCurso}
         onCerrar={reset}
       />
 
@@ -112,7 +128,7 @@ export default function App() {
       {/* Botón flotante de donación */}
       <button
         onClick={() => setDonarAbierto(true)}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
+        className="fixed bottom-[92px] md:bottom-5 right-4 md:right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
         aria-label="Donar"
       >
         <span className="text-sm leading-none">♥</span>
@@ -121,21 +137,21 @@ export default function App() {
 
       <DonateModal isOpen={donarAbierto} onClose={() => setDonarAbierto(false)} />
 
-      {/* Botón flotante para solicitar agregar/modificar un curso */}
-      <button
-        onClick={() => setSolicitarAbierto(true)}
-        className="fixed bottom-5 left-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-[#0c0824] hover:bg-[#161036] border border-cyan-300/40 text-cyan-200 font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
-        aria-label="Solicitar agregar o modificar un curso"
-      >
-        <span className="text-sm leading-none">+</span>
-        Solicitar curso
-      </button>
-
-      <SolicitarCursoModal
-        isOpen={solicitarAbierto}
-        onClose={() => setSolicitarAbierto(false)}
-        cursos={cursos}
+      <MobileNav
+        verMisCursos={verMisCursos}
+        onCursos={irACursos}
+        onMiCiclo={irAMiCiclo}
+        onSolicitar={abrirSolicitud}
       />
+
+      {solicitud && (
+        <SolicitarCursoModal
+          isOpen
+          inicial={solicitud}
+          onClose={() => setSolicitud(null)}
+          cursos={cursos}
+        />
+      )}
     </div>
     </ToastProvider>
   )

@@ -17,9 +17,9 @@ const armarMensaje = (tipo, curso, detalle) => {
   return lineas.join('\n')
 }
 
-export const SolicitarCursoModal = ({ isOpen, onClose, cursos = [] }) => {
-  const [tipo, setTipo] = useState('agregar')
-  const [curso, setCurso] = useState('')
+export const SolicitarCursoModal = ({ isOpen, onClose, cursos = [], inicial }) => {
+  const [tipo, setTipo] = useState(inicial?.tipo ?? 'agregar')
+  const [curso, setCurso] = useState(inicial?.curso ?? '')
   const [detalle, setDetalle] = useState('')
 
   if (!isOpen) return null

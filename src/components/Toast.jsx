@@ -25,8 +25,8 @@ export const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {/* bottom-20 para no tapar el botón flotante de Donar */}
-      <div className="fixed bottom-20 right-5 z-[80] flex flex-col gap-2 pointer-events-none">
+      {/* Encima del botón flotante de Donar (y de la barra inferior en móvil) */}
+      <div className="fixed bottom-[150px] md:bottom-20 right-4 md:right-5 z-[80] flex flex-col gap-2 pointer-events-none">
         {toasts.map((t) => (
           <Toast key={t.id} {...t} onClose={() => remove(t.id)} />
         ))}

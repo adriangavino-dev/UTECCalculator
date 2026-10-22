@@ -7,8 +7,8 @@ const redondear = (n) => Math.round(n)
 
 /* =====================================================================
    Funciones puras de cálculo — reutilizables fuera del hook
-   (CourseGrid las usa para el promedio en tarjetas y ModalCalculo
-   para el simulador "¿qué pasa si…?")
+   (CourseGrid las usa para las tarjetas y ModalCalculo para el
+   detalle del curso y el simulador "¿qué pasa si…?")
    ===================================================================== */
 
 const calcularSistemaSimple = (sistema, notasDelCurso, prefijo = '') => {
@@ -160,10 +160,117 @@ export const calcularNecesarioDe = (curso, notasDelCurso) => {
   return { candado: false, ...resolver(curso.sistema) }
 }
 
+// Nota con 1 decimal. Las notas se cortan hacia abajo (10.45 no debe verse
+// como 10.5 aprobado) y lo que "necesitas" se redondea hacia arriba.
+export const formatNota = (n, hacia = 'abajo') => {
+  const f = hacia === 'arriba' ? Math.ceil : Math.floor
+  return (f(Number(n) * 10 - (hacia === 'arriba' ? 1e-9 : -1e-9)) / 10).toFixed(1)
+}
+
+// Qué parte del curso ya está evaluada: peso rendido, puntos ganados (sobre 20)
+// y el promedio de lo rendido. También devuelve el detalle por evaluación.
+export const calcularProgreso = (curso, notasDelCurso) => {
+  const notas = notasDelCurso || {}
+  const lleno = (k) => notas[k] !== undefined && notas[k] !== '' && !isNaN(parseFloat(notas[k]))
+  const evaluaciones = []
+  let pesoTotal = 0, pesoEvaluado = 0, puntos = 0
+
+  const recorrer = (sistema, prefijo, factor, parte) => {
+    Object.keys(sistema).forEach(key => {
+      if (key === 'candado' || key === 'partes') return
+      const config = sistema[key]
+      if (typeof config === 'number') {
+        const peso = config * factor
+        pesoTotal += peso
+        const ok = lleno(`${prefijo}${key}`)
+        const aporte = ok ? redondear(parseFloat(notas[`${prefijo}${key}`])) * peso : 0
+        if (ok) { pesoEvaluado += peso; puntos += aporte }
+        evaluaciones.push({ key, parte, peso, estado: ok ? 'lleno' : 'vacio', aporte })
+      } else if (config && config.subNotas) {
+        const peso = config.peso * factor
+        pesoTotal += peso
+        if (config.directa && lleno(`${prefijo}${key}__directa`)) {
+          const aporte = redondear(parseFloat(notas[`${prefijo}${key}__directa`])) * peso
+          pesoEvaluado += peso; puntos += aporte
+          evaluaciones.push({ key, parte, peso, estado: 'lleno', aporte })
+          return
+        }
+        let acc = 0, wLleno = 0, todos = true
+        Object.keys(config.subNotas).forEach(sk => {
+          if (lleno(`${prefijo}${key}_${sk}`)) {
+            acc += parseFloat(notas[`${prefijo}${key}_${sk}`]) * config.subNotas[sk]
+            wLleno += config.subNotas[sk]
+          } else todos = false
+        })
+        const aporte = todos ? redondear(acc) * peso : acc * peso
+        pesoEvaluado += wLleno * peso; puntos += aporte
+        evaluaciones.push({ key, parte, peso, estado: todos ? 'lleno' : wLleno > 0 ? 'parcial' : 'vacio', aporte })
+      }
+    })
+  }
+
+  if (curso.sistema && curso.sistema.candado) {
+    curso.sistema.partes.forEach((parte, pIdx) => {
+      // Modelo viejo: la parte trae su peso y su sistema suma 1 por dentro
+      recorrer(parte.sistema, `P${pIdx}_`, parte.peso !== undefined ? parte.peso : 1, parte.nombre)
+    })
+  } else {
+    recorrer(curso.sistema, '', 1, null)
+  }
+
+  const falta = Math.max(0, pesoTotal - pesoEvaluado)
+  return {
+    evaluaciones,
+    pesoTotal,
+    pesoEvaluado,
+    fraccion: pesoTotal > 0 ? pesoEvaluado / pesoTotal : 0,
+    puntos,
+    maximo: puntos + falta * 20,
+    parcial: pesoEvaluado > 1e-9 ? puntos / pesoEvaluado : null,
+    completo: falta < 1e-9,
+  }
+}
+
+// Estado del curso para tarjetas, orden por urgencia y resumen del ciclo.
+// tipo: 'riesgo' | 'jalado' | 'ok' | 'aprobado' | 'vacio'
+export const estadoCurso = (curso, notasDelCurso) => {
+  const progreso = calcularProgreso(curso, notasDelCurso)
+  if (progreso.parcial === null) {
+    return { tipo: 'vacio', etiqueta: 'Sin notas', texto: 'Aún no pones notas', progreso, necesita: null }
+  }
+  if (progreso.completo) {
+    const res = calcularResultado(curso, notasDelCurso)
+    return res.aprobado
+      ? { tipo: 'aprobado', etiqueta: 'Aprobado', texto: `Nota final ${formatNota(res.final)}`, progreso, necesita: null }
+      : { tipo: 'jalado', etiqueta: 'Desaprobado', texto: `Nota final ${formatNota(res.final)}`, progreso, necesita: null }
+  }
+
+  const nec = calcularNecesarioDe(curso, notasDelCurso)
+  const necDe = (r) => (r.completo ? (r.notaActual >= MIN_APROBATORIO - 1e-9 ? -Infinity : Infinity) : r.necesario)
+  const necesita = nec.candado ? Math.max(...nec.partes.map(necDe)) : necDe(nec)
+
+  if (necesita > 20 + 1e-9) {
+    return { tipo: 'riesgo', etiqueta: 'Ya no alcanza', texto: 'Ya no llegas a 10.5', progreso, necesita }
+  }
+  if (necesita <= 1e-9) {
+    return { tipo: 'ok', etiqueta: 'Aprobando', texto: '¡Ya aprobaste, saques lo que saques!', progreso, necesita }
+  }
+  const enRiesgo = progreso.parcial < MIN_APROBATORIO - 1e-9
+  return {
+    tipo: enRiesgo ? 'riesgo' : 'ok',
+    etiqueta: enRiesgo ? 'En riesgo' : 'Aprobando',
+    texto: `Necesitas ${formatNota(necesita, 'arriba')} en lo que falta`,
+    progreso,
+    necesita,
+  }
+}
+
+// Orden por urgencia: primero lo que está en riesgo
+const RANGO = { riesgo: 0, jalado: 1, ok: 2, aprobado: 3, vacio: 4 }
+
 export const useCalculadora = () => {
   const [busqueda, setBusqueda] = useState("")
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null)
-  const [verNecesario, setVerNecesario] = useState(false)
   const [verMisCursos, setVerMisCursos] = useState(false)
   const [soloCandado, setSoloCandado] = useState(false)
   const [paginaActual, setPaginaActual] = useState(1)
@@ -203,15 +310,43 @@ export const useCalculadora = () => {
   // Reiniciar a la página 1 cuando cambian los filtros/búsqueda
   useEffect(() => { setPaginaActual(1) }, [busqueda, soloCandado, verMisCursos])
 
+  // Estado de cada curso (promedio, % evaluado, cuánto falta)
+  const estados = useMemo(() => {
+    const m = {}
+    cursos.forEach(c => { m[c.id] = estadoCurso(c, notasGlobales[c.id]) })
+    return m
+  }, [cursos, notasGlobales])
+
+  // "Mis cursos" = los marcados con ★ más los que ya tienen notas
+  const esMio = (c) => misCursosIds.includes(c.id) || estados[c.id]?.tipo !== 'vacio'
+
   const q = busqueda.trim().toLowerCase();
   let lista = cursos.filter(c => {
     const coincideBusqueda = q === '' ? true : (c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-    const estaEnMisCursos = misCursosIds.includes(c.id);
-    return verMisCursos ? (estaEnMisCursos && coincideBusqueda) : coincideBusqueda;
+    return verMisCursos ? (esMio(c) && coincideBusqueda) : coincideBusqueda;
   });
   if (soloCandado) lista = lista.filter(c => c.sistema && c.sistema.candado)
-  lista = [...lista].sort((a, b) => a.nombre.localeCompare(b.nombre))
+  const urgencia = (c) => {
+    const e = estados[c.id]
+    // Dentro de "en riesgo", primero el que más necesita
+    return RANGO[e.tipo] * 100 - (e.tipo === 'riesgo' ? Math.min(e.necesita ?? 21, 21) : 0)
+  }
+  lista = [...lista].sort((a, b) => urgencia(a) - urgencia(b) || a.nombre.localeCompare(b.nombre))
   const filtrados = lista
+
+  // Resumen "Mi ciclo"
+  const mios = cursos.filter(esMio)
+  const conNotas = mios.filter(c => estados[c.id].tipo !== 'vacio')
+  const ciclo = {
+    total: mios.length,
+    conNotas: conNotas.length,
+    promedio: conNotas.length
+      ? conNotas.reduce((acc, c) => acc + estados[c.id].progreso.parcial, 0) / conNotas.length
+      : null,
+    aprobando: conNotas.filter(c => ['ok', 'aprobado'].includes(estados[c.id].tipo)).length,
+    riesgo: conNotas.filter(c => ['riesgo', 'jalado'].includes(estados[c.id].tipo)).length,
+    sinNotas: mios.length - conNotas.length,
+  }
 
   // Paginación
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / PER_PAGE))
@@ -222,30 +357,16 @@ export const useCalculadora = () => {
   const actualizarNota = (cursoId, llaveNota, valor) => setNotasGlobales(prev => ({ ...prev, [cursoId]: { ...(prev[cursoId] || {}), [llaveNota]: valor } }));
   const limpiarNotasCurso = (cursoId) => setNotasGlobales(prev => ({ ...prev, [cursoId]: {} }));
 
-  // Cálculo en vivo: el promedio se recalcula solo al escribir
-  const notasDelCursoSel = (cursoSeleccionado && notasGlobales[cursoSeleccionado.id]) || {}
-  const resultado = useMemo(
-    () => (cursoSeleccionado && hayNotas(notasDelCursoSel) ? calcularResultado(cursoSeleccionado, notasDelCursoSel) : null),
-    [cursoSeleccionado, notasDelCursoSel],
-  )
-  const necesario = useMemo(
-    () => (cursoSeleccionado && verNecesario ? calcularNecesarioDe(cursoSeleccionado, notasDelCursoSel) : null),
-    [cursoSeleccionado, verNecesario, notasDelCursoSel],
-  )
-
-  const toggleNecesario = () => setVerNecesario(v => !v)
-
-  const abrirCurso = (curso) => { setCursoSeleccionado(curso); setVerNecesario(false) }
-  const reset = () => { setCursoSeleccionado(null); setVerNecesario(false) };
+  const reset = () => setCursoSeleccionado(null)
 
   return {
     busqueda, setBusqueda, verMisCursos, setVerMisCursos,
     soloCandado, setSoloCandado,
     filtrados, paginados, paginaActual: paginaSegura, setPaginaActual, totalPaginas, perPage: PER_PAGE,
-    cursoSeleccionado, setCursoSeleccionado: abrirCurso,
+    cursoSeleccionado, setCursoSeleccionado,
     notasGlobales, actualizarNota, misCursosIds, toggleFavorito,
-    resultado, reset, limpiarNotasCurso,
-    necesario, toggleNecesario, verNecesario,
+    reset, limpiarNotasCurso,
+    estados, ciclo,
     cursos, cargandoCursos, totalCursos: cursos.length
   }
 }
