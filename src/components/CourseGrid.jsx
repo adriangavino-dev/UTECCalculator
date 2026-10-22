@@ -51,7 +51,7 @@ export const CourseGrid = ({
         </div>
         <p className="text-slate-300 font-semibold text-sm">
           {verMisCursos
-            ? 'Aún no tienes cursos. Marca uno con ★ o pon tus notas en un curso.'
+            ? 'Aún no tienes cursos. Márcalos con ★ para agregarlos aquí.'
             : 'No se encontraron cursos.'}
         </p>
       </div>

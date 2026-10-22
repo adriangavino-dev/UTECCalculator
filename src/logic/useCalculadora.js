@@ -317,8 +317,8 @@ export const useCalculadora = () => {
     return m
   }, [cursos, notasGlobales])
 
-  // "Mis cursos" = los marcados con ★ más los que ya tienen notas
-  const esMio = (c) => misCursosIds.includes(c.id) || estados[c.id]?.tipo !== 'vacio'
+  // "Mis cursos" = solo los marcados con ★
+  const esMio = (c) => misCursosIds.includes(c.id)
 
   const q = busqueda.trim().toLowerCase();
   let lista = cursos.filter(c => {
@@ -334,7 +334,7 @@ export const useCalculadora = () => {
   lista = [...lista].sort((a, b) => urgencia(a) - urgencia(b) || a.nombre.localeCompare(b.nombre))
   const filtrados = lista
 
-  // Resumen "Mi ciclo"
+  // Resumen "Mi ciclo": solo con los cursos de "Mis cursos"
   const mios = cursos.filter(esMio)
   const conNotas = mios.filter(c => estados[c.id].tipo !== 'vacio')
   const ciclo = {
@@ -346,6 +346,8 @@ export const useCalculadora = () => {
     aprobando: conNotas.filter(c => ['ok', 'aprobado'].includes(estados[c.id].tipo)).length,
     riesgo: conNotas.filter(c => ['riesgo', 'jalado'].includes(estados[c.id].tipo)).length,
     sinNotas: mios.length - conNotas.length,
+    // ¿Algún curso (de mis cursos o no) tiene notas? → la lista se ordena por urgencia
+    algunoConNotas: cursos.some(c => estados[c.id].tipo !== 'vacio'),
   }
 
   // Paginación

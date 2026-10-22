@@ -53,7 +53,7 @@ const CicloCard = ({ ciclo, onMiCiclo }) => {
       <div className="flex flex-col gap-3 justify-center h-full">
         <span className="text-xs font-bold text-slate-400 tracking-[1.5px] uppercase">Mi ciclo</span>
         <p className="text-slate-300 text-sm font-semibold leading-relaxed">
-          Marca tus cursos con ★ o pon tus notas en uno, y aquí verás tu promedio del ciclo y qué cursos están en riesgo.
+          Marca tus cursos con ★ y aquí verás el promedio de tu ciclo y qué cursos están en riesgo.
         </p>
       </div>
     )
@@ -216,7 +216,7 @@ export const SearchHome = ({
                   : `${totalCursos} disponibles`}
             </span>
           </h2>
-          {ciclo.conNotas > 0 && (
+          {ciclo.algunoConNotas && (
             <span className="text-[13px] text-slate-400 font-semibold">
               Ordenado por: <span className="text-slate-100">los que más te urgen</span>
             </span>
