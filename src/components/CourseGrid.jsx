@@ -66,7 +66,8 @@ export const CourseGrid = ({
         const e = estados[curso.id]
         const tono = TONOS[e.tipo]
         const pct = Math.round(e.progreso.fraccion * 100)
-        const prom = e.progreso.parcial !== null ? formatNota(e.progreso.parcial) : '—'
+        // Nota acumulada sobre 20 (igual que el anillo del detalle)
+        const prom = e.progreso.parcial !== null ? formatNota(e.progreso.puntos) : '—'
 
         return (
           <div key={curso.id}>
@@ -144,7 +145,7 @@ export const CourseGrid = ({
                 <h3 className="text-[17px] font-bold text-slate-100 leading-snug min-w-0">{curso.nombre}</h3>
                 <div className="text-right shrink-0">
                   <div className={`text-[32px] leading-none font-bold tabular-nums ${tono.texto}`}>{prom}</div>
-                  <div className="text-[11px] font-bold text-slate-400 mt-1">promedio</div>
+                  <div className="text-[11px] font-bold text-slate-400 mt-1">acumulado</div>
                 </div>
               </div>
 

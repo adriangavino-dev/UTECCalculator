@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useToast } from './Toast'
 import {
-  calcularResultado, calcularNecesarioDe, calcularProgreso, notasSimuladas, formatNota,
+  calcularResultado, calcularNecesarioDe, calcularProgreso, notasSimuladas, estadoCurso, formatNota,
 } from '../logic/useCalculadora'
 
 const MIN_APROBATORIO = 10.5
@@ -87,9 +87,11 @@ export const ModalCalculo = ({
   progreso.evaluaciones.forEach((ev) => { aportes[`${ev.parte ?? ''}|${ev.key}`] = ev })
 
   // Número grande del anillo
-  const numero = progreso.completo && resultado ? Number(resultado.final) : progreso.parcial
-  const aprobandoAhora = progreso.completo && resultado ? resultado.aprobado : numero !== null && numero >= MIN_APROBATORIO - 1e-9
-  const tonoAnillo = numero === null ? 'text-slate-400' : aprobandoAhora ? 'text-teal-300' : 'text-rose-300'
+  // Número grande del anillo: la nota acumulada sobre 20 (lo que falta cuenta como 0)
+  const numero = !conNotas ? null : progreso.completo && resultado ? Number(resultado.final) : progreso.puntos
+  // El color depende de cómo vas (no del número, que al inicio siempre es bajo)
+  const tipo = estadoCurso(curso, notasDelCurso).tipo
+  const tonoAnillo = tipo === 'vacio' ? 'text-slate-400' : ['riesgo', 'jalado'].includes(tipo) ? 'text-rose-300' : 'text-teal-300'
 
   const compartir = async () => {
     const url = `${window.location.origin}/?curso=${encodeURIComponent(curso.id)}`
@@ -337,20 +339,14 @@ export const ModalCalculo = ({
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-[46px] leading-none font-bold tabular-nums">{numero !== null ? formatNota(numero) : '—'}</span>
                     <span className="max-w-[110px] text-xs leading-tight font-bold text-slate-400 mt-1.5">
-                      {progreso.completo && conNotas ? 'nota final' : 'promedio hasta ahora'}
+                      {progreso.completo && conNotas ? 'nota final' : 'nota acumulada'}
                     </span>
                   </div>
                 </div>
 
-                <div className="w-full grid grid-cols-2 gap-2.5">
-                  <div className="bg-white/[0.04] rounded-2xl p-3">
-                    <div className="text-xl font-bold tabular-nums">{formatNota(progreso.puntos)}</div>
-                    <div className="text-[11px] font-bold text-slate-400">puntos ganados de 20</div>
-                  </div>
-                  <div className="bg-white/[0.04] rounded-2xl p-3">
-                    <div className="text-xl font-bold tabular-nums">{formatNota(progreso.maximo)}</div>
-                    <div className="text-[11px] font-bold text-slate-400">máximo posible</div>
-                  </div>
+                <div className="w-full bg-white/[0.04] rounded-2xl p-3">
+                  <div className="text-xl font-bold tabular-nums">{formatNota(progreso.maximo)}</div>
+                  <div className="text-[11px] font-bold text-slate-400">máximo posible</div>
                 </div>
 
                 {!necesario ? (
