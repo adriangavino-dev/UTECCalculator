@@ -1,0 +1,733 @@
+[
+  {
+    "id": "AD6100",
+    "nombre": "Emprendimiento I",
+    "carrera": [],
+    "sistema": {
+      "EC 1": 0.05,
+      "ec 2": 0.05,
+      "pc 1": 0.2,
+      "pc 2": 0.2,
+      "examen final": 0.25,
+      "Examen parcial": 0.25
+    },
+    "created_by": null,
+    "created_at": "2026-08-12T19:33:46.933134+00:00",
+    "updated_at": "2026-08-12T19:33:46.933134+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CC1103",
+    "nombre": "Álgebra Lineal",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "EC1": {
+        "peso": 0.25,
+        "directa": true,
+        "subNotas": {
+          "AP1": 0.016667,
+          "AP2": 0.016667,
+          "AP3": 0.016667,
+          "AP4": 0.016667,
+          "AP5": 0.016667,
+          "AP6": 0.016667,
+          "EA1": 0.3,
+          "EA2": 0.3,
+          "RC1": 0.1,
+          "RC2": 0.2
+        }
+      },
+      "EC2": {
+        "peso": 0.25,
+        "directa": true,
+        "subNotas": {
+          "AP7": 0.016667,
+          "AP8": 0.016667,
+          "AP9": 0.016667,
+          "EA3": 0.3,
+          "EA4": 0.3,
+          "RC3": 0.1,
+          "AP10": 0.016667,
+          "AP11": 0.016667,
+          "AP12": 0.016667,
+          "Exposición": 0.2
+        }
+      },
+      "Examen Final": 0.3,
+      "Examen Parcial": 0.2
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-10-27T02:19:47.02743+00:00",
+    "ciclo": 2
+  },
+  {
+    "id": "CC1104",
+    "nombre": "Cálculo Vectorial",
+    "carrera": [],
+    "sistema": {
+      "ec1": 0.25,
+      "ec2": 0.25,
+      "examen  final": 0.3,
+      "examen parcial": 0.2
+    },
+    "created_by": null,
+    "created_at": "2026-06-30T19:31:35.62078+00:00",
+    "updated_at": "2026-06-30T19:31:35.62078+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CC1105",
+    "nombre": "Estadística y Probabilidades I",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "EF": 0.2,
+      "EP": 0.2,
+      "PG1": 0.15,
+      "PG2": 0.15,
+      "Quiz 1": 0.05,
+      "Quiz 2": 0.05,
+      "Tarea 1": 0.1,
+      "Tarea 2": 0.1
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-06-13T00:47:00.125508+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CC2101",
+    "nombre": "Ecuaciones Diferenciales",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "EF": 0.3,
+      "EP": 0.2,
+      "EC1": {
+        "peso": 0.25,
+        "directa": true,
+        "subNotas": {
+          "AG 1": 0.05,
+          "AG 2": 0.05,
+          "ABP 1": 0.1,
+          "Quiz 1": 0.233333,
+          "Quiz 2": 0.233333,
+          "Quiz 3": 0.233333,
+          "Tarea 1": 0.05,
+          "Tarea 2": 0.05
+        }
+      },
+      "EC2": {
+        "peso": 0.25,
+        "directa": true,
+        "subNotas": {
+          "AG 3": 0.05,
+          "AG 4": 0.05,
+          "ABP 2": 0.2,
+          "Quiz 4": 0.2,
+          "Quiz 5": 0.2,
+          "Quiz 6": 0.2,
+          "Tarea 3": 0.05,
+          "Tarea 4": 0.05
+        }
+      }
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-07-05T01:46:04.675189+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CC2104",
+    "nombre": "Métodos Númericos",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.3,
+            "ep": 0.2,
+            "ec1": {
+              "peso": 0.15,
+              "subNotas": {
+                "EA1": 0.2,
+                "EA2": 0.2,
+                "EA3": 0.2,
+                "RC1": 0.2,
+                "RC2": 0.2
+              }
+            },
+            "ec2": {
+              "peso": 0.15,
+              "subNotas": {
+                "EA4": 0.2,
+                "EA5": 0.2,
+                "EA6": 0.2,
+                "RC3": 0.2,
+                "RC4": 0.2
+              }
+            }
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.2
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T21:54:28.981988+00:00",
+    "updated_at": "2026-06-16T17:01:20.905878+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CC6101",
+    "nombre": "Fundamento de Cálculo",
+    "carrera": [],
+    "sistema": {
+      "TEORIA": {
+        "peso": 1,
+        "subNotas": {
+          "Examen Final": 0.3,
+          "Evaluación Continua": 0.7
+        }
+      }
+    },
+    "created_by": null,
+    "created_at": "2026-09-17T01:44:02.569289+00:00",
+    "updated_at": "2026-09-17T01:44:02.569289+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS1022",
+    "nombre": "Matemáticas Discretas II",
+    "carrera": [
+      "Ciencia de la Computación",
+      "Sistemas de Información"
+    ],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.3,
+            "EP": 0.3
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "EC1": {
+              "peso": 0.2,
+              "directa": true,
+              "subNotas": {
+                "PC1": 0.5,
+                "Test 1": 0.25,
+                "Test 2": 0.25
+              }
+            },
+            "EC2": {
+              "peso": 0.2,
+              "directa": true,
+              "subNotas": {
+                "PC2": 0.5,
+                "Test 3": 0.25,
+                "Test 4": 0.25
+              }
+            }
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-07-05T01:46:11.008342+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS1111",
+    "nombre": "Algoritmos y Estructuras de Datos",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.2,
+            "EP": 0.2
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "C1": {
+              "peso": 0.2,
+              "directa": true,
+              "subNotas": {
+                "EC1": 0.333333,
+                "EC2": 0.333333,
+                "EC3": 0.33333399999999996
+              }
+            },
+            "P1": 0.1,
+            "P2": 0.1,
+            "EC2": {
+              "peso": 0.2,
+              "directa": true,
+              "subNotas": {
+                "EC4": 0.333333,
+                "EC5": 0.333333,
+                "EC6": 0.33333399999999996
+              }
+            }
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-16T16:54:56.996539+00:00",
+    "updated_at": "2026-09-22T20:17:54.73943+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS1112",
+    "nombre": "Programación II",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "examen final": 0.3,
+            "Examen parcial": 0.1
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.1,
+            "P2": 0.2,
+            "EC1": 0.15,
+            "EC2": 0.15
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-30T19:37:58.280118+00:00",
+    "updated_at": "2026-06-30T19:37:58.280118+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "cs1273",
+    "nombre": "Empresa y Consumidor",
+    "carrera": [],
+    "sistema": {
+      "EF": 0.25,
+      "EP": 0.25,
+      "EC1": {
+        "peso": 0.05,
+        "subNotas": {
+          "Actividad 1": 0.25,
+          "Actividad 2": 0.25,
+          "Actividad 3": 0.25,
+          "Actividad 4": 0.25
+        }
+      },
+      "EC2": {
+        "peso": 0.05,
+        "subNotas": {
+          "Actividad 1": 0.25,
+          "Actividad 2": 0.25,
+          "Actividad 3": 0.25,
+          "Actividad 4": 0.25
+        }
+      },
+      "pc1": 0.2,
+      "pc2": 0.2
+    },
+    "created_by": null,
+    "created_at": "2026-06-16T16:47:34.507404+00:00",
+    "updated_at": "2026-06-16T16:47:34.507404+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS2013",
+    "nombre": "Programación III",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "Ef": 0.3,
+            "Ep": 0.1
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.1,
+            "P2": 0.2,
+            "Ec1": 0.15,
+            "Ec2": 0.15
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-06-13T15:13:48.454954+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS2024",
+    "nombre": "Teoría de la Computación",
+    "carrera": [],
+    "sistema": {
+      "EF": {
+        "peso": 0.5,
+        "subNotas": {
+          "I1": 0.5,
+          "I2": 0.5
+        }
+      },
+      "EP": {
+        "peso": 0.16,
+        "subNotas": {
+          "G1": 0.5,
+          "G2": 0.5
+        }
+      },
+      "EC1": 0.25,
+      "EC2": 0.09
+    },
+    "created_by": null,
+    "created_at": "2026-08-12T14:01:47.802738+00:00",
+    "updated_at": "2026-09-25T21:36:47.293975+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS2031",
+    "nombre": "Desarrollo Basado en Plataformas",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.2,
+            "EP": 0.2
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.2,
+            "P2": 0.2,
+            "EC1": {
+              "peso": 0.1,
+              "directa": true,
+              "subNotas": {
+                "Quiz 1": 0.044444,
+                "Quiz 2": 0.044444,
+                "Quiz 3": 0.044444,
+                "Quiz 4": 0.044444,
+                "Quiz 5": 0.044444,
+                "Quiz 6": 0.044444,
+                "Quiz 7": 0.044444,
+                "Quiz 8": 0.044444,
+                "Quiz 9": 0.044444,
+                "Hackathon 0": 0.3,
+                "Hackathon 1": 0.3
+              }
+            },
+            "EC2": {
+              "peso": 0.1,
+              "directa": true,
+              "subNotas": {
+                "Postman": 0.1,
+                "Quiz 10": 0.1,
+                "Quiz 11": 0.1,
+                "E2E BACKEND": 0.2,
+                "Hackathon 2": 0.3,
+                "E2E FRONTEND": 0.2
+              }
+            }
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-18T13:47:50.292892+00:00",
+    "updated_at": "2026-07-06T00:24:01.920574+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS2041",
+    "nombre": "Base de Datos I",
+    "carrera": [
+      "Ciencia de la Computación"
+    ],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "Ef": 0.25,
+            "Ep": 0.25
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.1,
+            "P2": 0.2,
+            "Ec1": {
+              "peso": 0.1,
+              "directa": true,
+              "subNotas": {
+                "Lab 1": 0.142857,
+                "Lab 2": 0.142857,
+                "Lab 3": 0.142857,
+                "Lab 4": 0.142857,
+                "Lab 5": 0.142857,
+                "Lab 6": 0.142857,
+                "Lab 7": 0.142858
+              }
+            },
+            "Ec2": {
+              "peso": 0.1,
+              "directa": true,
+              "subNotas": {
+                "Lab 8": 0.16666699999999998,
+                "Lab 9": 0.16666699999999998,
+                "Lab 10": 0.16666699999999998,
+                "Lab 11": 0.16666699999999998,
+                "Lab 12": 0.16666699999999998,
+                "Lab 13": 0.16666699999999998
+              }
+            }
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T00:47:00.125508+00:00",
+    "updated_at": "2026-07-05T01:45:50.303936+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS3061",
+    "nombre": "Machine Learning",
+    "carrera": [],
+    "sistema": {
+      "EF": 0.3,
+      "EP": 0.1,
+      "P1": 0.1,
+      "P2": 0.3,
+      "EC1": 0.1,
+      "EC2": 0.1
+    },
+    "created_by": null,
+    "created_at": "2026-10-13T14:24:19.972329+00:00",
+    "updated_at": "2026-10-13T14:24:19.972329+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS3212",
+    "nombre": "Estadística I",
+    "carrera": [],
+    "sistema": {
+      "P1": 0.15,
+      "P2": 0.15,
+      "ec 1": 0.1,
+      "ec 2": 0.1,
+      "Examen final": 0.25,
+      "examen parcial": 0.25
+    },
+    "created_by": null,
+    "created_at": "2026-07-13T21:33:39.202149+00:00",
+    "updated_at": "2026-07-13T21:33:39.202149+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS3P02",
+    "nombre": "Cloud Computing",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.15,
+            "EP": 0.15,
+            "EC1": 0.1,
+            "EC2": 0.1
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "P1": 0.2,
+            "P2": 0.3
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-16T17:00:10.365393+00:00",
+    "updated_at": "2026-06-16T17:00:10.365393+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CS6005",
+    "nombre": "Matemáticas Discretas I",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "examen final": 0.3,
+            "Examen parcial": 0.3
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "ec1": 0.2,
+            "ec2": 0.2
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-09-17T01:45:31.81663+00:00",
+    "updated_at": "2026-09-24T23:42:13.699694+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "CY6001",
+    "nombre": "Introducción de Ciberseguridad",
+    "carrera": [],
+    "sistema": {
+      "teoria": {
+        "peso": 0.5,
+        "subNotas": {
+          "Examen Final": 0.6,
+          "Examen Parcial": 0.4
+        }
+      },
+      "laboratorio": {
+        "peso": 0.5,
+        "subNotas": {
+          "P1": 0.2,
+          "P2": 0.4,
+          "EC 1": 0.2,
+          "EC 2": 0.2
+        }
+      }
+    },
+    "created_by": null,
+    "created_at": "2026-07-11T17:08:08.383604+00:00",
+    "updated_at": "2026-09-29T00:41:44.696948+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "HH2101",
+    "nombre": "Perú: Temas de la sociedad contemporánea",
+    "carrera": [],
+    "sistema": {
+      "EF": 0.25,
+      "EP": 0.25,
+      "EC1": 0.25,
+      "Ec2": 0.25
+    },
+    "created_by": null,
+    "created_at": "2026-10-16T20:18:30.945658+00:00",
+    "updated_at": "2026-10-16T20:18:30.945658+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "HH5101",
+    "nombre": "Ética y Tecnología",
+    "carrera": [],
+    "sistema": {
+      "EF": 0.25,
+      "EP": 0.25,
+      "P1": 0.2,
+      "P2": 0.3
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T21:45:11.810012+00:00",
+    "updated_at": "2026-06-13T21:45:11.810012+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "ME2013",
+    "nombre": "Estática",
+    "carrera": [],
+    "sistema": {
+      "partes": [
+        {
+          "nombre": "Teoría",
+          "sistema": {
+            "EF": 0.25,
+            "EP": 0.25
+          }
+        },
+        {
+          "nombre": "Laboratorio",
+          "sistema": {
+            "EC1": 0.25,
+            "EC2": 0.15,
+            "EC3": 0.1
+          }
+        }
+      ],
+      "candado": true
+    },
+    "created_by": null,
+    "created_at": "2026-06-17T14:52:15.462479+00:00",
+    "updated_at": "2026-06-17T14:52:15.462479+00:00",
+    "ciclo": null
+  },
+  {
+    "id": "PI2202",
+    "nombre": "Proyectos Interdiciplinarios 2",
+    "carrera": [],
+    "sistema": {
+      "P1": 0.25,
+      "P2": 0.35,
+      "EC1": 0.134,
+      "EC2": 0.133,
+      "EC3": 0.133
+    },
+    "created_by": null,
+    "created_at": "2026-06-13T15:02:27.623678+00:00",
+    "updated_at": "2026-08-10T15:20:20.550919+00:00",
+    "ciclo": null
+  }
+]
