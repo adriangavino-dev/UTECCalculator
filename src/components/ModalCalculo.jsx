@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, CircleAlert, CircleCheck, Lock, Share2, Star, Trash2 } from 'lucide-react'
 import { useToast } from './Toast'
+import { useFocoModal } from '../logic/useFocoModal'
+import { NumeroAnimado } from './NumeroAnimado'
 import {
   calcularResultado, calcularNecesarioDe, calcularProgreso, notasSimuladas, estadoCurso, formatNota,
 } from '../logic/useCalculadora'
@@ -32,20 +36,23 @@ const textoNecesario = (r) => {
 
 // Tono de la caja "cuánto necesitas"
 const tonoNecesario = (r) => {
-  if (r.completo) return r.notaActual >= MIN_APROBATORIO - 1e-9 ? 'teal' : 'rose'
-  if (r.yaAprobado) return 'teal'
-  if (!r.posible) return 'rose'
-  return r.necesario > 14 ? 'amber' : 'teal'
+  if (r.completo) return r.notaActual >= MIN_APROBATORIO - 1e-9 ? 'bien' : 'mal'
+  if (r.yaAprobado) return 'bien'
+  if (!r.posible) return 'mal'
+  return r.necesario > 14 ? 'ajustado' : 'bien'
 }
 
 const CAJA = {
-  teal: 'bg-teal-300/[0.08] border-teal-300/30 text-teal-100',
-  amber: 'bg-amber-300/[0.08] border-amber-300/35 text-amber-100',
-  rose: 'bg-rose-300/[0.08] border-rose-300/35 text-rose-100',
-  slate: 'bg-white/[0.04] border-white/10 text-slate-200',
+  bien: 'bg-success-soft border-success/25',
+  ajustado: 'bg-warning-soft border-warning/30',
+  mal: 'bg-danger-soft border-danger/30',
+  neutro: 'bg-muted border-border',
 }
+const ICONO_CAJA = { bien: 'text-success', ajustado: 'text-warning', mal: 'text-danger', neutro: 'text-muted-foreground' }
 
-const inputNota = 'h-12 rounded-xl bg-[#07061a] text-center font-bold text-slate-100 outline-none focus:border-cyan-300/70 transition-colors placeholder:text-slate-600 border tabular-nums disabled:cursor-not-allowed'
+const inputNota = 'h-11 rounded-lg bg-background border border-input text-center num font-semibold text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition placeholder:text-muted-foreground/60 disabled:cursor-not-allowed'
+
+const tarjeta = 'bg-card border border-border rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.04)]'
 
 export const ModalCalculo = ({
   curso,
@@ -59,11 +66,15 @@ export const ModalCalculo = ({
 }) => {
   const { showToast } = useToast()
   const [simular, setSimular] = useState(12)
+  const panelRef = useFocoModal()
 
   // Escape cierra
   useEffect(() => {
     if (!curso) return
-    const onKey = (e) => { if (e.key === 'Escape') onCerrar() }
+    const onKey = (e) => {
+      // Si hay otra ventana encima (p. ej. Solicitar curso), Escape cierra solo esa
+      if (e.key === 'Escape' && document.querySelectorAll('[aria-modal="true"]').length === 1) onCerrar()
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [curso, onCerrar])
@@ -86,12 +97,11 @@ export const ModalCalculo = ({
   const aportes = {}
   progreso.evaluaciones.forEach((ev) => { aportes[`${ev.parte ?? ''}|${ev.key}`] = ev })
 
-  // Número grande del anillo
   // Número grande del anillo: la nota acumulada sobre 20 (lo que falta cuenta como 0)
   const numero = !conNotas ? null : progreso.completo && resultado ? Number(resultado.final) : progreso.puntos
   // El color depende de cómo vas (no del número, que al inicio siempre es bajo)
   const tipo = estadoCurso(curso, notasDelCurso).tipo
-  const tonoAnillo = tipo === 'vacio' ? 'text-slate-400' : ['riesgo', 'jalado'].includes(tipo) ? 'text-rose-300' : 'text-teal-300'
+  const tonoAnillo = tipo === 'vacio' ? 'text-muted-foreground' : ['riesgo', 'jalado'].includes(tipo) ? 'text-danger' : 'text-success'
 
   const compartir = async () => {
     const url = `${window.location.origin}/?curso=${encodeURIComponent(curso.id)}`
@@ -104,38 +114,39 @@ export const ModalCalculo = ({
   }
 
   const estadoFila = (ev) => {
-    if (!ev || ev.estado === 'vacio') return { texto: 'Pendiente', clase: 'text-slate-400' }
+    if (!ev || ev.estado === 'vacio') return { texto: 'Pendiente', clase: 'text-muted-foreground' }
     const pts = `${ev.aporte.toFixed(2)} pts`
     return ev.estado === 'parcial'
-      ? { texto: `En curso · aporta ${pts}`, clase: 'text-cyan-300' }
-      : { texto: `Aporta ${pts}`, clase: 'text-teal-300' }
+      ? { texto: `En curso · aporta ${pts}`, clase: 'text-primary' }
+      : { texto: `Aporta ${pts}`, clase: 'text-success' }
   }
 
   // Filas de evaluaciones de un "sistema" simple (componentes número o subNotas)
   const renderSistema = (sistema, prefijo, parte, factor) => (
-    <div className="divide-y divide-white/[0.06]">
+    <div className="divide-y divide-border">
       {Object.keys(sistema).map((key) => {
         if (key === 'candado' || key === 'partes') return null
         const config = sistema[key]
         const ev = aportes[`${parte ?? ''}|${key}`]
         const est = estadoFila(ev)
         const idBase = `nota-${prefijo}${key}`.replace(/\s+/g, '-')
+        const chipPeso = 'num text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5'
 
         if (typeof config === 'number') {
           const llave = `${prefijo}${key}`
           return (
             <div key={key} className="flex items-center gap-3 md:gap-4 py-3.5">
-              <div className="flex-1 min-w-0 flex flex-col gap-1">
-                <label htmlFor={idBase} className="text-[15px] font-bold text-slate-100 truncate">{key}</label>
-                <span className={`text-xs font-bold ${est.clase}`}>{est.texto}</span>
+              <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                <label htmlFor={idBase} className="text-[15px] font-medium text-foreground truncate">{key}</label>
+                <span className={`text-xs ${est.clase}`}>{est.texto}</span>
               </div>
-              <span className="text-xs font-bold text-cyan-300 bg-cyan-300/[0.08] rounded-lg px-2 py-1 tabular-nums">{pct(config * factor)}</span>
+              <span className={chipPeso}>{pct(config * factor)}</span>
               <input
                 id={idBase}
                 type="number" inputMode="decimal" placeholder="—" step="0.1" min="0" max="20"
                 value={notasDelCurso[llave] || ''}
                 onChange={(e) => actualizarNota(curso.id, llave, e.target.value)}
-                className={`${inputNota} w-[76px] md:w-[84px] text-xl ${notasDelCurso[llave] ? 'border-cyan-300/45' : 'border-white/[0.12]'}`}
+                className={`${inputNota} w-[76px] md:w-20 text-lg`}
               />
             </div>
           )
@@ -149,15 +160,15 @@ export const ModalCalculo = ({
         return (
           <div key={key} className="py-3.5 flex flex-col gap-3">
             <div className="flex items-center gap-3 md:gap-4">
-              <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <div className="flex-1 min-w-0 flex flex-col gap-0.5">
                 {config.directa ? (
-                  <label htmlFor={idBase} className="text-[15px] font-bold text-slate-100 truncate">{key}</label>
+                  <label htmlFor={idBase} className="text-[15px] font-medium text-foreground truncate">{key}</label>
                 ) : (
-                  <span className="text-[15px] font-bold text-slate-100 truncate">{key}</span>
+                  <span className="text-[15px] font-medium text-foreground truncate">{key}</span>
                 )}
-                <span className={`text-xs font-bold ${est.clase}`}>{est.texto}</span>
+                <span className={`text-xs ${est.clase}`}>{est.texto}</span>
               </div>
-              <span className="text-xs font-bold text-cyan-300 bg-cyan-300/[0.08] rounded-lg px-2 py-1 tabular-nums">{pct(config.peso * factor)}</span>
+              <span className={chipPeso}>{pct(config.peso * factor)}</span>
               {config.directa && (
                 <input
                   id={idBase}
@@ -165,25 +176,25 @@ export const ModalCalculo = ({
                   value={notaDirecta}
                   title="Nota completa (opcional): si la pones, se ignoran las subnotas"
                   onChange={(e) => actualizarNota(curso.id, llaveDirecta, e.target.value)}
-                  className={`${inputNota} w-[76px] md:w-[84px] text-xl ${bloqueado ? 'border-teal-300/50' : 'border-white/[0.12]'}`}
+                  className={`${inputNota} w-[76px] md:w-20 text-lg`}
                 />
               )}
             </div>
             {config.directa && (
-              <p className="-mt-1 text-[11px] text-slate-500 font-semibold">
+              <p className="-mt-1 text-xs text-muted-foreground">
                 {bloqueado
-                  ? 'Usando la nota completa: borra la nota de arriba para editar las subnotas'
-                  : 'Si ya sabes la nota completa, ponla arriba. Si no, llena las subnotas'}
+                  ? 'Usando la nota completa: bórrala para editar las subnotas.'
+                  : 'Si ya sabes la nota completa, ponla arriba. Si no, llena las subnotas.'}
               </p>
             )}
-            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 pl-3 border-l-2 border-white/[0.06] transition-opacity ${bloqueado ? 'opacity-40' : ''}`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 pl-3 border-l-2 border-border transition-opacity ${bloqueado ? 'opacity-40' : ''}`}>
               {Object.keys(config.subNotas).map((subKey) => {
                 const llave = `${prefijo}${key}_${subKey}`
                 const idSub = `${idBase}-${subKey}`.replace(/\s+/g, '-')
                 return (
-                  <div key={subKey} className="flex items-center justify-between gap-3 bg-white/[0.03] pl-3.5 pr-2 py-2 rounded-xl">
-                    <label htmlFor={idSub} className="text-[13px] text-slate-300 font-semibold truncate">
-                      {subKey} <span className="text-slate-500 text-[11px]">{Math.round(config.subNotas[subKey] * 100)}%</span>
+                  <div key={subKey} className="flex items-center justify-between gap-3 bg-muted/60 pl-3 pr-1.5 py-1.5 rounded-lg">
+                    <label htmlFor={idSub} className="text-sm text-foreground truncate">
+                      {subKey} <span className="num text-xs text-muted-foreground">{Math.round(config.subNotas[subKey] * 100)}%</span>
                     </label>
                     <input
                       id={idSub}
@@ -191,7 +202,7 @@ export const ModalCalculo = ({
                       disabled={bloqueado}
                       value={notasDelCurso[llave] || ''}
                       onChange={(e) => actualizarNota(curso.id, llave, e.target.value)}
-                      className={`${inputNota} !h-10 w-16 text-base ${notasDelCurso[llave] ? 'border-cyan-300/40' : 'border-white/[0.1]'}`}
+                      className={`${inputNota} !h-9 w-16 text-base`}
                     />
                   </div>
                 )
@@ -203,80 +214,93 @@ export const ModalCalculo = ({
     </div>
   )
 
-  const botonHeader = 'min-h-[44px] px-3.5 md:px-4 rounded-xl border font-bold text-[13px] transition-colors cursor-pointer active:scale-95'
+  const botonHeader = 'inline-flex items-center gap-1.5 h-10 px-3.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer active:scale-[0.97]'
+  const tono = necesario && !necesario.candado ? tonoNecesario(necesario) : 'neutro'
+  const IconoCaja = tono === 'bien' ? CircleCheck : CircleAlert
 
   return (
-    <div
-      className="fixed inset-0 bg-[#07061a]/85 backdrop-blur-md flex items-stretch md:items-center justify-center md:p-4 z-50 animate-fade-in"
+    <motion.div
+      className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px] flex items-stretch md:items-center justify-center md:p-4 z-50"
       role="dialog"
       aria-modal="true"
       aria-label={`Calculadora de ${curso.nombre}`}
       onClick={(e) => { if (e.target === e.currentTarget) onCerrar() }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="relative w-full md:max-w-6xl md:max-h-[92vh] overflow-y-auto custom-scrollbar bg-[#07061a] md:bg-[#0a0720] md:border md:border-white/10 md:rounded-[28px] shadow-2xl shadow-black/50">
-        <div className="px-4 md:px-8 pt-5 md:pt-7 pb-8 flex flex-col gap-6 md:gap-7">
+      <motion.div
+        ref={panelRef}
+        tabIndex={-1}
+        className="relative w-full md:max-w-6xl md:max-h-[92vh] overflow-y-auto custom-scrollbar bg-background md:border md:border-border md:rounded-2xl shadow-2xl outline-none"
+        initial={{ y: 32, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 24, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+      >
+        <div className="px-4 md:px-8 pt-5 md:pt-7 pb-8 flex flex-col gap-6">
 
           {/* Encabezado */}
-          <header className="flex flex-wrap justify-between items-end gap-4">
+          <div className="flex flex-wrap justify-between items-end gap-4">
             <div className="flex flex-col gap-2.5 min-w-0">
-              <button type="button" onClick={onCerrar} className="self-start text-[13px] font-bold text-cyan-300 hover:text-cyan-200 transition-colors cursor-pointer">
-                ← Volver a cursos
+              <button type="button" onClick={onCerrar} className="group self-start inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" /> Volver a cursos
               </button>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="text-[11px] font-bold tracking-[1.5px] text-cyan-300 bg-cyan-300/10 border border-cyan-300/25 rounded-lg px-2 py-0.5">{curso.id}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="num text-xs text-muted-foreground bg-muted rounded px-1.5 py-0.5">{curso.id}</span>
                 {esCandado && (
-                  <span className="text-[11px] font-bold text-amber-200 bg-amber-300/10 border border-amber-300/30 rounded-lg px-2 py-0.5">🔒 Candado</span>
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-warning bg-warning-soft rounded px-1.5 py-0.5">
+                    <Lock className="w-3 h-3" /> Candado
+                  </span>
                 )}
-                {carreras.length > 0 && (
-                  <span className="text-xs font-bold text-slate-400">{carreras.join(' · ')}</span>
-                )}
+                {carreras.length > 0 && <span className="text-xs text-muted-foreground">{carreras.join(' · ')}</span>}
               </div>
-              <h2 className="m-0 text-[26px] md:text-[34px] leading-tight font-bold text-slate-100">{curso.nombre}</h2>
+              <h2 className="m-0 text-2xl md:text-3xl leading-tight font-semibold tracking-tight text-foreground">{curso.nombre}</h2>
             </div>
             <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => onToggleFav(curso.id)}
                 aria-pressed={esFavorito}
-                className={`${botonHeader} ${esFavorito
-                  ? 'border-amber-300/40 bg-amber-300/10 text-amber-200'
-                  : 'border-white/[0.14] text-slate-200 hover:text-amber-200 hover:border-amber-300/40'}`}
+                className={`${botonHeader} ${esFavorito ? 'border-star/40 bg-warning-soft text-foreground' : 'border-border bg-card text-foreground hover:bg-muted'}`}
               >
-                {esFavorito ? '★ En mis cursos' : '☆ Agregar a mis cursos'}
+                <Star className={`w-4 h-4 ${esFavorito ? 'text-star' : 'text-muted-foreground'}`} fill={esFavorito ? 'currentColor' : 'none'} />
+                {esFavorito ? 'En mis cursos' : 'Agregar a mis cursos'}
               </button>
-              <button type="button" onClick={compartir} className={`${botonHeader} border-white/[0.14] bg-[#0c0824] text-slate-100 hover:border-cyan-300/40`}>
-                Compartir
+              <button type="button" onClick={compartir} className={`${botonHeader} border-border bg-card text-foreground hover:bg-muted`}>
+                <Share2 className="w-4 h-4 text-muted-foreground" /> Compartir
               </button>
-              <button type="button" onClick={() => limpiarNotasCurso(curso.id)} className={`${botonHeader} border-rose-300/35 text-rose-100 hover:bg-rose-300/10`}>
-                Limpiar notas
+              <button type="button" onClick={() => limpiarNotasCurso(curso.id)} className={`${botonHeader} border-border bg-card text-danger hover:bg-danger-soft`}>
+                <Trash2 className="w-4 h-4" /> Limpiar notas
               </button>
             </div>
-          </header>
+          </div>
 
           <div className="flex flex-wrap gap-5 md:gap-6 items-start">
 
             {/* Columna izquierda: evaluaciones */}
-            <section className="flex-[999_1_560px] min-w-0 flex flex-col gap-[18px]" aria-label="Evaluaciones">
+            <section className="flex-[999_1_560px] min-w-0 flex flex-col gap-4" aria-label="Evaluaciones">
 
-              <div className="bg-[#0c0824] border border-white/[0.08] rounded-[22px] p-[18px] md:p-[22px] flex flex-col gap-3.5">
+              <div className={`${tarjeta} p-4 md:p-5 flex flex-col gap-3`}>
                 <div className="flex justify-between items-center gap-3 flex-wrap">
-                  <h3 className="m-0 text-[15px] font-bold text-slate-100">Cómo se compone tu nota</h3>
-                  <span className="text-xs font-bold text-slate-400">
-                    {pct(progreso.fraccion)} evaluado · {pct(1 - progreso.fraccion)} por rendir
+                  <h3 className="m-0 text-sm font-semibold text-foreground">Cómo se compone tu nota</h3>
+                  <span className="text-xs text-muted-foreground">
+                    <span className="num">{pct(progreso.fraccion)}</span> evaluado · <span className="num">{pct(1 - progreso.fraccion)}</span> por rendir
                   </span>
                 </div>
-                <div className="flex gap-1 h-9" aria-hidden="true">
+                <div className="flex gap-1 h-8" aria-hidden="true">
                   {progreso.evaluaciones.map((ev, i) => (
                     <div
                       key={`${ev.parte}-${ev.key}-${i}`}
                       title={`${ev.parte ? `${ev.parte} · ` : ''}${ev.key} · ${pct(ev.peso)}`}
                       style={{ width: `${(ev.peso / (progreso.pesoTotal || 1)) * 100}%` }}
-                      className={`rounded-lg flex items-center justify-center text-[11px] font-bold overflow-hidden whitespace-nowrap px-1 transition-colors ${
+                      className={`rounded-md flex items-center justify-center text-[11px] font-medium overflow-hidden whitespace-nowrap px-1 transition-colors duration-300 ${
                         ev.estado === 'lleno'
-                          ? 'bg-cyan-300 text-[#0a0420]'
+                          ? 'bg-primary text-primary-foreground'
                           : ev.estado === 'parcial'
-                            ? 'bg-cyan-300/35 text-cyan-50'
-                            : 'bg-white/[0.06] text-slate-400'
+                            ? 'bg-primary/25 text-foreground'
+                            : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       <span className="truncate">{ev.key}</span>
@@ -285,23 +309,23 @@ export const ModalCalculo = ({
                 </div>
               </div>
 
-              <div className="bg-[#0c0824] border border-white/[0.08] rounded-[22px] px-[18px] md:px-[22px] py-2">
+              <div className={`${tarjeta} px-4 md:px-5 py-1`}>
                 {esCandado ? (
                   <div className="flex flex-col">
                     {curso.sistema.partes.map((parte, pIdx) => {
                       const parteRes = resultado?.candado ? resultado.partes.find((p) => p.nombre === parte.nombre) : null
                       const factor = parte.peso !== undefined ? parte.peso : 1
                       return (
-                        <div key={pIdx} className={pIdx > 0 ? 'pt-3 mt-1 border-t border-white/[0.1]' : 'pt-3'}>
+                        <div key={pIdx} className={pIdx > 0 ? 'pt-3 mt-1 border-t-2 border-border' : 'pt-3'}>
                           <div className="flex items-center justify-between gap-3 flex-wrap">
-                            <span className="font-bold text-cyan-100 text-sm uppercase tracking-[2px]">
-                              {parte.nombre} <span className="text-cyan-300/70 text-[11px]">· {pct(pesoDeParte(parte))}</span>
+                            <span className="text-sm font-semibold text-foreground">
+                              {parte.nombre} <span className="num text-xs font-normal text-muted-foreground">· {pct(pesoDeParte(parte))}</span>
                             </span>
                             {parteRes && (
-                              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
-                                parteRes.aprobada ? 'bg-teal-300/10 text-teal-200 border-teal-300/35' : 'bg-rose-300/10 text-rose-200 border-rose-300/35'
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                                parteRes.aprobada ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger'
                               }`}>
-                                {formatNota(parteRes.nota)} · {parteRes.aprobada ? 'Aprobada' : 'Jalada'} (mín 10.5)
+                                <span className="num">{formatNota(parteRes.nota)}</span> · {parteRes.aprobada ? 'Aprobada' : 'Jalada'} (mín. 10.5)
                               </span>
                             )}
                           </div>
@@ -313,9 +337,9 @@ export const ModalCalculo = ({
                 ) : (
                   renderSistema(curso.sistema, '', null, 1)
                 )}
-                <div className="pt-3.5 pb-2.5 border-t border-white/[0.06] text-[13px] text-slate-400 font-semibold">
+                <div className="py-3.5 border-t border-border text-sm text-muted-foreground">
                   ¿Algún peso está mal?{' '}
-                  <button type="button" onClick={() => onReportar(curso)} className="font-bold text-cyan-300 hover:text-cyan-200 transition-colors cursor-pointer">
+                  <button type="button" onClick={() => onReportar(curso)} className="font-medium text-primary hover:underline underline-offset-2 cursor-pointer">
                     Reportar con el sílabo
                   </button>
                 </div>
@@ -323,73 +347,82 @@ export const ModalCalculo = ({
             </section>
 
             {/* Columna derecha: resultado + simulador */}
-            <aside className="flex-[1_1_360px] min-w-0 flex flex-col gap-[18px]" aria-label="Resultado">
+            <aside className="flex-[1_1_360px] min-w-0 flex flex-col gap-4 md:sticky md:top-0" aria-label="Resultado">
 
-              <div className="bg-[#0c0824] border border-white/[0.08] rounded-[22px] p-6 flex flex-col items-center gap-4 text-center" role="status" aria-live="polite">
+              <div className={`${tarjeta} p-5 flex flex-col items-center gap-4 text-center`} role="status" aria-live="polite">
                 <div className={`relative w-[180px] h-[180px] ${tonoAnillo}`}>
                   <svg width="180" height="180" viewBox="0 0 180 180" aria-hidden="true">
-                    <circle cx="90" cy="90" r={RADIO} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="14" />
-                    {numero > 0 && <circle
-                      cx="90" cy="90" r={RADIO} fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round"
-                      strokeDasharray={`${(CIRC * Math.min(1, (numero ?? 0) / 20)).toFixed(1)} ${CIRC.toFixed(1)}`}
-                      transform="rotate(-90 90 90)"
-                      className="transition-[stroke-dasharray] duration-300"
-                    />}
+                    <circle cx="90" cy="90" r={RADIO} fill="none" stroke="var(--muted)" strokeWidth="12" />
+                    {numero > 0 && (
+                      <motion.circle
+                        cx="90" cy="90" r={RADIO} fill="none" stroke="currentColor" strokeWidth="12" strokeLinecap="round"
+                        transform="rotate(-90 90 90)"
+                        strokeDasharray={CIRC}
+                        initial={{ strokeDashoffset: CIRC }}
+                        animate={{ strokeDashoffset: CIRC * (1 - Math.min(1, numero / 20)) }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    )}
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-[46px] leading-none font-bold tabular-nums">{numero !== null ? formatNota(numero) : '—'}</span>
-                    <span className="max-w-[110px] text-xs leading-tight font-bold text-slate-400 mt-1.5">
+                    <NumeroAnimado valor={numero} className="num text-[44px] leading-none font-semibold" />
+                    <span className="max-w-[110px] text-xs leading-tight text-muted-foreground mt-1.5">
                       {progreso.completo && conNotas ? 'nota final' : 'nota acumulada'}
                     </span>
                   </div>
                 </div>
 
-                <div className="w-full bg-white/[0.04] rounded-2xl p-3">
-                  <div className="text-xl font-bold tabular-nums">{formatNota(progreso.maximo)}</div>
-                  <div className="text-[11px] font-bold text-slate-400">máximo posible</div>
+                <div className="w-full flex items-center justify-between rounded-lg bg-muted px-3.5 py-2.5">
+                  <span className="text-sm text-muted-foreground">Máximo posible</span>
+                  <span className="num text-lg font-semibold text-foreground">{formatNota(progreso.maximo)}</span>
                 </div>
 
                 {!necesario ? (
-                  <div className={`w-full rounded-2xl p-3.5 border ${CAJA.slate}`}>
-                    <div className="text-[15px] font-bold">Pon tus notas y te decimos cuánto necesitas</div>
-                    <div className="text-xs font-semibold text-slate-400 mt-1">para llegar a 10.5</div>
+                  <div className={`w-full rounded-lg p-3.5 border text-left ${CAJA.neutro}`}>
+                    <div className="text-sm font-medium text-foreground">Pon tus notas y te decimos cuánto necesitas</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">para llegar a 10.5</div>
                   </div>
                 ) : necesario.candado ? (
-                  <div className={`w-full rounded-2xl p-3.5 border text-left flex flex-col gap-1.5 ${CAJA.slate}`}>
-                    <div className="text-xs font-bold text-slate-400">Cada parte debe llegar a 10.5:</div>
+                  <div className={`w-full rounded-lg p-3.5 border text-left flex flex-col gap-1.5 ${CAJA.neutro}`}>
+                    <div className="text-xs text-muted-foreground">Cada parte debe llegar a 10.5:</div>
                     {necesario.partes.map((p, i) => (
-                      <div key={i} className="text-sm font-semibold">
-                        <span className="text-cyan-200 font-bold">{p.nombre}:</span> {textoNecesario(p)}
+                      <div key={i} className="text-sm text-foreground">
+                        <span className="font-semibold">{p.nombre}:</span> {textoNecesario(p)}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className={`w-full rounded-2xl p-3.5 border ${CAJA[tonoNecesario(necesario)]}`}>
-                    <div className="text-[15px] font-bold">{textoNecesario(necesario)}</div>
-                    <div className="text-xs font-semibold text-slate-400 mt-1">para llegar a 10.5</div>
+                  <div className={`w-full rounded-lg p-3.5 border text-left flex gap-2.5 ${CAJA[tono]}`}>
+                    <IconoCaja className={`w-5 h-5 shrink-0 mt-px ${ICONO_CAJA[tono]}`} />
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">{textoNecesario(necesario)}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">para llegar a 10.5</div>
+                    </div>
                   </div>
                 )}
 
                 {resultado?.candado && progreso.completo && !resultado.aprobado && resultado.partes.some((p) => !p.aprobada) && (
-                  <p className="text-xs font-bold text-rose-200">🔒 Jalas por candado: una parte no llega a 10.5</p>
+                  <p className="inline-flex items-center gap-1.5 text-xs font-medium text-danger">
+                    <Lock className="w-3.5 h-3.5" /> Jalas por candado: una parte no llega a 10.5
+                  </p>
                 )}
               </div>
 
               {resultadoSim && (
-                <div className="bg-[#0c0824] border border-cyan-300/30 rounded-[22px] p-6 flex flex-col gap-3.5">
-                  <div className="flex justify-between items-center">
-                    <h3 className="m-0 text-[15px] font-bold text-slate-100">Simulador</h3>
-                    <span className="text-[11px] font-bold text-cyan-300 tracking-[1.5px] uppercase">¿Qué pasa si…?</span>
+                <div className={`${tarjeta} p-5 flex flex-col gap-3.5`}>
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="m-0 text-sm font-semibold text-foreground">Simulador</h3>
+                    <span className="text-xs text-muted-foreground">¿Qué pasa si…?</span>
                   </div>
-                  <label htmlFor="simulador" className="text-[13px] text-slate-300 font-semibold">
-                    Si saco <span className="text-slate-100 font-bold text-base tabular-nums">{simular.toFixed(1)}</span> en todo lo que falta
+                  <label htmlFor="simulador" className="text-sm text-muted-foreground">
+                    Si saco <span className="num text-base font-semibold text-foreground">{simular.toFixed(1)}</span> en todo lo que falta
                   </label>
                   <input
                     id="simulador"
                     type="range" min="0" max="20" step="0.5"
                     value={simular}
                     onChange={(e) => setSimular(parseFloat(e.target.value))}
-                    className="w-full accent-cyan-300 cursor-pointer"
+                    className="w-full cursor-pointer"
                   />
                   <div className="flex gap-1.5 flex-wrap" role="group" aria-label="Notas rápidas">
                     {ATAJOS.map((v) => (
@@ -398,19 +431,19 @@ export const ModalCalculo = ({
                         type="button"
                         onClick={() => setSimular(v)}
                         aria-pressed={simular === v}
-                        className={`min-h-[36px] px-3 rounded-[10px] border font-bold text-xs text-slate-100 transition-colors cursor-pointer ${
-                          simular === v ? 'bg-cyan-300/[0.18] border-cyan-300/60' : 'border-white/[0.14] hover:border-white/30'
+                        className={`num h-8 min-w-10 px-2.5 rounded-md border text-sm font-medium transition-colors cursor-pointer ${
+                          simular === v ? 'bg-foreground text-background border-foreground' : 'bg-card text-foreground border-border hover:border-input'
                         }`}
                       >
                         {v}
                       </button>
                     ))}
                   </div>
-                  <div className="flex justify-between items-center gap-3 pt-3.5 border-t border-white/[0.07]" aria-live="polite">
-                    <span className="text-[13px] text-slate-300 font-semibold">Terminarías con</span>
-                    <span className={`flex items-center gap-2.5 ${resultadoSim.aprobado ? 'text-teal-300' : 'text-rose-300'}`}>
-                      <span className="text-[34px] leading-none font-bold tabular-nums">{formatNota(resultadoSim.final)}</span>
-                      <span className="text-[11px] font-bold px-2 py-1 rounded-lg border border-current">
+                  <div className="flex justify-between items-center gap-3 pt-3.5 border-t border-border" aria-live="polite">
+                    <span className="text-sm text-muted-foreground">Terminarías con</span>
+                    <span className={`flex items-center gap-2.5 ${resultadoSim.aprobado ? 'text-success' : 'text-danger'}`}>
+                      <NumeroAnimado valor={Number(resultadoSim.final)} className="num text-3xl leading-none font-semibold" />
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${resultadoSim.aprobado ? 'bg-success-soft' : 'bg-danger-soft'}`}>
                         {resultadoSim.aprobado ? 'Apruebas' : 'Desapruebas'}
                       </span>
                     </span>
@@ -420,7 +453,7 @@ export const ModalCalculo = ({
             </aside>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

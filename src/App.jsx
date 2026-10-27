@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
+import { Heart } from 'lucide-react'
 import { useCalculadora } from './logic/useCalculadora'
 import { useAuth } from './logic/useAuth'
 import { ModalCalculo } from './components/ModalCalculo'
@@ -10,8 +12,22 @@ import { HistorialModal } from './components/HistorialModal'
 import { DonateModal } from './components/DonateModal'
 import { SolicitarCursoModal } from './components/SolicitarCursoModal'
 import { ToastProvider } from './components/Toast'
+import { Footer } from './components/Footer'
+import { PaginaLegal } from './pages/Legal'
+
+const RUTAS_LEGALES = ['/terminos', '/privacidad']
 
 export default function App() {
+  const ruta = window.location.pathname.replace(/\/+$/, '')
+  return (
+    // reducedMotion="user": sin animaciones si el sistema pide reducir movimiento
+    <MotionConfig reducedMotion="user">
+      {RUTAS_LEGALES.includes(ruta) ? <PaginaLegal ruta={ruta} /> : <Calculadora />}
+    </MotionConfig>
+  )
+}
+
+function Calculadora() {
   const {
     busqueda, setBusqueda,
     verMisCursos, setVerMisCursos,
@@ -62,7 +78,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-    <div className="min-h-screen text-slate-100 font-['Quicksand'] antialiased selection:bg-teal-400/40 selection:text-white">
+    <div className="min-h-screen flex flex-col">
 
       <TopBar
         auth={auth}
@@ -101,18 +117,24 @@ export default function App() {
         onVerHistorial={() => setHistorialAbierto(true)}
       />
 
+      <Footer />
+
       {/* key: el simulador se reinicia al cambiar de curso */}
-      <ModalCalculo
-        key={cursoSeleccionado?.id}
-        curso={cursoSeleccionado}
-        notasGlobales={notasGlobales}
-        actualizarNota={actualizarNota}
-        limpiarNotasCurso={limpiarNotasCurso}
-        esFavorito={!!cursoSeleccionado && misCursosIds.includes(cursoSeleccionado.id)}
-        onToggleFav={toggleFavorito}
-        onReportar={reportarCurso}
-        onCerrar={reset}
-      />
+      <AnimatePresence>
+        {cursoSeleccionado && (
+          <ModalCalculo
+            key={cursoSeleccionado.id}
+            curso={cursoSeleccionado}
+            notasGlobales={notasGlobales}
+            actualizarNota={actualizarNota}
+            limpiarNotasCurso={limpiarNotasCurso}
+            esFavorito={misCursosIds.includes(cursoSeleccionado.id)}
+            onToggleFav={toggleFavorito}
+            onReportar={reportarCurso}
+            onCerrar={reset}
+          />
+        )}
+      </AnimatePresence>
 
       <CursoFormModal
         isOpen={formAbierto}
@@ -126,16 +148,15 @@ export default function App() {
       <HistorialModal isOpen={historialAbierto} onClose={() => setHistorialAbierto(false)} />
 
       {/* Botón flotante de donación */}
-      <button
+      <motion.button
         onClick={() => setDonarAbierto(true)}
-        className="fixed bottom-[92px] md:bottom-5 right-4 md:right-5 z-40 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-2xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-95 transition-colors cursor-pointer"
-        aria-label="Donar"
+        whileHover={{ y: -1 }}
+        whileTap={{ scale: 0.96 }}
+        className="fixed bottom-[92px] md:bottom-5 right-4 md:right-5 z-40 flex items-center gap-2 h-10 pl-3 pr-4 rounded-full bg-card border border-border shadow-md text-sm font-medium text-foreground cursor-pointer"
       >
-        <span className="text-sm leading-none">♥</span>
+        <Heart className="w-4 h-4 text-danger" fill="currentColor" />
         Donar
-      </button>
-
-      <DonateModal isOpen={donarAbierto} onClose={() => setDonarAbierto(false)} />
+      </motion.button>
 
       <MobileNav
         verMisCursos={verMisCursos}
@@ -144,14 +165,17 @@ export default function App() {
         onSolicitar={abrirSolicitud}
       />
 
-      {solicitud && (
-        <SolicitarCursoModal
-          isOpen
-          inicial={solicitud}
-          onClose={() => setSolicitud(null)}
-          cursos={cursos}
-        />
-      )}
+      <AnimatePresence>
+        {donarAbierto && <DonateModal key="donar" onClose={() => setDonarAbierto(false)} />}
+        {solicitud && (
+          <SolicitarCursoModal
+            key="solicitar"
+            inicial={solicitud}
+            onClose={() => setSolicitud(null)}
+            cursos={cursos}
+          />
+        )}
+      </AnimatePresence>
     </div>
     </ToastProvider>
   )

@@ -15,7 +15,7 @@ const EPSILON = 0.01
 const sumaPct = (arr) => arr.reduce((acc, x) => acc + (parseFloat(x.porcentaje) || 0), 0)
 const round2 = (n) => Math.round(n * 100) / 100
 const pesoAPct = (p) => String(Math.round((p * 100 + Number.EPSILON) * 10000) / 10000)
-const inputBase = 'rounded-lg bg-black/40 border text-slate-100 placeholder:text-slate-600 outline-none transition-all'
+const inputBase = 'rounded-lg bg-background border text-foreground placeholder:text-muted-foreground outline-none transition-all'
 
 const repartir = (items) => {
   const n = items.length
@@ -77,21 +77,21 @@ const SortableSub = ({ sub, comp, componentes, update }) => {
         {...attributes}
         {...listeners}
         style={{ touchAction: 'none' }}
-        className="shrink-0 w-6 h-7 flex items-center justify-center rounded-md text-slate-500 hover:text-cyan-200 hover:bg-white/[0.06] cursor-grab active:cursor-grabbing transition-colors"
+        className="shrink-0 w-6 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted cursor-grab active:cursor-grabbing transition-colors"
         aria-label="Arrastrar para reordenar"
         title="Arrastra para reordenar"
       >
         <IconoGrip />
       </button>
       <input type="text" placeholder="Tests" value={sub.nombre} aria-label="Nombre de la subnota" onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { nombre: e.target.value }))}
-        className={`flex-1 min-w-0 px-2.5 py-1.5 ${inputBase} bg-black/50 border-white/[0.06] focus:border-teal-300/50 text-xs font-semibold`} />
+        className={`flex-1 min-w-0 px-2.5 py-1.5 ${inputBase} bg-background border-border focus:border-primary text-xs font-semibold`} />
       <div className="relative w-20 shrink-0">
         <input type="number" placeholder="0" min="0" max="100" step="0.0001" value={sub.porcentaje} aria-label="Porcentaje de la subnota" onChange={(e) => update(subUpdate(componentes, comp.key, sub.key, { porcentaje: e.target.value }))}
-          className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-black/50 border-teal-300/20 text-center text-teal-100 font-bold text-xs focus:border-teal-300/60`} />
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-teal-300/50 text-[10px] font-bold">%</span>
+          className={`w-full pl-2 pr-6 py-1.5 ${inputBase} bg-background border-success/30 text-center text-foreground font-bold text-xs focus:border-primary`} />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-success text-xs font-bold">%</span>
       </div>
       <button onClick={() => update(subRemove(componentes, comp.key, sub.key))} disabled={comp.subNotas.length === 1}
-        className="w-7 h-7 shrink-0 flex items-center justify-center rounded-md bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer text-xs" aria-label="Eliminar subnota">✕</button>
+        className="w-7 h-7 shrink-0 flex items-center justify-center rounded-md bg-danger-soft hover:bg-danger-soft text-danger disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer text-xs" aria-label="Eliminar subnota">✕</button>
     </div>
   )
 }
@@ -118,41 +118,41 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
       {componentes.map((comp) => {
         const sOk = subnotaOkComp(comp)
         return (
-          <div key={comp.key} className="bg-white/[0.03] rounded-2xl border border-white/10 p-4">
+          <div key={comp.key} className="bg-muted rounded-2xl border border-border p-4">
             <div className="flex items-center gap-2">
               <input type="text" placeholder="EC1" value={comp.nombre} aria-label="Nombre del componente"
                 onChange={(e) => update(compUpdate(componentes, comp.key, { nombre: e.target.value }))}
-                className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-white/10 focus:border-cyan-300/50 font-bold text-sm uppercase`} />
+                className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-border focus:border-primary font-bold text-sm`} />
               <div className="relative w-24 shrink-0">
                 <input type="number" placeholder="0" min="0" max="100" step="0.01" value={comp.porcentaje} aria-label="Porcentaje del componente"
                   onChange={(e) => update(compUpdate(componentes, comp.key, { porcentaje: e.target.value }))}
-                  className={`w-full pl-3 pr-7 py-2 ${inputBase} border-cyan-300/20 text-center text-cyan-200 font-bold text-sm focus:border-cyan-300/60`} />
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cyan-300/60 text-xs font-bold">%</span>
+                  className={`w-full pl-3 pr-7 py-2 ${inputBase} border-primary/30 text-center text-primary font-bold text-sm focus:border-primary`} />
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-primary text-xs font-bold">%</span>
               </div>
               <button onClick={() => update(compRemove(componentes, comp.key))} disabled={componentes.length === 1}
-                className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-400/20 text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer" aria-label="Eliminar">
+                className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-danger-soft hover:bg-danger-soft border border-danger/30 text-danger disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90 cursor-pointer" aria-label="Eliminar">
                 <IconoBorrar />
               </button>
             </div>
 
             <div className="flex items-center gap-4 mt-3 flex-wrap">
               <label className="flex items-center gap-2 cursor-pointer w-fit">
-                <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-cyan-400 w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-slate-400">Tiene subnotas</span>
+                <input type="checkbox" checked={comp.tieneSubnotas} onChange={(e) => update(compToggleSub(componentes, comp.key, e.target.checked))} className="accent-[var(--primary)] w-3.5 h-3.5" />
+                <span className="text-xs font-bold text-muted-foreground">Tiene subnotas</span>
               </label>
               {comp.tieneSubnotas && (
                 <label className="flex items-center gap-2 cursor-pointer w-fit" title="Muestra un cuadro opcional para ingresar la nota completa de esta evaluación sin llenar las subnotas">
-                  <input type="checkbox" checked={!!comp.permiteDirecta} onChange={(e) => update(compUpdate(componentes, comp.key, { permiteDirecta: e.target.checked }))} className="accent-teal-400 w-3.5 h-3.5" />
-                  <span className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300/80">Permitir nota completa</span>
+                  <input type="checkbox" checked={!!comp.permiteDirecta} onChange={(e) => update(compUpdate(componentes, comp.key, { permiteDirecta: e.target.checked }))} className="accent-[var(--primary)] w-3.5 h-3.5" />
+                  <span className="text-xs font-bold text-success">Permitir nota completa</span>
                 </label>
               )}
             </div>
 
             {comp.tieneSubnotas && (
-              <div className="mt-3 pl-3 border-l-2 border-teal-300/20 space-y-2">
+              <div className="mt-3 pl-3 border-l-2 border-success/30 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-[1.5px] font-bold text-teal-300/80">Subnotas (suman 100% de {comp.nombre || 'este'}) · arrastra ⠿</span>
-                  <span className={`text-[10px] font-black ${sOk ? 'text-teal-300' : 'text-amber-300'}`}>{round2(subnotaSumArr(comp))}%{sOk ? ' ✓' : ''}</span>
+                  <span className="text-xs font-bold text-success">Subnotas (suman 100% de {comp.nombre || 'este'}) · arrastra ⠿</span>
+                  <span className={`text-xs font-semibold ${sOk ? 'text-success' : 'text-star'}`}>{round2(subnotaSumArr(comp))}%{sOk ? ' ✓' : ''}</span>
                 </div>
 
                 <DndContext
@@ -171,16 +171,16 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
                 </DndContext>
 
                 <div className="flex items-center gap-2 pt-1">
-                  <button onClick={() => update(subAdd(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-teal-300 hover:text-teal-200 transition-colors cursor-pointer">+ Subnota</button>
-                  <span className="text-slate-600">·</span>
-                  <button onClick={() => update(subRepartir(componentes, comp.key))} className="text-[10px] uppercase tracking-[1.5px] font-bold text-cyan-300/80 hover:text-cyan-200 transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
+                  <button onClick={() => update(subAdd(componentes, comp.key))} className="text-xs font-bold text-success hover:text-success transition-colors cursor-pointer">+ Subnota</button>
+                  <span className="text-muted-foreground">·</span>
+                  <button onClick={() => update(subRepartir(componentes, comp.key))} className="text-xs font-bold text-primary hover:text-primary transition-colors cursor-pointer" title="Reparte 100% en partes iguales">÷ Equitativo</button>
                 </div>
               </div>
             )}
           </div>
         )
       })}
-      <button onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-cyan-200 hover:border-cyan-300/40 transition-all text-[10px] uppercase tracking-[2px] font-bold cursor-pointer">+ Agregar {nombreItem}</button>
+      <button onClick={() => update(compAdd(componentes))} className="w-full py-2.5 rounded-xl border border-dashed border-border text-muted-foreground hover:text-primary hover:border-primary/40 transition-all text-xs font-bold cursor-pointer">+ Agregar {nombreItem}</button>
     </div>
   )
 }
@@ -295,23 +295,23 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
   }
 
   return (
-    <div className="fixed inset-0 bg-[#07061a]/80 backdrop-blur-md flex items-center justify-center p-4 z-[60] animate-fade-in"
+    <div className="fixed inset-0 bg-background dark:bg-background backdrop-blur-[2px] flex items-center justify-center p-4 z-[60]"
       onClick={(e) => { if (e.target === e.currentTarget) cerrar() }}>
-      <div className="relative w-full max-w-2xl max-h-[92vh] rounded-[34px] border border-white/10 shadow-2xl shadow-black/50">
-        <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-[#0c0824] rounded-[33px] overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[92vh] rounded-2xl border border-border shadow-2xl">
+        <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-card rounded-2xl overflow-hidden">
 
           {/* Header */}
-          <div className="relative z-10 flex items-center justify-between gap-4 px-6 md:px-8 pt-6 pb-4 border-b border-white/[0.08]">
+          <div className="relative z-10 flex items-center justify-between gap-4 px-6 md:px-8 pt-6 pb-4 border-b border-border">
             <div>
-              <p className="text-[10px] uppercase tracking-[3px] text-cyan-300 font-bold mb-1 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
+              <p className="text-xs text-primary font-bold mb-1 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                 {esEdicion ? 'Editar curso' : 'Nuevo curso'}
               </p>
-              <h3 className="text-xl font-bold tracking-tight text-slate-100">
+              <h3 className="text-xl font-bold tracking-tight text-foreground">
                 {esEdicion ? cursoEditar.id : 'Agregar curso'}
               </h3>
             </div>
-            <button onClick={cerrar} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
+            <button onClick={cerrar} className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted hover:bg-muted border border-border text-foreground/80 hover:text-foreground transition-all active:scale-90 cursor-pointer" aria-label="Cerrar">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -323,27 +323,27 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">
-                  Código {esEdicion && <span className="text-slate-500">(no editable)</span>}
+                <label className="block text-xs text-primary font-bold mb-2">
+                  Código {esEdicion && <span className="text-muted-foreground">(no editable)</span>}
                 </label>
                 <input type="text" placeholder="CS3041" value={id} disabled={esEdicion} onChange={(e) => setId(e.target.value)}
-                  className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-bold text-sm uppercase disabled:opacity-50 disabled:cursor-not-allowed`} />
+                  className={`w-full px-3 py-2.5 ${inputBase} border-border focus:border-primary focus:ring-2 focus:ring-primary/20 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed`} />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-[10px] uppercase tracking-[2px] text-cyan-300 font-bold mb-2">Nombre del curso</label>
+                <label className="block text-xs text-primary font-bold mb-2">Nombre del curso</label>
                 <input type="text" placeholder="Algoritmos y Estructuras de Datos" value={nombre} onChange={(e) => setNombre(e.target.value)}
-                  className={`w-full px-3 py-2.5 ${inputBase} border-white/10 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20 font-medium text-sm`} />
+                  className={`w-full px-3 py-2.5 ${inputBase} border-border focus:border-primary focus:ring-2 focus:ring-primary/20 font-medium text-sm`} />
               </div>
             </div>
 
             {/* Toggle candado */}
-            <div className="flex items-center justify-between bg-white/[0.03] border border-white/10 rounded-2xl px-4 py-3">
+            <div className="flex items-center justify-between bg-muted border border-border rounded-2xl px-4 py-3">
               <div>
-                <span className="text-sm font-bold text-slate-100 flex items-center gap-2">🔒 Curso candado</span>
-                <span className="text-[10px] text-slate-400 font-medium">Dos partes (ej. Teoría/Lab); cada una debe llegar a 10.5</span>
+                <span className="text-sm font-bold text-foreground flex items-center gap-2">🔒 Curso candado</span>
+                <span className="text-xs text-muted-foreground font-medium">Dos partes (ej. Teoría/Lab); cada una debe llegar a 10.5</span>
               </div>
               <button onClick={() => setCandado((v) => !v)}
-                className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${candado ? 'bg-cyan-300' : 'bg-white/10'}`} aria-label="Activar candado">
+                className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${candado ? 'bg-primary' : 'bg-muted'}`} aria-label="Activar candado">
                 <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${candado ? 'left-[26px]' : 'left-0.5'}`}></span>
               </button>
             </div>
@@ -352,11 +352,11 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
             {!candado && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] uppercase tracking-[2px] text-teal-300 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300"></span>
+                  <span className="text-xs text-success font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                     Sistema de evaluación
                   </span>
-                  <span className={`text-[11px] font-black ${normalOk ? 'text-teal-300' : 'text-amber-300'}`}>
+                  <span className={`text-[11px] font-semibold ${normalOk ? 'text-success' : 'text-star'}`}>
                     Total: {round2(totalNormal)}% / 100%{normalOk ? ' ✓' : ''}
                   </span>
                 </div>
@@ -368,21 +368,21 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
             {candado && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase tracking-[2px] text-teal-300 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-300"></span>
+                  <span className="text-xs text-success font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                     Partes (los % son sobre el total del curso)
                   </span>
-                  <span className={`text-[11px] font-black ${candadoTotalOk ? 'text-teal-300' : 'text-amber-300'}`}>
+                  <span className={`text-[11px] font-semibold ${candadoTotalOk ? 'text-success' : 'text-star'}`}>
                     Total: {round2(totalCandado)}% / 100%{candadoTotalOk ? ' ✓' : ''}
                   </span>
                 </div>
 
                 {partes.map((parte) => (
-                  <div key={parte.key} className="bg-white/[0.02] rounded-2xl border border-cyan-300/20 p-4">
+                  <div key={parte.key} className="bg-muted rounded-2xl border border-primary/30 p-4">
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <input type="text" placeholder="Teoría" value={parte.nombre} aria-label="Nombre de la parte" onChange={(e) => updateParteNombre(parte.key, e.target.value)}
-                        className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-cyan-300/30 focus:border-cyan-300/60 font-bold text-sm`} />
-                      <span className="shrink-0 text-[10px] uppercase tracking-[1.5px] font-black text-cyan-200 bg-cyan-300/10 border border-cyan-300/30 px-3 py-2 rounded-lg">
+                        className={`flex-1 min-w-0 px-3 py-2 ${inputBase} border-primary/30 focus:border-primary font-bold text-sm`} />
+                      <span className="shrink-0 text-xs font-semibold text-primary bg-accent border border-primary/30 px-3 py-2 rounded-lg">
                         Peso {round2(pesoParte(parte))}%
                       </span>
                     </div>
@@ -397,36 +397,36 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
             )}
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-400/30 rounded-xl px-4 py-3 text-rose-200 text-xs font-semibold">{error}</div>
+              <div className="bg-danger-soft border border-danger/30 rounded-xl px-4 py-3 text-danger text-xs font-semibold">{error}</div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="relative z-10 px-6 md:px-8 py-4 border-t border-white/[0.08] bg-black/20 flex items-center justify-between gap-3">
+          <div className="relative z-10 px-6 md:px-8 py-4 border-t border-border bg-background flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-h-[40px]">
               {esEdicion && (
                 confirmarBorrar ? (
                   <>
-                    <span className="text-[10px] text-rose-300 font-black uppercase tracking-wider hidden sm:block">¿Eliminar?</span>
+                    <span className="text-xs text-danger font-semibold hidden sm:block">¿Eliminar?</span>
                     <button onClick={handleEliminar} disabled={guardando}
-                      className="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-200 hover:bg-rose-500/30 font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer disabled:opacity-40">
+                      className="px-3 py-2 rounded-lg bg-danger-soft border border-danger/30 text-danger hover:bg-danger-soft font-bold text-xs transition-all cursor-pointer disabled:opacity-40">
                       {guardando ? 'Borrando…' : 'Sí, borrar'}
                     </button>
                     <button onClick={() => setConfirmarBorrar(false)}
-                      className="px-3 py-2 rounded-lg bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer">No</button>
+                      className="px-3 py-2 rounded-lg bg-muted border border-border text-foreground/80 hover:text-foreground font-bold text-xs transition-all cursor-pointer">No</button>
                   </>
                 ) : (
                   <button onClick={() => setConfirmarBorrar(true)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-400/20 text-rose-300 hover:bg-rose-500/20 hover:border-rose-400/40 font-bold text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer" title="Eliminar curso">
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-danger-soft border border-danger/30 text-danger hover:bg-danger-soft hover:border-danger/40 font-bold text-xs transition-all cursor-pointer" title="Eliminar curso">
                     <IconoBorrar /> Eliminar
                   </button>
                 )
               )}
             </div>
             <div className="flex gap-2">
-              <button onClick={cerrar} className="px-5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] font-bold text-[11px] uppercase tracking-[2px] transition-all cursor-pointer">Cancelar</button>
+              <button onClick={cerrar} className="px-5 py-2.5 rounded-xl bg-muted border border-border text-foreground/80 hover:text-foreground hover:bg-muted font-bold text-[11px] transition-all cursor-pointer">Cancelar</button>
               <button onClick={handleGuardar} disabled={!puedeGuardar}
-                className="px-6 py-2.5 rounded-xl bg-cyan-300 hover:bg-cyan-200 text-[#0a0420] font-black text-[11px] uppercase tracking-[2px] active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                className="px-6 py-2.5 rounded-xl bg-primary hover:opacity-90 text-primary-foreground font-semibold text-[11px] active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                 {guardando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Guardar curso'}
               </button>
             </div>
