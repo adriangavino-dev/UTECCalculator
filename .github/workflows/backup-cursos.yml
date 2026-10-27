@@ -1,0 +1,47 @@
+# Backup diario de los cursos de Supabase.
+# Guarda cursos.json en la rama "backups": cada cambio queda como un commit,
+# así se puede ver y recuperar cualquier versión anterior de un curso.
+name: Backup de cursos
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # 3:00 a. m. hora de Perú
+  workflow_dispatch: # botón "Run workflow" para hacerlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Descargar cursos
+        run: node scripts/backup-cursos.mjs "$RUNNER_TEMP/cursos.json"
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Guardar en la rama backups
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch origin backups; then
+            git worktree add -B backups bk origin/backups
+          else
+            git worktree add --orphan -b backups bk
+          fi
+          cp "$RUNNER_TEMP/cursos.json" bk/cursos.json
+          cd bk
+          git add cursos.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios desde el último backup."
+            exit 0
+          fi
+          git commit -m "Backup $(date -u +%F)"
+          git push origin backups

@@ -25,3 +25,7 @@ dist-ssr
 
 .claude/*
 .github/*
+!.github/workflows/
+
+# Backups locales (npm run backup)
+backups/

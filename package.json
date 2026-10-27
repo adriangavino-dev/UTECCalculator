@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "npx react-doctor@latest",
+    "backup": "node --env-file=.env.local scripts/backup-cursos.mjs",
+    "restaurar": "node scripts/restaurar-curso.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
