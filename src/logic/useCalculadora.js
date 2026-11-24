@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
+import { normalizarTexto, indexarCurso, evaluarBusqueda } from './busquedaCursos'
 
 const MIN_APROBATORIO = 10.5
 const PER_PAGE = 9
@@ -317,21 +318,39 @@ export const useCalculadora = () => {
     return m
   }, [cursos, notasGlobales])
 
+  // Índices precalculados para búsqueda rápida (sin tildes, siglas, tokens, romanos)
+  const indicesBusqueda = useMemo(() => {
+    const m = {}
+    cursos.forEach((c) => { m[c.id] = indexarCurso(c) })
+    return m
+  }, [cursos])
+
   // "Mis cursos" = solo los marcados con ★
   const esMio = (c) => misCursosIds.includes(c.id)
 
-  const q = busqueda.trim().toLowerCase();
-  let lista = cursos.filter(c => {
-    const coincideBusqueda = q === '' ? true : (c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-    return verMisCursos ? (esMio(c) && coincideBusqueda) : coincideBusqueda;
-  });
+  const qNorm = normalizarTexto(busqueda)
+  const hayConsulta = qNorm !== ''
+  const puntajes = {}
+  let lista = cursos.filter((c) => {
+    if (verMisCursos && !esMio(c)) return false
+    if (!hayConsulta) return true
+    const p = evaluarBusqueda(indicesBusqueda[c.id], busqueda)
+    puntajes[c.id] = p
+    return p !== null
+  })
   if (soloCandado) lista = lista.filter(c => c.sistema && c.sistema.candado)
   const urgencia = (c) => {
     const e = estados[c.id]
     // Dentro de "en riesgo", primero el que más necesita
     return RANGO[e.tipo] * 100 - (e.tipo === 'riesgo' ? Math.min(e.necesita ?? 21, 21) : 0)
   }
-  lista = [...lista].sort((a, b) => urgencia(a) - urgencia(b) || a.nombre.localeCompare(b.nombre))
+  lista = [...lista].sort((a, b) => {
+    if (hayConsulta) {
+      const diff = puntajes[a.id] - puntajes[b.id]
+      if (diff !== 0) return diff
+    }
+    return urgencia(a) - urgencia(b) || a.nombre.localeCompare(b.nombre)
+  })
   const filtrados = lista
 
   // Resumen "Mi ciclo": solo con los cursos de "Mis cursos"
