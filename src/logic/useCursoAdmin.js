@@ -35,6 +35,32 @@ export const useCursoAdmin = () => {
   const construirSistema = (cursoForm) =>
     cursoForm.candado ? construirCandado(cursoForm.partes) : construirSimple(cursoForm.componentes)
 
+  // Etiquetas de búsqueda: sin vacías ni repetidas (sin importar mayúsculas)
+  const limpiarEtiquetas = (etiquetas = []) => {
+    const vistas = new Set()
+    return etiquetas
+      .map((e) => e.trim().replace(/\s+/g, ' ').slice(0, 40))
+      .filter((e) => {
+        const k = e.toLowerCase()
+        if (!e || vistas.has(k)) return false
+        vistas.add(k)
+        return true
+      })
+      .slice(0, 20)
+  }
+
+  // Solo se envían si el formulario las trae (así no falla si la columna aún no existe)
+  const camposEtiquetas = (cursoForm) =>
+    cursoForm.etiquetas === undefined ? {} : { etiquetas: limpiarEtiquetas(cursoForm.etiquetas) }
+
+  const mensajeError = (err, porDefecto) => {
+    if (err.code === '23505') return mensajeDuplicado(err)
+    if ((err.message || '').includes('etiquetas')) {
+      return 'Falta activar las etiquetas en Supabase: ejecuta supabase/etiquetas_cursos.sql'
+    }
+    return err.message || porDefecto
+  }
+
   const mensajeDuplicado = (err) => {
     const msg = (err.message || '').toLowerCase()
     if (msg.includes('nombre')) return 'Ya existe un curso con ese nombre.'
@@ -52,6 +78,7 @@ export const useCursoAdmin = () => {
         nombre: cursoForm.nombre.trim(),
         carrera: [],
         sistema: construirSistema(cursoForm),
+        ...camposEtiquetas(cursoForm),
       })
       .select()
       .single()
@@ -59,9 +86,7 @@ export const useCursoAdmin = () => {
     setGuardando(false)
 
     if (insertError) {
-      const message = insertError.code === '23505'
-        ? mensajeDuplicado(insertError)
-        : (insertError.message || 'Error al guardar el curso.')
+      const message = mensajeError(insertError, 'Error al guardar el curso.')
       setError(message)
       return { ok: false, message }
     }
@@ -77,6 +102,7 @@ export const useCursoAdmin = () => {
       .update({
         nombre: cursoForm.nombre.trim(),
         sistema: construirSistema(cursoForm),
+        ...camposEtiquetas(cursoForm),
       })
       .eq('id', originalId)
       .select()
@@ -85,9 +111,7 @@ export const useCursoAdmin = () => {
     setGuardando(false)
 
     if (updError) {
-      const message = updError.code === '23505'
-        ? mensajeDuplicado(updError)
-        : (updError.message || 'Error al actualizar el curso.')
+      const message = mensajeError(updError, 'Error al actualizar el curso.')
       setError(message)
       return { ok: false, message }
     }

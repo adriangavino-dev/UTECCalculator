@@ -20,16 +20,21 @@ if (!curso) {
 // Texto SQL entre comillas simples
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`
 const carrera = [].concat(curso.carrera || [])
+const etiquetas = Array.isArray(curso.etiquetas) ? curso.etiquetas : null
 
+// Las etiquetas solo existen en backups hechos después de activarlas
+const conEtiquetas = etiquetas !== null
 console.log(`-- Restaurar ${curso.id} (${curso.nombre}) desde ${archivo}
-insert into cursos (id, nombre, carrera, sistema)
+insert into cursos (id, nombre, carrera, sistema${conEtiquetas ? ', etiquetas' : ''})
 values (
   ${q(curso.id)},
   ${q(curso.nombre)},
   array[${carrera.map(q).join(', ')}]::text[],
-  ${q(JSON.stringify(curso.sistema))}::jsonb
+  ${q(JSON.stringify(curso.sistema))}::jsonb${conEtiquetas ? `,
+  array[${etiquetas.map(q).join(', ')}]::text[]` : ''}
 )
 on conflict (id) do update
   set nombre = excluded.nombre,
       carrera = excluded.carrera,
-      sistema = excluded.sistema;`)
+      sistema = excluded.sistema${conEtiquetas ? `,
+      etiquetas = excluded.etiquetas` : ''};`)

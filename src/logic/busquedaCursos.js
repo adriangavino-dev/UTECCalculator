@@ -47,20 +47,25 @@ const armarSiglas = (palabras) => {
 
 /**
  * Pre-indexa un curso para búsquedas sin tildes, por tokens, romanos y siglas automáticas.
+ * Las etiquetas manuales del curso (no visibles en la página) se buscan igual que el nombre.
  */
 export const indexarCurso = (curso) => {
   const idNorm = normalizarTexto(curso.id)
   const idCompacto = idNorm.replace(/[^a-z0-9]/g, '')
   const nombreNorm = normalizarTexto(curso.nombre)
+  const etiquetas = (curso.etiquetas || []).map(normalizarTexto).filter(Boolean)
   const palabras = tokenizar(curso.nombre)
-  const palabrasExpandidas = palabras.map((base) => ({
+  const palabrasEtiquetas = etiquetas.flatMap((e) => tokenizar(e))
+  const palabrasExpandidas = [...new Set([...palabras, ...palabrasEtiquetas])].map((base) => ({
     base,
     alt: ROMANO_A_ARABIGO[base] || ARABIGO_A_ROMANO[base] || null,
   }))
   const sinConectores = palabras.filter((w) => !STOP_WORDS.has(w))
   const siglas = new Set([...armarSiglas(sinConectores), ...armarSiglas(palabras)])
+  // Etiqueta completa, con y sin espacios (ej. "mate 2" y "mate2")
+  const etiquetasCompletas = new Set(etiquetas.flatMap((e) => [e, e.replace(/[^a-z0-9]/g, '')]))
 
-  return { idNorm, idCompacto, nombreNorm, palabrasExpandidas, siglas }
+  return { idNorm, idCompacto, nombreNorm, palabrasExpandidas, siglas, etiquetasCompletas }
 }
 
 const nivelToken = (indice, tok, esMultiToken) => {
@@ -124,7 +129,9 @@ export const evaluarBusqueda = (indice, consulta) => {
   if (
     indice.idCompacto === qCompacto ||
     indice.nombreNorm === qNorm ||
-    indice.siglas.has(qCompacto)
+    indice.siglas.has(qCompacto) ||
+    indice.etiquetasCompletas.has(qNorm) ||
+    indice.etiquetasCompletas.has(qCompacto)
   ) {
     return 0
   }

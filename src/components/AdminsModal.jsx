@@ -39,7 +39,7 @@ export const AdminsModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-background dark:bg-background backdrop-blur-[2px] flex items-center justify-center p-4 z-[60]"
+      className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-[60]"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="relative w-full max-w-lg max-h-[88vh] rounded-2xl border border-border shadow-2xl">

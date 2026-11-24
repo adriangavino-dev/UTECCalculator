@@ -5,6 +5,7 @@ import { DndContext, closestCenter, PointerSensor, TouchSensor, KeyboardSensor, 
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
+import { X } from 'lucide-react'
 
 const uid = () => (crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`)
 const nuevaSubnota = () => ({ key: uid(), nombre: '', porcentaje: '' })
@@ -185,12 +186,80 @@ const ListaComponentes = ({ componentes, update, nombreItem = 'componente' }) =>
   )
 }
 
+// Etiquetas de búsqueda: chips con Enter o coma. No se muestran en la página.
+const EtiquetasInput = ({ etiquetas, setEtiquetas }) => {
+  const [texto, setTexto] = useState('')
+
+  const agregar = (valor) => {
+    const nuevas = valor.split(',').map((t) => t.trim().replace(/\s+/g, ' ')).filter(Boolean)
+    setTexto('')
+    if (nuevas.length === 0) return
+    setEtiquetas((prev) => {
+      const vistas = new Set(prev.map((e) => e.toLowerCase()))
+      const unicas = nuevas.filter((n) => {
+        const k = n.toLowerCase()
+        if (vistas.has(k)) return false
+        vistas.add(k)
+        return true
+      })
+      return [...prev, ...unicas].slice(0, 20)
+    })
+  }
+
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      agregar(texto)
+    } else if (e.key === 'Backspace' && texto === '' && etiquetas.length > 0) {
+      setEtiquetas((prev) => prev.slice(0, -1))
+    }
+  }
+
+  return (
+    <div>
+      <label htmlFor="etiquetas-curso" className="block text-xs text-primary font-bold mb-2">
+        Etiquetas de búsqueda <span className="text-muted-foreground font-medium">(opcional)</span>
+      </label>
+      <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl border border-border bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition">
+        {etiquetas.map((et) => (
+          <span key={et} className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-md bg-muted text-sm text-foreground">
+            {et}
+            <button
+              type="button"
+              onClick={() => setEtiquetas((prev) => prev.filter((x) => x !== et))}
+              className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-danger cursor-pointer"
+              aria-label={`Quitar etiqueta ${et}`}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </span>
+        ))}
+        <input
+          id="etiquetas-curso"
+          type="text"
+          value={texto}
+          maxLength={40}
+          onChange={(e) => setTexto(e.target.value)}
+          onKeyDown={onKeyDown}
+          onBlur={() => agregar(texto)}
+          placeholder={etiquetas.length ? 'Agregar otra…' : 'Ej. mate 2, discretas, MD2'}
+          className="flex-1 min-w-[150px] h-7 px-1.5 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+        />
+      </div>
+      <p className="text-xs text-muted-foreground mt-1.5">
+        No se muestran en la página: solo sirven para encontrar el curso en el buscador. Separa con Enter o coma.
+      </p>
+    </div>
+  )
+}
+
 export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosExistentes = [] }) => {
   const { agregarCurso, editarCurso, eliminarCurso, guardando, error, setError } = useCursoAdmin()
   const { showToast } = useToast()
 
   const [id, setId] = useState('')
   const [nombre, setNombre] = useState('')
+  const [etiquetas, setEtiquetas] = useState([])
   const [candado, setCandado] = useState(false)
   const [componentes, setComponentes] = useState([nuevoComponente()])
   const [partes, setPartes] = useState([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
@@ -205,6 +274,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
     if (cursoEditar) {
       setId(cursoEditar.id)
       setNombre(cursoEditar.nombre)
+      setEtiquetas(cursoEditar.etiquetas || [])
       const sis = cursoEditar.sistema || {}
       if (sis.candado) {
         setCandado(true)
@@ -236,7 +306,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
         setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
       }
     } else {
-      setId(''); setNombre(''); setCandado(false)
+      setId(''); setNombre(''); setEtiquetas([]); setCandado(false)
       setComponentes([nuevoComponente()])
       setPartes([nuevaParte('Teoría'), nuevaParte('Laboratorio')])
     }
@@ -278,7 +348,10 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
       return
     }
 
-    const payload = { id, nombre, candado, componentes, partes }
+    // Las etiquetas se envían si hay alguna o si el curso ya las tenía (para poder borrarlas).
+    // Así, si la columna aún no existe en Supabase, guardar sin etiquetas sigue funcionando.
+    const enviarEtiquetas = etiquetas.length > 0 || (esEdicion && Array.isArray(cursoEditar.etiquetas))
+    const payload = { id, nombre, candado, componentes, partes, ...(enviarEtiquetas ? { etiquetas } : {}) }
     const res = esEdicion ? await editarCurso(cursoEditar.id, payload) : await agregarCurso(payload)
     if (res.ok) {
       showToast(esEdicion ? 'Cambios guardados' : `Curso ${id.trim()} agregado`, 'success')
@@ -295,7 +368,7 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
   }
 
   return (
-    <div className="fixed inset-0 bg-background dark:bg-background backdrop-blur-[2px] flex items-center justify-center p-4 z-[60]"
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-[60]"
       onClick={(e) => { if (e.target === e.currentTarget) cerrar() }}>
       <div className="relative w-full max-w-2xl max-h-[92vh] rounded-2xl border border-border shadow-2xl">
         <div className="relative w-full h-full max-h-[calc(92vh-3px)] flex flex-col bg-card rounded-2xl overflow-hidden">
@@ -335,6 +408,8 @@ export const CursoFormModal = ({ isOpen, onClose, onSaved, cursoEditar, cursosEx
                   className={`w-full px-3 py-2.5 ${inputBase} border-border focus:border-primary focus:ring-2 focus:ring-primary/20 font-medium text-sm`} />
               </div>
             </div>
+
+            <EtiquetasInput etiquetas={etiquetas} setEtiquetas={setEtiquetas} />
 
             {/* Toggle candado */}
             <div className="flex items-center justify-between bg-muted border border-border rounded-2xl px-4 py-3">
