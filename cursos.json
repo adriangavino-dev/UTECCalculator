@@ -14,7 +14,8 @@
     "created_by": null,
     "created_at": "2026-08-12T19:33:46.933134+00:00",
     "updated_at": "2026-08-12T19:33:46.933134+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CC1103",
@@ -61,7 +62,8 @@
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
     "updated_at": "2026-10-27T02:19:47.02743+00:00",
-    "ciclo": 2
+    "ciclo": 2,
+    "etiquetas": []
   },
   {
     "id": "CC1104",
@@ -76,7 +78,8 @@
     "created_by": null,
     "created_at": "2026-06-30T19:31:35.62078+00:00",
     "updated_at": "2026-06-30T19:31:35.62078+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CC1105",
@@ -97,7 +100,8 @@
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
     "updated_at": "2026-06-13T00:47:00.125508+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CC2101",
@@ -139,8 +143,11 @@
     },
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
-    "updated_at": "2026-07-05T01:46:04.675189+00:00",
-    "ciclo": null
+    "updated_at": "2026-11-24T22:38:16.025117+00:00",
+    "ciclo": null,
+    "etiquetas": [
+      "edo"
+    ]
   },
   {
     "id": "CC2104",
@@ -152,9 +159,10 @@
           "nombre": "Teoría",
           "sistema": {
             "EF": 0.3,
-            "ep": 0.2,
-            "ec1": {
+            "EP": 0.2,
+            "EC1": {
               "peso": 0.15,
+              "directa": true,
               "subNotas": {
                 "EA1": 0.2,
                 "EA2": 0.2,
@@ -163,8 +171,9 @@
                 "RC2": 0.2
               }
             },
-            "ec2": {
+            "EC2": {
               "peso": 0.15,
+              "directa": true,
               "subNotas": {
                 "EA4": 0.2,
                 "EA5": 0.2,
@@ -186,8 +195,9 @@
     },
     "created_by": null,
     "created_at": "2026-06-13T21:54:28.981988+00:00",
-    "updated_at": "2026-06-16T17:01:20.905878+00:00",
-    "ciclo": null
+    "updated_at": "2026-11-24T21:40:42.06716+00:00",
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CC6101",
@@ -205,7 +215,8 @@
     "created_by": null,
     "created_at": "2026-09-17T01:44:02.569289+00:00",
     "updated_at": "2026-09-17T01:44:02.569289+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS1022",
@@ -251,8 +262,12 @@
     },
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
-    "updated_at": "2026-07-05T01:46:11.008342+00:00",
-    "ciclo": null
+    "updated_at": "2026-11-25T00:01:55.104848+00:00",
+    "ciclo": null,
+    "etiquetas": [
+      "chiscretas",
+      "mates"
+    ]
   },
   {
     "id": "CS1111",
@@ -298,7 +313,8 @@
     "created_by": null,
     "created_at": "2026-06-16T16:54:56.996539+00:00",
     "updated_at": "2026-09-22T20:17:54.73943+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS1112",
@@ -328,7 +344,8 @@
     "created_by": null,
     "created_at": "2026-06-30T19:37:58.280118+00:00",
     "updated_at": "2026-06-30T19:37:58.280118+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "cs1273",
@@ -361,7 +378,8 @@
     "created_by": null,
     "created_at": "2026-06-16T16:47:34.507404+00:00",
     "updated_at": "2026-06-16T16:47:34.507404+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS2013",
@@ -393,7 +411,8 @@
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
     "updated_at": "2026-06-13T15:13:48.454954+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS2024",
@@ -419,8 +438,11 @@
     },
     "created_by": null,
     "created_at": "2026-08-12T14:01:47.802738+00:00",
-    "updated_at": "2026-09-25T21:36:47.293975+00:00",
-    "ciclo": null
+    "updated_at": "2026-11-24T22:37:59.420649+00:00",
+    "ciclo": null,
+    "etiquetas": [
+      "teocomp"
+    ]
   },
   {
     "id": "CS2031",
@@ -479,7 +501,8 @@
     "created_by": null,
     "created_at": "2026-06-18T13:47:50.292892+00:00",
     "updated_at": "2026-07-06T00:24:01.920574+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS2041",
@@ -535,7 +558,8 @@
     "created_by": null,
     "created_at": "2026-06-13T00:47:00.125508+00:00",
     "updated_at": "2026-11-13T13:53:03.090751+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS3051",
@@ -554,7 +578,8 @@
     "created_by": null,
     "created_at": "2026-11-12T00:18:21.972399+00:00",
     "updated_at": "2026-11-12T00:18:21.972399+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS3061",
@@ -571,7 +596,8 @@
     "created_by": null,
     "created_at": "2026-10-13T14:24:19.972329+00:00",
     "updated_at": "2026-10-13T14:24:19.972329+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS3212",
@@ -588,7 +614,8 @@
     "created_by": null,
     "created_at": "2026-07-13T21:33:39.202149+00:00",
     "updated_at": "2026-07-13T21:33:39.202149+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS3P02",
@@ -618,7 +645,8 @@
     "created_by": null,
     "created_at": "2026-06-16T17:00:10.365393+00:00",
     "updated_at": "2026-06-16T17:00:10.365393+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "CS6005",
@@ -645,8 +673,12 @@
     },
     "created_by": null,
     "created_at": "2026-09-17T01:45:31.81663+00:00",
-    "updated_at": "2026-09-24T23:42:13.699694+00:00",
-    "ciclo": null
+    "updated_at": "2026-11-25T00:01:50.398101+00:00",
+    "ciclo": null,
+    "etiquetas": [
+      "chiscretas",
+      "mates"
+    ]
   },
   {
     "id": "CY6001",
@@ -673,7 +705,8 @@
     "created_by": null,
     "created_at": "2026-07-11T17:08:08.383604+00:00",
     "updated_at": "2026-09-29T00:41:44.696948+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "HH2101",
@@ -688,7 +721,22 @@
     "created_by": null,
     "created_at": "2026-10-16T20:18:30.945658+00:00",
     "updated_at": "2026-10-16T20:18:30.945658+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
+  },
+  {
+    "id": "HH3101",
+    "nombre": "Arte y Tecnología",
+    "carrera": [],
+    "sistema": {
+      "EPY1": 0.5,
+      "TGC1": 0.5
+    },
+    "created_by": null,
+    "created_at": "2026-11-24T22:27:52.530313+00:00",
+    "updated_at": "2026-11-24T22:27:52.530313+00:00",
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "HH5101",
@@ -703,7 +751,8 @@
     "created_by": null,
     "created_at": "2026-06-13T21:45:11.810012+00:00",
     "updated_at": "2026-06-13T21:45:11.810012+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "ME2013",
@@ -732,7 +781,8 @@
     "created_by": null,
     "created_at": "2026-06-17T14:52:15.462479+00:00",
     "updated_at": "2026-06-17T14:52:15.462479+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "PI2202",
@@ -748,7 +798,8 @@
     "created_by": null,
     "created_at": "2026-06-13T15:02:27.623678+00:00",
     "updated_at": "2026-08-10T15:20:20.550919+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   },
   {
     "id": "PI3103",
@@ -764,6 +815,7 @@
     "created_by": null,
     "created_at": "2026-11-12T00:20:24.705701+00:00",
     "updated_at": "2026-11-12T00:20:24.705701+00:00",
-    "ciclo": null
+    "ciclo": null,
+    "etiquetas": []
   }
 ]
